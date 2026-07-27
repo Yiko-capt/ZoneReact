@@ -1,0 +1,453 @@
+/* ZoneReact - Design System (main.css) */
+
+/* =========================================
+   FUENTES
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+/* =========================================
+   VARIABLES
+   ========================================= */
+:root {
+  /* Paleta 16-bit */
+  --yellow:       #F4C430;
+  --yellow-dark:  #C8991A;
+  --red:          #E8543E;
+  --red-dark:     #B83020;
+  --green:        #5A8A4A;
+  --green-light:  #8BC34A;
+  --green-dark:   #3A5F2E;
+  --blue:         #4A6FA5;
+  --blue-light:   #7FA8D0;
+  --purple:       #7B6FA0;
+  --beige:        #F4EFE6;
+  --paper:        #FFFDF8;
+  --ink:          #1A1A1A;
+  --gray:         #6E6E6E;
+  --gray-light:   #C0BAB0;
+  --white:        #FFFFFF;
+
+  /* Semánticos */
+  --bg:           var(--beige);
+  --surface:      var(--paper);
+  --accent:       var(--yellow);
+  --danger:       var(--red);
+  --success:      var(--green);
+
+  /* Bordes y sombras pixel-art */
+  --border:       3px solid var(--ink);
+  --border-thin:  2px solid var(--ink);
+  --shadow:       4px 4px 0 var(--ink);
+  --shadow-sm:    3px 3px 0 var(--ink);
+  --shadow-lg:    6px 6px 0 var(--ink);
+  --shadow-yellow:4px 4px 0 var(--yellow);
+  --shadow-red:   4px 4px 0 var(--red);
+  --shadow-green: 4px 4px 0 var(--green);
+
+  /* Tipografía */
+  --font-pixel:   'Press Start 2P', monospace;
+  --font-vt:      'VT323', monospace;
+  --font-body:    'Nunito', sans-serif;
+
+  /* Radios (pixel-art = sin bordes redondeados salvo excepciones) */
+  --radius:       0px;
+  --radius-pill:  999px;
+}
+
+/* =========================================
+   BASE
+   ========================================= */
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-body);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.pixel-title {
+  font-family: var(--font-pixel);
+  font-size: clamp(14px, 3vw, 28px);
+  line-height: 1.6;
+}
+
+.pixel-text {
+  font-family: var(--font-vt);
+  font-size: clamp(18px, 2.5vw, 26px);
+  line-height: 1.3;
+}
+
+/* =========================================
+   NAVBAR
+   ========================================= */
+#main-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: var(--surface);
+  border-bottom: var(--border);
+  height: 64px;
+  display: flex;
+  align-items: stretch;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  border-right: var(--border);
+  cursor: pointer;
+  background: var(--surface);
+  transition: background 0.1s;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+}
+
+.nav-brand:hover {
+  background: var(--yellow);
+}
+
+.nav-brand-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--yellow);
+  border: var(--border);
+  box-shadow: 3px 3px 0 var(--ink);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 900;
+  transform: rotate(-3deg);
+  flex-shrink: 0;
+}
+
+.nav-links {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.nav-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 24px;
+  border-right: 1px solid var(--gray-light);
+  font-weight: 700;
+  font-size: 15px;
+  background: var(--surface);
+  transition: background 0.1s;
+  position: relative;
+}
+
+.nav-btn:hover {
+  background: var(--beige);
+}
+
+.nav-btn.active {
+  background: var(--yellow);
+}
+
+.nav-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 12px; right: 12px;
+  height: 4px;
+  background: var(--ink);
+}
+
+.nav-btn .nav-icon {
+  font-size: 20px;
+}
+
+/* =========================================
+   APP SHELL
+   ========================================= */
+#app {
+  flex: 1;
+  padding-top: 64px;
+  position: relative;
+}
+
+.screen {
+  display: none;
+  min-height: calc(100vh - 64px);
+  animation: screenIn 0.2s ease-out;
+}
+
+.screen.active {
+  display: block;
+}
+
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   BOTONES
+   ========================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 15px;
+  border: var(--border);
+  box-shadow: var(--shadow);
+  background: var(--yellow);
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  position: relative;
+  letter-spacing: 0.01em;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.btn:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0 var(--ink);
+}
+
+.btn-primary { background: var(--yellow); }
+.btn-secondary { background: var(--surface); }
+.btn-danger { background: var(--red); color: var(--white); }
+.btn-success { background: var(--green); color: var(--white); }
+.btn-blue { background: var(--blue); color: var(--white); }
+
+.btn-lg {
+  padding: 18px 32px;
+  font-size: 18px;
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 13px;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-full { width: 100%; }
+
+/* =========================================
+   TAGS / BADGES
+   ========================================= */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: var(--border-thin);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--yellow);
+}
+
+.tag-red { background: var(--red); color: var(--white); }
+.tag-green { background: var(--green); color: var(--white); }
+.tag-blue { background: var(--blue); color: var(--white); }
+.tag-ink { background: var(--ink); color: var(--white); }
+
+/* =========================================
+   CARDS
+   ========================================= */
+.card {
+  background: var(--surface);
+  border: var(--border);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.card-yellow {
+  background: var(--yellow);
+  border: var(--border);
+  box-shadow: var(--shadow);
+}
+
+/* =========================================
+   FORMULARIOS
+   ========================================= */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.form-input {
+  background: var(--surface);
+  border: var(--border);
+  padding: 12px 16px;
+  font-size: 16px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  outline: none;
+  transition: box-shadow 0.15s;
+  width: 100%;
+}
+
+.form-input:focus {
+  box-shadow: var(--shadow-yellow);
+}
+
+.form-input.code {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 22px;
+  font-weight: 900;
+  text-align: center;
+}
+
+/* =========================================
+   PROGRESS BAR
+   ========================================= */
+.progress-bar {
+  border: var(--border-thin);
+  height: 14px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--yellow);
+  transition: width 0.4s ease;
+}
+
+.progress-bar-fill.green { background: var(--green); }
+.progress-bar-fill.red   { background: var(--red); }
+
+/* =========================================
+   TOAST NOTIFICATION
+   ========================================= */
+#toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  background: var(--ink);
+  color: var(--white);
+  border: 3px solid var(--white);
+  box-shadow: 6px 6px 0 var(--yellow);
+  padding: 16px 22px;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(120%);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+#toast b { color: var(--yellow); }
+
+/* =========================================
+   SCORE / XP DISPLAY
+   ========================================= */
+.xp-badge {
+  display: inline-flex;
+  border: var(--border);
+  box-shadow: var(--shadow);
+}
+
+.xp-badge-num {
+  background: var(--yellow);
+  padding: 10px 14px;
+  font-family: var(--font-pixel);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.xp-badge-num.negative { background: var(--red); color: var(--white); }
+
+.xp-badge-info {
+  background: var(--surface);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.xp-badge-info b { font-size: 14px; font-weight: 900; }
+.xp-badge-info small { font-size: 11px; color: var(--gray); }
+
+/* =========================================
+   DIVIDER
+   ========================================= */
+.divider {
+  border: none;
+  border-top: var(--border-thin);
+  margin: 24px 0;
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+   /* 1. Estilos para la barra completa (contenedor padre) */
+footer {
+  background: var(--ink);
+  color: var(--white);
+  border-top: var(--border);
+  padding: 18px 30px; /* Padding único para todo el footer */
+  
+  /* Alineación en la misma fila */
+  display: flex;
+  justify-content: space-between; /* Izquierda y Derecha */
+  align-items: center;            /* Centrado vertical */
+  
+  /* Tipografía general */
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* 2. Limpiamos los estilos individuales para que no interfieran */
+.site-footer,
+.site-footer-right {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+
+/* =========================================
+   SCROLLBAR PIXEL
+   ========================================= */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--beige); }
+::-webkit-scrollbar-thumb { background: var(--ink); }
+::-webkit-scrollbar-thumb:hover { background: var(--gray); }

@@ -1,0 +1,50 @@
+/* ZoneReact - Reset CSS */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

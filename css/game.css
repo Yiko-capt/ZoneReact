@@ -1,0 +1,113 @@
+/* ZoneReact - Game Canvas & HUD styles */
+
+/* Map screen scroll lock & fixed viewport */
+html.map-mode-active,
+body.map-mode-active {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  position: fixed !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body.map-mode-active #app {
+  height: calc(100vh - 64px) !important;
+  overflow: hidden !important;
+  position: relative !important;
+  padding-top: 64px !important;
+}
+
+body.map-mode-active #screen-map {
+  display: block !important;
+  height: 100% !important;
+  width: 100% !important;
+  position: absolute !important;
+  inset: 0 !important;
+  top: 64px !important;
+  overflow: hidden !important;
+  background: var(--ink) !important;
+}
+
+.map-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+/* Canvas pixel rendering & full viewport fit */
+#game-canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute;
+  inset: 0;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: #424549;
+}
+
+/* Situation pin tooltip */
+.map-pin-tooltip {
+  position: absolute;
+  background: var(--surface);
+  border: var(--border);
+  box-shadow: var(--shadow);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 20;
+  transform: translate(-50%, -110%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.map-pin-tooltip.visible {
+  opacity: 1;
+}
+
+/* Pixel art 2D map scene preview in home */
+.home-city-preview {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+/* Canvas loading state */
+.canvas-loading {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--white);
+  font-family: var(--font-pixel);
+  font-size: 12px;
+}
+
+.canvas-loading-bar {
+  width: 200px;
+  height: 12px;
+  border: 2px solid var(--white);
+  overflow: hidden;
+}
+
+.canvas-loading-fill {
+  height: 100%;
+  background: var(--yellow);
+  animation: loadFill 1.2s ease-in-out forwards;
+}
+
+@keyframes loadFill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}

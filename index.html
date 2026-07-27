@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ZoneReact - Plataforma educativa 16-Bit para secundaria. Toma decisiones inteligentes, protege a tus amigos y aprende sobre los efectos de las drogas en tu cuerpo." />
+  <title>ZoneReact — Tu Comunidad te Necesita (16-Bit Edition)</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/screens.css" />
+  <link rel="stylesheet" href="css/game.css" />
+
+  <style>
+    @keyframes shake {
+      0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)}
+    }
+    .shake { animation: shake 0.4s ease; }
+  </style>
+</head>
+<body>
+
+<!-- =========================================
+     NAVIGATION BAR
+     ========================================= -->
+<nav id="main-nav">
+  <button class="nav-brand" aria-label="ZoneReact Inicio">
+    <div class="nav-brand-icon">Z</div>
+    <span>ZoneReact</span>
+  </button>
+  <div class="nav-links">
+    <button class="nav-btn" id="nav-home">
+      <span class="nav-icon">🏠</span>
+      Inicio
+    </button>
+    <button class="nav-btn" id="nav-aventura">
+      <span class="nav-icon">🎮</span>
+      Aventura
+    </button>
+    <button class="nav-btn" id="nav-body">
+      <span class="nav-icon">👥</span>
+      Tu Cuerpo
+    </button>
+  </div>
+</nav>
+
+<!-- =========================================
+     APP CONTAINER
+     ========================================= -->
+<main id="app">
+
+  <!-- ===== PANTALLA 1: HOME ===== -->
+  <div id="screen-home" class="screen">
+    <div class="home-hero">
+      <div class="home-copy">
+        <div class="home-eyebrow">Tu comunidad te necesita</div>
+        <h1 class="home-title">Zone<span>React</span></h1>
+        <p class="home-desc">
+          Tu personaje está en el colegio. Hay situaciones de riesgo alrededor del barrio.
+           Muévete y toma decisiones para hacer tu distrito más seguro.</p>
+        <div class="home-form">
+          <label class="home-form-label" for="home-player-name">¿Cómo te llamamos?</label>
+          <input
+            type="text"
+            id="home-player-name"
+            class="form-input"
+            placeholder="Escribe tu nombre..."
+            maxlength="20"
+            autocomplete="off"
+          />
+          <button id="home-start-btn" class="btn btn-primary btn-lg">
+            🎮 Entrar a la aventura -->
+          </button>
+          <button class="btn btn-secondary" onclick="window.ZR.navigate('screen-body-select')">
+            👥 Interactúa con tu cuerpo
+          </button>
+        </div>
+      </div>
+
+      <div class="home-visual">
+        <canvas id="home-preview-canvas" style="position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated"></canvas>
+      </div>
+    </div>
+
+    <div class="home-about">
+      <div class="home-about-inner">
+        <div>
+          <div class="home-eyebrow">¿Qué es ZoneReact?</div>
+          <h2>Una plataforma para jóvenes que quieren <span style="color:var(--red);  -webkit-text-stroke: 2px #000000;text-shadow:3px 3px 0px  #C8991A" >marcar la diferencia.</span></h2>
+          <p style="margin-bottom:16px">
+            ZoneReact es una plataforma creada por estudiantes de la PUCP y la UPC para promover
+            la buena toma de decisiones y combatir la inseguridad ciudadana en los colegios.
+          </p>
+          <p>
+            A través de escenarios interactivos en 16-bits, los usuarios aprenden a identificar riesgos,
+            apoyar a sus amigos y tomar decisiones responsables ante el consumo de sustancias.
+          </p>
+        </div>
+        <div class="home-about-icon"><img src="images/pueblo_marron.jpg" alt="Leo 16-bit" style="width:70%;height:70%;object-fit:cover;border:3px solid #1A1A1A;box-shadow:4px 4px 0 #1A1A1A;image-rendering:pixelated"/></div> 
+      </div>
+    </div>
+
+    <footer >
+      <div class="site-footer">© ZoneReact · Demo Hackathon 2026 </div>
+      <div class="site-footer-right"> Aprende · Decide · Transforma</div>
+    </footer>
+  </div>
+
+  <!-- ===== PANTALLA 2: MENÚ AVENTURA ===== -->
+  <div id="screen-menu-aventura" class="screen">
+    <div class="aventura-copy">
+      <div class="home-eyebrow" id="aventura-player-greeting">¡Hola!</div>
+      <h1>Aventura</h1>
+      <p>Elige cómo quieres jugar. Ayuda a Leo en su historia o compite con tu comunidad en tiempo real.</p>
+
+      <div class="aventura-actions">
+        <button class="aventura-btn" id="btn-modo-historia">
+          <span class="aventura-btn-icon">📖</span>
+          <div class="aventura-btn-text">
+            <b>Modo Historia</b>
+            <span>Ayuda a Leo en 5 decisiones críticas</span>
+          </div>
+        </button>
+
+        <button class="aventura-btn" id="btn-multijugador">
+          <span class="aventura-btn-icon">👥</span>
+          <div class="aventura-btn-text">
+            <b>Multijugador</b>
+            <span>Compite con tu comunidad en tiempo real</span>
+          </div>
+        </button>
+
+        <button class="aventura-btn" id="btn-avatar-menu" style="border-style:dashed">
+          <span class="aventura-btn-icon">🎨</span>
+          <div class="aventura-btn-text">
+            <b>Personalizar Avatar </b>
+            <span>Cambia la apariencia de tu personaje</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="aventura-avatar-area">
+      <div class="aventura-avatar-preview" id="aventura-avatar-click" title="Personalizar avatar">
+        <div class="avatar-display" id="aventura-avatar-display"></div>
+        <button class="btn btn-sm aventura-avatar-label" style="white-space:nowrap">✏️ Avatar 16-Bit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA 3: AVATAR CUSTOMIZER (ENLARGED) ===== -->
+  <div id="screen-avatar" class="screen">
+    <div class="avatar-header">
+      <button class="btn btn-secondary btn-sm" id="avatar-back-btn">← Regresar</button>
+      <h1>Personaliza tu Avatar 16-Bit</h1>
+    </div>
+
+    <div class="avatar-screen-inner">
+      <div class="avatar-options-panel">
+        <h3>Opciones de Color & Estilo</h3>
+        <div class="avatar-swatch-grid" id="avatar-swatch-grid"></div>
+
+        <h3 style="margin-top:20px">Género</h3>
+        <div class="avatar-gender-switch">
+          <button class="gender-btn active" data-gender="hombre">🧑 Hombre</button>
+          <button class="gender-btn" data-gender="mujer">👧 Mujer</button>
+        </div>
+      </div>
+
+      <div class="avatar-stage">
+        <div class="avatar-stage-platform"></div>
+        <div class="avatar-display" id="avatar-stage-display"></div>
+      </div>
+
+      <div class="avatar-controls-panel">
+        <button class="avatar-tab-btn active" data-tab="piel">
+          <span class="tab-icon">🎨</span> Piel
+        </button>
+        <button class="avatar-tab-btn" data-tab="cabello">
+          <span class="tab-icon">💇</span> Cabello
+        </button>
+        <button class="avatar-tab-btn" data-tab="polo">
+          <span class="tab-icon">👕</span> Polo
+        </button>
+        <button class="avatar-tab-btn" data-tab="shorts">
+          <span class="tab-icon">🩳</span> Shorts
+        </button>
+      </div>
+    </div>
+
+    <div class="avatar-save-bar">
+      <p style="font-size:13px;color:var(--gray)">Tu personaje en 16-bit se actualizará en todo el juego</p>
+      <button id="avatar-save-btn" class="btn btn-primary btn-lg">💾 Guardar Avatar</button>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA 4: MULTI JOIN ===== -->
+  <div id="screen-multi-join" class="screen">
+    <div class="multi-join-card">
+      <button class="btn btn-secondary btn-sm" id="multi-join-back" style="margin-bottom:24px;align-self:flex-start">← Regresar</button>
+      <h1>Únete a tu comunidad</h1>
+      <p>Escribe el código de tu comunidad</p>
+
+      <input
+        type="text"
+        id="multi-code-input"
+        class="form-input code"
+        placeholder="CÓDIGO"
+        maxlength="8"
+      />
+      <button id="multi-join-btn" class="btn btn-primary btn-full btn-lg" style="margin-bottom:8px">
+        Unirse →
+      </button>
+
+      <div class="multi-divider">o</div>
+
+      <button id="multi-create-btn" class="btn btn-secondary btn-full">
+        ✨ Crear grupo
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA 5: MULTI LOBBY ===== -->
+  <div id="screen-multi-lobby" class="screen">
+    <div class="lobby-left">
+      <button class="btn btn-secondary btn-sm" id="lobby-back-btn" style="margin-bottom:24px">← Regresar</button>
+      <h1 id="lobby-title">Bienvenido a SchoolSJL</h1>
+      <p>Tabla de posiciones de tu equipo</p>
+
+      <div class="leaderboard-table">
+        <div class="lb-header">
+          <div>#</div>
+          <div>Nombre</div>
+          <div style="text-align:right">Pts</div>
+        </div>
+        <div id="lobby-leaderboard"></div>
+      </div>
+    </div>
+
+    <div class="lobby-right">
+      <div class="lobby-player-name" id="lobby-player-display-name">Tú</div>
+      <div class="lobby-avatar-wrap avatar-display" id="lobby-avatar-display"></div>
+      <button class="btn btn-secondary btn-sm" id="lobby-avatar-btn">✏️ Cambiar Avatar</button>
+      <button class="btn btn-primary btn-lg" id="lobby-ready-btn" style="width:100%">
+        ¿Listo? →
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA 6: VS SCREEN ===== -->
+  <div id="screen-vs" class="screen">
+    <div class="vs-team">
+      <div class="vs-team-icons">
+        <span class="vs-team-icon-char">👾</span>
+        <span class="vs-team-icon-char">👾</span>
+        <span class="vs-team-icon-char">👾</span>
+      </div>
+      <div class="vs-team-name" id="vs-my-squad">SchoolSJL</div>
+    </div>
+
+    <div class="vs-separator">
+      <div class="vs-badge">VS</div>
+    </div>
+
+    <div class="vs-team">
+      <div class="vs-team-icons">
+        <span class="vs-team-icon-char" style="color:#E8543E">👾</span>
+        <span class="vs-team-icon-char" style="color:#E8543E">👾</span>
+        <span class="vs-team-icon-char" style="color:#E8543E">👾</span>
+      </div>
+      <div class="vs-team-name" id="vs-enemy-squad">LuriganchoCity</div>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA 7: CREAR COMUNIDAD ===== -->
+  <div id="screen-multi-create" class="screen">
+    <div class="create-left">
+      <button class="btn btn-secondary btn-sm" id="create-back-btn" style="margin-bottom:24px">← Regresar</button>
+      <h1>Escribe el nombre de tu comunidad</h1>
+
+      <div class="form-group" style="margin-bottom:20px">
+        <input
+          type="text"
+          id="squad-name-input"
+          class="form-input"
+          placeholder="Ej. SchoolSJL"
+          maxlength="20"
+        />
+      </div>
+
+      <button id="generate-code-btn" class="btn btn-primary" style="margin-bottom:16px">
+        🔑 Generar código
+      </button>
+
+      <div class="generated-code" id="generated-code-display">——————</div>
+      <p style="font-size:13px;color:var(--gray);margin-top:12px">Comparte este código con tu equipo para que se unan</p>
+
+      <button id="create-ready-btn" class="btn btn-success" style="margin-top:32px">
+        ✅ ¡Estamos listos!
+      </button>
+    </div>
+
+    <div class="create-right">
+      <h2>Miembros en sala</h2>
+      <p style="color:var(--gray);font-size:13px;margin-bottom:16px">Esperando que se unan...</p>
+      <div class="leaderboard-table">
+        <div class="lb-header">
+          <div>#</div>
+          <div>Nombre</div>
+          <div style="text-align:right">Pts</div>
+        </div>
+        <div id="create-members-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA 8: CINEMÁTICA LEO (16-BIT DESIGN) ===== -->
+  <div id="screen-cinematic" class="screen">
+    <div class="cinematic-container">
+
+      <div class="cinematic-chars">
+        <!-- Player -->
+        <div class="cinematic-char">
+          <div class="cinematic-char-sprite">
+            <div class="avatar-display" id="cinematic-player-sprite"></div>
+          </div>
+          <div class="cinematic-char-name" id="cinematic-player-name">Tú</div>
+        </div>
+
+        <div style="font-family:'Press Start 2P',monospace;font-size:28px;color:var(--yellow)">+</div>
+
+        <!-- Leo 16-Bit -->
+        <div class="cinematic-char">
+          <div class="cinematic-char-sprite" id="cinematic-leo-sprite">
+            <img src="images/leo_16bit.jpg" alt="Leo 16-bit" style="width:100%;height:100%;object-fit:cover;border:3px solid #1A1A1A;box-shadow:4px 4px 0 #1A1A1A;image-rendering:pixelated"/>
+          </div>
+          <div class="cinematic-char-name leo">Leo</div>
+        </div>
+      </div>
+
+      <div class="cinematic-speech">
+        <h2 id="cinematic-title">¡Tu mejor amigo Leo necesita tu ayuda!</h2>
+        <p id="cinematic-body">Leo está en peligro. Su barrio está lleno de situaciones de riesgo.</p>
+      </div>
+
+      <div class="cinematic-objective">
+        🎯 Objetivo: Guiar a Leo a través de 5 decisiones críticas para evitar que caiga en la adicción o el microtráfico.
+      </div>
+
+      <div style="display:flex;align-items:center;gap:16px;justify-content:center;margin-bottom:24px">
+        <span style="color:var(--white);font-size:14px" id="cinematic-progress">1 / 3</span>
+      </div>
+
+      <div style="display:flex;gap:16px;justify-content:center">
+        <button id="cinematic-skip-btn" class="btn btn-secondary" style="color:var(--white);background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3)">
+          Saltar →
+        </button>
+        <button id="cinematic-next-btn" class="btn btn-primary btn-lg">
+          Siguiente →
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== PANTALLAS 9/10: MAPA ===== -->
+  <div id="screen-map" class="screen">
+    <div class="map-wrapper">
+      <canvas id="game-canvas"></canvas>
+
+      <div class="map-hud">
+        <div class="map-hud-card map-hud-player">
+          <div style="font-weight:900;font-size:15px" id="map-player-name">Jugador</div>
+        </div>
+
+        <div class="map-hud-score-card">
+          <span class="map-hud-score-icon">🏆</span>
+          <div style="display:flex;flex-direction:column">
+            <span style="font-size:10px;font-weight:900;letter-spacing:0.1em;color:#1A1A1A">PUNTAJE XP</span>
+            <span class="map-hud-score-val" id="map-player-score">0 XP</span>
+          </div>
+        </div>
+
+        <div class="map-hud-card" style="align-self:center">
+          <span id="map-mode-label" style="font-size:13px;font-weight:700">📖 Modo Historia</span>
+        </div>
+
+        <div class="map-hud-spacer"></div>
+
+        <div class="map-hud-card map-hud-timer" id="map-timer-card" style="display:none">
+          <span class="map-timer-label">TIEMPO</span>
+          <span class="map-timer-value" id="map-timer-display">7:30</span>
+        </div>
+
+        <div class="map-hud-card map-mini-leaderboard" id="map-leaderboard-card" style="display:none">
+          <div style="font-size:10px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Liderboard</div>
+          <div id="map-mini-lb-body"></div>
+        </div>
+      </div>
+
+      <div class="map-interact-prompt" id="map-interact-prompt">
+        <kbd>E</kbd>
+        <span>Interactuar — <b class="situation-name-hint"></b></span>
+      </div>
+
+      <div class="map-controls-hint">
+        <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> o
+        <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd>
+        para moverte •
+        <kbd>E</kbd> para interactuar
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA 11: SITUACIÓN ===== -->
+  <div id="screen-situation" class="screen">
+    <div class="situation-art">
+      <div class="situation-scene">
+        <div class="situation-emoji" id="situation-emoji">⚠️</div>
+        <div class="situation-art-title" id="situation-scene-title"></div>
+      </div>
+    </div>
+
+    <div class="situation-panel">
+      <button class="btn btn-secondary btn-sm" id="situation-back-btn" style="align-self:flex-start;margin-bottom:24px">
+        ← Volver al mapa
+      </button>
+
+      <div id="situation-tag" class="tag tag-red situation-tag">PRESIÓN SOCIAL</div>
+      <h1 class="situation-title" id="situation-title">"La Esquina del Colegio"</h1>
+      <div class="situation-context" id="situation-context"></div>
+
+      <div class="situation-tip">
+        <div class="situation-tip-icon">?</div>
+        <span id="situation-tip"></span>
+      </div>
+
+      <div class="situation-actions">
+        <button id="situation-decide-btn" class="btn btn-primary btn-lg">
+          Tomar una decisión →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA 12: DECISIÓN ===== -->
+  <div id="screen-decision" class="screen">
+    <div class="decision-head">
+      <div id="decision-tag" class="tag tag-red">MOMENTO CLAVE</div>
+      <h1>¿Qué decisión <span>tomas?</span></h1>
+      <p class="decision-context" id="decision-context"></p>
+    </div>
+
+    <div class="decision-options" id="decision-options"></div>
+
+    <div class="decision-footer">
+      <div class="decision-tip">
+        <div class="decision-tip-badge">TIP</div>
+        <span id="decision-tip-text"></span>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button id="decision-back-btn" class="btn btn-secondary">← Volver</button>
+        <button id="decision-confirm-btn" class="btn btn-primary">Confirmar decisión →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLAS 13/14: RESULTADO ===== -->
+  <div id="screen-result" class="screen">
+    <div class="result-info">
+      <div id="result-icon" class="result-icon">✓</div>
+      <div id="result-label" class="tag tag-green">DECISIÓN SEGURA</div>
+      <h1 class="result-title" id="result-title">¡Buena decisión!</h1>
+      <div class="result-feedback" id="result-feedback"></div>
+
+      <div style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;font-weight:700">
+          <span>Progreso total</span>
+          <span id="result-score-pct">0 / 100 XP</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill green" id="result-score-bar-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="xp-badge" style="margin-bottom:24px">
+        <div class="xp-badge-num" id="result-xp-num">+10</div>
+        <div class="xp-badge-info">
+          <b>XP</b>
+          <small id="result-xp-total">Total: 10 XP</small>
+        </div>
+      </div>
+
+      <button id="result-map-btn" class="btn btn-primary btn-full btn-lg">
+        Volver al mapa →
+      </button>
+    </div>
+
+    <div class="result-poster" id="result-poster">
+      <div class="result-word" id="result-word">¡BIEN!</div>
+      <div class="result-quote" id="result-quote"></div>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA FINAL ===== -->
+  <div id="screen-ending" class="screen">
+    <div class="ending-card">
+      <div id="ending-rank" class="ending-rank-badge yellow">🏆 GUARDIÁN COMUNITARIO</div>
+      <div class="ending-score" id="ending-score">100 / 100 XP</div>
+      <h1 id="ending-title">¡Leo está a salvo!</h1>
+      <p id="ending-desc">Guiaste a Leo con sabiduría. Eres un guardián de tu comunidad.</p>
+      <div id="ending-decisions" style="text-align:left;margin-bottom:24px"></div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button id="ending-retry-btn" class="btn btn-secondary">🔄 Intentar de nuevo</button>
+        <button id="ending-home-btn" class="btn btn-primary">🏠 Volver al inicio</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANTALLA 15/16: TU CUERPO (RESPUESTA VISUAL DIRECTA) ===== -->
+  <div id="screen-body-select" class="screen">
+    <div class="body-select-head">
+      <div class="home-eyebrow">Módulo educativo 16-Bit</div>
+      <h1>¿Qué pasa en tu cuerpo?</h1>
+      <p>Toca una sustancia para ver cómo altera tu cuerpo y presiona cualquier órgano para ver su efecto detallado.</p>
+    </div>
+
+    <div class="body-select-grid">
+      <!-- Left: affected avatar + status banner + organ hotspots -->
+      <div class="body-figure">
+        <div class="body-figure-sprite" id="body-avatar-display"></div>
+
+        <!-- Hotspots superimposed on body -->
+        <div class="organ-hotspot brain" data-organ="brain" title="Cerebro">🧠</div>
+        <div class="organ-hotspot lungs" data-organ="lungs" title="Pulmones/Hígado">🫁</div>
+        <div class="organ-hotspot heart" data-organ="heart" title="Corazón">❤️</div>
+
+        <!-- Status banner -->
+        <div class="substance-status-banner" id="substance-status-effect"></div>
+
+        <!-- Organ quick tabs -->
+        <div style="margin-top:16px;width:100%">
+          <div style="font-size:12px;font-weight:900;margin-bottom:8px;color:var(--gray);text-transform:uppercase">Órganos afectados:</div>
+          <div class="organs-tabs" id="organ-tabs" style="display:flex;gap:8px"></div>
+        </div>
+      </div>
+
+      <!-- Right: substance cards grid -->
+      <div class="body-substances" id="substance-cards"></div>
+    </div>
+  </div>
+
+</main><!-- /#app -->
+
+<!-- ===== MODAL ÓRGANO GRANDE (P17) ===== -->
+<div id="organ-modal-backdrop">
+  <div class="organ-modal" role="dialog" aria-modal="true" aria-label="Detalle del órgano">
+    <button class="modal-close-btn" id="organ-modal-close" aria-label="Cerrar">✕</button>
+
+    <div class="organ-modal-inner">
+      <!-- Left: LARGE ORGAN IMAGE -->
+      <div class="organ-modal-image">
+        <img id="modal-organ-image" src="" alt="Imagen del órgano 16-bit" onerror="this.style.display='none'" />
+      </div>
+
+      <!-- Right: content -->
+      <div class="organ-modal-content">
+        <div id="modal-organ-title"></div>
+        <div id="modal-organ-effects" class="organ-modal-effects"></div>
+        <div class="organ-modal-warning" id="modal-organ-warning"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast" role="alert" aria-live="polite">
+  <span id="toast-msg"></span>
+</div>
+
+<!-- =========================================
+     SCRIPTS
+     ========================================= -->
+<script src="js/data/situations.js"></script>
+<script src="js/data/substances.js"></script>
+<script src="js/app.js"></script>
+<script src="js/avatar.js"></script>
+<script src="js/game-engine.js"></script>
+<script src="js/game-story.js"></script>
+<script src="js/game-multi.js"></script>
+<script src="js/body-module.js"></script>
+
+<script>
+  (function () {
+    function drawHomePreview() {
+      const canvas = document.getElementById('home-preview-canvas');
+      if (!canvas) return;
+      const parent = canvas.parentElement;
+      canvas.width = parent.clientWidth;
+      canvas.height = parent.clientHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
+      const W = canvas.width, H = canvas.height;
+
+      // Sky
+      ctx.fillStyle = '#6BA8E8';
+      ctx.fillRect(0, 0, W, H * 0.55);
+
+      // Ground
+      ctx.fillStyle = '#68B04D';
+      ctx.fillRect(0, H * 0.55, W, H * 0.45);
+
+      // Road 16-bit
+      ctx.fillStyle = '#424549';
+      ctx.fillRect(0, H * 0.64, W, H * 0.14);
+      ctx.fillStyle = '#F4C430';
+      for (let x = 0; x < W; x += 44) ctx.fillRect(x, H * 0.70, 24, 4);
+
+      // Buildings 16-bit
+      const buildings = [
+        { x: 0.04, w: 0.14, h: 0.46, color: '#4268A0' },
+        { x: 0.20, w: 0.12, h: 0.38, color: '#C85238' },
+        { x: 0.34, w: 0.16, h: 0.52, color: '#5C5C78' },
+        { x: 0.52, w: 0.10, h: 0.32, color: '#D4A462' },
+        { x: 0.64, w: 0.15, h: 0.48, color: '#E0AC28' },
+        { x: 0.81, w: 0.15, h: 0.55, color: '#C85238' },
+      ];
+
+      buildings.forEach(b => {
+        const bx = b.x * W;
+        const bw = b.w * W;
+        const by = H * 0.64 - b.h * H * 0.65;
+        const bh = b.h * H * 0.65;
+
+        ctx.fillStyle = b.color;
+        ctx.fillRect(bx, by, bw, bh);
+
+        ctx.strokeStyle = '#1A1A1A';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(bx, by, bw, bh);
+
+        ctx.fillStyle = '#FCE883';
+        const cols = Math.floor(bw / 16);
+        const rows = Math.floor(bh / 20);
+        for (let wr = 0; wr < rows; wr++) {
+          for (let wc = 0; wc < cols; wc++) {
+            if ((wr + wc) % 2 === 0) {
+              ctx.fillRect(bx + 6 + wc * 16, by + 8 + wr * 20, 8, 10);
+            }
+          }
+        }
+      });
+    }
+
+    drawHomePreview();
+    window.addEventListener('resize', drawHomePreview);
+  })();
+</script>
+
+</body>
+</html>
