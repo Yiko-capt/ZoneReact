@@ -96,7 +96,11 @@ h1, h2, h3, h4 {
   z-index: 1000;
   background: var(--surface);
   border-bottom: var(--border);
+<<<<<<< HEAD
   height: 80px;
+=======
+  height: 85px;
+>>>>>>> 25806485f367a65bd568be6002c9f25e5c39f7c0
   display: flex;
   align-items: stretch;
 }
