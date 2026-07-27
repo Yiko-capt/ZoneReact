@@ -96,11 +96,7 @@ h1, h2, h3, h4 {
   z-index: 1000;
   background: var(--surface);
   border-bottom: var(--border);
-<<<<<<< HEAD
-  height: 80px;
-=======
-  height: 85px;
->>>>>>> 25806485f367a65bd568be6002c9f25e5c39f7c0
+  height: 70px;
   display: flex;
   align-items: stretch;
 }
@@ -116,6 +112,7 @@ h1, h2, h3, h4 {
   transition: background 0.1s;
   font-weight: 900;
   font-size: 20px;
+  font-family: Space Grotesk, bold, sans-serif;
   letter-spacing: -0.03em;
 }
 
@@ -153,7 +150,8 @@ h1, h2, h3, h4 {
   padding: 0 24px;
   border-right: 1px solid var(--gray-light);
   font-weight: 700;
-  font-size: 15px;
+  font-family: Space Grotesk, bold, sans-serif;
+  font-size: 16px;
   background: var(--surface);
   transition: background 0.1s;
   position: relative;
@@ -176,7 +174,7 @@ h1, h2, h3, h4 {
 }
 
 .nav-btn .nav-icon {
-  font-size: 20px;
+  font-size: 30px;
 }
 
 /* =========================================

@@ -94,6 +94,12 @@ window.ZR.navigate = function (screenId, data) {
 
   updateNavActive(screenId);
 
+  if (screenId === 'screen-home' && window.ZR.drawHomePreview) {
+    setTimeout(window.ZR.drawHomePreview, 10);
+  } else if (screenId === 'screen-menu-aventura' && window.ZR.drawAventuraPreview) {
+    setTimeout(window.ZR.drawAventuraPreview, 10);
+  }
+
   if (_screenInits[screenId]) {
     _screenInits[screenId](data || {});
   }

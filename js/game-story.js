@@ -15,6 +15,9 @@ window.ZR.registerScreen('screen-menu-aventura', function () {
   if (greet) greet.textContent = name ? `¡Hola, ${name}!` : 'Elige tu modo';
 
   window.ZR.renderAvatarInContainer('aventura-avatar-display', window.ZR.state.avatar);
+  if (window.ZR.drawAventuraPreview) {
+    setTimeout(window.ZR.drawAventuraPreview, 10);
+  }
 
   document.getElementById('btn-modo-historia')?.addEventListener('click', () => {
     window.ZR.navigate('screen-cinematic');
@@ -40,11 +43,10 @@ window.ZR.registerScreen('screen-cinematic', function () {
 
   window.ZR.renderAvatarInContainer('cinematic-player-sprite', window.ZR.state.avatar);
 
-  // Render 16-bit Leo sprite
   const leoContainer = document.getElementById('cinematic-leo-sprite');
   if (leoContainer) {
     leoContainer.innerHTML = `
-      <img src="images/leo_16bit.jpg" alt="Leo 16-bit" style="width:100%;height:100%;object-fit:cover;border:3px solid #1A1A1A;box-shadow:4px 4px 0 #1A1A1A;image-rendering:pixelated"/>
+      <img src="images/leo_16bit.jpg" alt="Leo 16-bit" />
     `;
   }
 

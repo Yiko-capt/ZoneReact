@@ -80,6 +80,13 @@
 
       <div class="home-visual">
         <canvas id="home-preview-canvas" style="position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated"></canvas>
+        <div class="visual-overlay-mission">
+          <span class="mission-tag">MISIÓN</span>
+          <div class="mission-text">Haz tu distrito más seguro</div>
+        </div>
+        <div class="visual-overlay-bubble">
+          Tu barrio.<br>Tus decisiones.
+        </div>
       </div>
     </div>
 
@@ -142,6 +149,14 @@
     </div>
 
     <div class="aventura-avatar-area">
+      <canvas id="aventura-preview-canvas" style="position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;z-index:0;"></canvas>
+      <div class="visual-overlay-mission">
+        <span class="mission-tag">MISIÓN</span>
+        <div class="mission-text">Haz tu distrito más seguro</div>
+      </div>
+      <div class="visual-overlay-bubble">
+        Tu barrio.<br>Tus decisiones.
+      </div>
       <div class="aventura-avatar-preview" id="aventura-avatar-click" title="Personalizar avatar">
         <div class="avatar-display" id="aventura-avatar-display"></div>
         <button class="btn btn-sm aventura-avatar-label" style="white-space:nowrap">✏️ Avatar 16-Bit</button>
@@ -332,7 +347,7 @@
         <!-- Leo 16-Bit -->
         <div class="cinematic-char">
           <div class="cinematic-char-sprite" id="cinematic-leo-sprite">
-            <img src="images/leo_16bit.jpg" alt="Leo 16-bit" style="width:100%;height:100%;object-fit:cover;border:3px solid #1A1A1A;box-shadow:4px 4px 0 #1A1A1A;image-rendering:pixelated"/>
+            <img src="images/leo_16bit.jpg" alt="Leo 16-bit" />
           </div>
           <div class="cinematic-char-name leo">Leo</div>
         </div>
@@ -593,68 +608,407 @@
 
 <script>
   (function () {
-    function drawHomePreview() {
-      const canvas = document.getElementById('home-preview-canvas');
-      if (!canvas) return;
-      const parent = canvas.parentElement;
-      canvas.width = parent.clientWidth;
-      canvas.height = parent.clientHeight;
-      const ctx = canvas.getContext('2d');
+    function drawDetailedCity(ctx, W, H, isSunset) {
       ctx.imageSmoothingEnabled = false;
-      const W = canvas.width, H = canvas.height;
 
-      // Sky
-      ctx.fillStyle = '#6BA8E8';
-      ctx.fillRect(0, 0, W, H * 0.55);
+      // 1. SKY (Day vs Sunset)
+      if (isSunset) {
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.74);
+        skyGrad.addColorStop(0, '#2B143A');   // Deep twilight top
+        skyGrad.addColorStop(0.3, '#6B2252'); // Dusky magenta
+        skyGrad.addColorStop(0.65, '#D84E34');// Sunset orange red
+        skyGrad.addColorStop(1.0, '#F7B733'); // Golden horizon
+        ctx.fillStyle = skyGrad;
+      } else {
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.74);
+        skyGrad.addColorStop(0, '#4285F4');
+        skyGrad.addColorStop(0.6, '#6BA8E8');
+        skyGrad.addColorStop(1.0, '#94C5F8');
+        ctx.fillStyle = skyGrad;
+      }
+      ctx.fillRect(0, 0, W, H);
 
-      // Ground
-      ctx.fillStyle = '#68B04D';
-      ctx.fillRect(0, H * 0.55, W, H * 0.45);
+      const outline = '#1A1A1A';
 
-      // Road 16-bit
-      ctx.fillStyle = '#424549';
-      ctx.fillRect(0, H * 0.64, W, H * 0.14);
-      ctx.fillStyle = '#F4C430';
-      for (let x = 0; x < W; x += 44) ctx.fillRect(x, H * 0.70, 24, 4);
+      // SUN AT SUNSET
+      if (isSunset) {
+        const sunX = W * 0.48;
+        const sunY = H * 0.46;
+        const sunR = Math.min(W, H) * 0.12;
 
-      // Buildings 16-bit
-      const buildings = [
-        { x: 0.04, w: 0.14, h: 0.46, color: '#4268A0' },
-        { x: 0.20, w: 0.12, h: 0.38, color: '#C85238' },
-        { x: 0.34, w: 0.16, h: 0.52, color: '#5C5C78' },
-        { x: 0.52, w: 0.10, h: 0.32, color: '#D4A462' },
-        { x: 0.64, w: 0.15, h: 0.48, color: '#E0AC28' },
-        { x: 0.81, w: 0.15, h: 0.55, color: '#C85238' },
+        const glow = ctx.createRadialGradient(sunX, sunY, sunR * 0.2, sunX, sunY, sunR * 2.2);
+        glow.addColorStop(0, 'rgba(255, 235, 160, 0.95)');
+        glow.addColorStop(0.4, 'rgba(255, 140, 50, 0.4)');
+        glow.addColorStop(1, 'rgba(255, 100, 50, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, sunR * 2.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#FFF2B2';
+        ctx.beginPath();
+        ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // RETRO CLOUDS
+      function drawCloud(cx, cy, s = 1) {
+        ctx.fillStyle = isSunset ? 'rgba(255,255,255,0.85)' : '#FFFFFF';
+        ctx.strokeStyle = outline;
+        ctx.lineWidth = 2.5;
+
+        ctx.fillRect(cx, cy, 60 * s, 18 * s);
+        ctx.strokeRect(cx, cy, 60 * s, 18 * s);
+
+        ctx.fillRect(cx + 12 * s, cy - 10 * s, 36 * s, 14 * s);
+        ctx.strokeRect(cx + 12 * s, cy - 10 * s, 36 * s, 14 * s);
+      }
+
+      drawCloud(W * 0.08, H * 0.06, 1.0);
+      drawCloud(W * 0.38, H * 0.04, 1.2);
+      drawCloud(W * 0.76, H * 0.08, 0.9);
+
+      const roadY = H * 0.74;
+
+      // 2. BACKGROUND & MIDGROUND BUILDINGS (VARIED SKYLINE WITH DIFFERENT COLORS)
+      const skyline = [
+        { xR: 0.00, wR: 0.12, hR: 0.52, color: isSunset ? '#2C3A50' : '#3B5982', winColor: isSunset ? '#FFD54F' : '#7CB5EC', cols: 2, rows: 5 },
+        { xR: 0.11, wR: 0.11, hR: 0.60, color: isSunset ? '#7A2E20' : '#B84335', winColor: isSunset ? '#FFB74D' : '#FCE883', cols: 2, rows: 6, hasWaterTower: true },
+        { xR: 0.21, wR: 0.14, hR: 0.44, color: isSunset ? '#3A3A52' : '#52526B', winColor: isSunset ? '#FFE082' : '#81D4FA', cols: 3, rows: 4 },
+        { xR: 0.42, wR: 0.16, hR: 0.64, color: isSunset ? '#8C672A' : '#D49A38', winColor: isSunset ? '#FFF176' : '#FFFF8D', cols: 3, rows: 7, hasAntenna: true },
+        { xR: 0.57, wR: 0.14, hR: 0.52, color: isSunset ? '#264E66' : '#346B8B', winColor: isSunset ? '#FFD54F' : '#80DEEA', cols: 3, rows: 5 },
+        { xR: 0.70, wR: 0.15, hR: 0.46, color: isSunset ? '#82381F' : '#C25B38', winColor: isSunset ? '#FFE082' : '#FFF59D', cols: 3, rows: 4 },
+        { xR: 0.84, wR: 0.16, hR: 0.58, color: isSunset ? '#28304D' : '#38436B', winColor: isSunset ? '#FFCA28' : '#81D4FA', cols: 3, rows: 6 }
       ];
 
-      buildings.forEach(b => {
-        const bx = b.x * W;
-        const bw = b.w * W;
-        const by = H * 0.64 - b.h * H * 0.65;
-        const bh = b.h * H * 0.65;
+      skyline.forEach(b => {
+        const bx = b.xR * W;
+        const bw = b.wR * W;
+        const bh = H * b.hR;
+        const by = roadY - bh;
 
+        // Main building body
         ctx.fillStyle = b.color;
         ctx.fillRect(bx, by, bw, bh);
 
-        ctx.strokeStyle = '#1A1A1A';
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = outline;
+        ctx.lineWidth = 2.5;
         ctx.strokeRect(bx, by, bw, bh);
 
-        ctx.fillStyle = '#FCE883';
-        const cols = Math.floor(bw / 16);
-        const rows = Math.floor(bh / 20);
-        for (let wr = 0; wr < rows; wr++) {
-          for (let wc = 0; wc < cols; wc++) {
-            if ((wr + wc) % 2 === 0) {
-              ctx.fillRect(bx + 6 + wc * 16, by + 8 + wr * 20, 8, 10);
+        // Roof Ledge / Cornice
+        ctx.fillStyle = outline;
+        ctx.fillRect(bx - 2, by, bw + 4, 4);
+
+        // Water Tower attachment
+        if (b.hasWaterTower) {
+          const tw = 16, th = 16;
+          const tx = bx + bw / 2 - tw / 2;
+          const ty = by - th - 4;
+          ctx.fillStyle = '#6D4C41';
+          ctx.fillRect(tx, ty, tw, th);
+          ctx.strokeRect(tx, ty, tw, th);
+          ctx.fillStyle = outline;
+          ctx.fillRect(tx + 2, ty + th, 3, 4);
+          ctx.fillRect(tx + tw - 5, ty + th, 3, 4);
+        }
+
+        // Antenna attachment
+        if (b.hasAntenna) {
+          const ax = bx + bw / 2;
+          ctx.strokeStyle = outline;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(ax, by);
+          ctx.lineTo(ax, by - 24);
+          ctx.stroke();
+          ctx.fillStyle = '#FF5252';
+          ctx.fillRect(ax - 2, by - 26, 4, 4);
+        }
+
+        // Individual windows with dark frames & cross panes
+        const padX = 8;
+        const padY = 12;
+        const availW = bw - padX * 2;
+        const availH = bh - padY * 2;
+        const cellW = availW / b.cols;
+        const cellH = availH / b.rows;
+
+        for (let r = 0; r < b.rows; r++) {
+          for (let c = 0; c < b.cols; c++) {
+            const wx = bx + padX + c * cellW + 3;
+            const wy = by + padY + r * cellH + 3;
+            const ww = cellW - 6;
+            const wh = cellH - 6;
+
+            if (ww > 4 && wh > 4) {
+              ctx.fillStyle = b.winColor;
+              ctx.fillRect(wx, wy, ww, wh);
+              ctx.strokeStyle = outline;
+              ctx.lineWidth = 1.5;
+              ctx.strokeRect(wx, wy, ww, wh);
+
+              // Window cross divider
+              if (ww > 10 && wh > 10) {
+                ctx.beginPath();
+                ctx.moveTo(wx + ww / 2, wy);
+                ctx.lineTo(wx + ww / 2, wy + wh);
+                ctx.moveTo(wx, wy + wh / 2);
+                ctx.lineTo(wx + ww, wy + wh / 2);
+                ctx.stroke();
+              }
             }
           }
         }
       });
+
+      // 3. THE SCHOOL BUILDING ("COLEGIO") - ARCHITECTURAL REALISTIC 16-BIT DESIGN
+      const schoolW = Math.max(220, W * 0.35);
+      const schoolH = Math.max(140, H * 0.36);
+      const schoolX = W * 0.04;
+      const schoolY = roadY - schoolH;
+
+      // Base Body (Beige brick color)
+      ctx.fillStyle = '#EFE3C3';
+      ctx.fillRect(schoolX, schoolY, schoolW, schoolH);
+      ctx.strokeStyle = outline;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(schoolX, schoolY, schoolW, schoolH);
+
+      // Brick horizontal lines texture on base
+      ctx.strokeStyle = 'rgba(180, 160, 130, 0.4)';
+      ctx.lineWidth = 1.5;
+      for (let y = schoolY + 12; y < roadY; y += 12) {
+        ctx.beginPath();
+        ctx.moveTo(schoolX + 2, y);
+        ctx.lineTo(schoolX + schoolW - 2, y);
+        ctx.stroke();
+      }
+
+      // Central Entrance Archway & Double Doors
+      const doorW = 38;
+      const doorH = 50;
+      const doorX = schoolX + schoolW / 2 - doorW / 2;
+      const doorY = roadY - doorH;
+
+      // Archway frame
+      ctx.fillStyle = '#C2B49B';
+      ctx.fillRect(doorX - 6, doorY - 8, doorW + 12, doorH + 8);
+      ctx.strokeStyle = outline;
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(doorX - 6, doorY - 8, doorW + 12, doorH + 8);
+
+      // Double Wooden Doors
+      ctx.fillStyle = '#5A3D28';
+      ctx.fillRect(doorX, doorY, doorW, doorH);
+      ctx.strokeRect(doorX, doorY, doorW, doorH);
+
+      ctx.beginPath();
+      ctx.moveTo(doorX + doorW / 2, doorY);
+      ctx.lineTo(doorX + doorW / 2, doorY + doorH);
+      ctx.stroke();
+
+      // Door handles
+      ctx.fillStyle = '#F4C430';
+      ctx.fillRect(doorX + doorW / 2 - 5, doorY + doorH / 2 - 2, 3, 4);
+      ctx.fillRect(doorX + doorW / 2 + 2, doorY + doorH / 2 - 2, 3, 4);
+
+      // Entrance Steps
+      ctx.fillStyle = '#B8AC98';
+      ctx.fillRect(doorX - 10, roadY - 6, doorW + 20, 6);
+      ctx.strokeRect(doorX - 10, roadY - 6, doorW + 20, 6);
+
+      // Windows on Base Floor (left & right of door)
+      const baseWinW = 22;
+      const baseWinH = 30;
+      const baseWinY = roadY - baseWinH - 12;
+
+      const leftWin1 = schoolX + 16;
+      const leftWin2 = doorX - 32;
+      const rightWin1 = doorX + doorW + 10;
+      const rightWin2 = schoolX + schoolW - 16 - baseWinW;
+
+      [leftWin1, leftWin2, rightWin1, rightWin2].forEach(wx => {
+        if (wx > schoolX + 4 && wx + baseWinW < schoolX + schoolW - 4) {
+          ctx.fillStyle = '#79B4E8';
+          ctx.fillRect(wx, baseWinY, baseWinW, baseWinH);
+          ctx.strokeStyle = outline;
+          ctx.lineWidth = 2;
+          ctx.strokeRect(wx, baseWinY, baseWinW, baseWinH);
+
+          // Pane cross
+          ctx.beginPath();
+          ctx.moveTo(wx + baseWinW / 2, baseWinY);
+          ctx.lineTo(wx + baseWinW / 2, baseWinY + baseWinH);
+          ctx.moveTo(wx, baseWinY + baseWinH / 2);
+          ctx.lineTo(wx + baseWinW, baseWinY + baseWinH / 2);
+          ctx.stroke();
+        }
+      });
+
+      // Second Floor Windows Row
+      const upperWinY = schoolY + 36;
+      const upperWinW = 20;
+      const upperWinH = 26;
+      const numUpperWins = Math.floor((schoolW - 20) / 32);
+      const startUpperX = schoolX + (schoolW - (numUpperWins * 32 - 12)) / 2;
+
+      for (let u = 0; u < numUpperWins; u++) {
+        const ux = startUpperX + u * 32;
+        ctx.fillStyle = '#79B4E8';
+        ctx.fillRect(ux, upperWinY, upperWinW, upperWinH);
+        ctx.strokeStyle = outline;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(ux, upperWinY, upperWinW, upperWinH);
+
+        ctx.beginPath();
+        ctx.moveTo(ux + upperWinW / 2, upperWinY);
+        ctx.lineTo(ux + upperWinW / 2, upperWinY + upperWinH);
+        ctx.stroke();
+      }
+
+      // Red Canopy Bar across school
+      const roofBarH = 20;
+      const roofBarY = schoolY;
+      ctx.fillStyle = '#D84A38';
+      ctx.fillRect(schoolX - 6, roofBarY, schoolW + 12, roofBarH);
+      ctx.strokeStyle = outline;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(schoolX - 6, roofBarY, schoolW + 12, roofBarH);
+
+      // Central Gable Peak (Triangular Roof over entrance)
+      const gableW = 100;
+      const gableH = 28;
+      const gableX = schoolX + schoolW / 2;
+      const gableY = schoolY - gableH;
+
+      ctx.fillStyle = '#D84A38';
+      ctx.beginPath();
+      ctx.moveTo(gableX - gableW / 2, schoolY);
+      ctx.lineTo(gableX, gableY);
+      ctx.lineTo(gableX + gableW / 2, schoolY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = outline;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // School Clock in Gable Center
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(gableX, schoolY - 12, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = outline;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(gableX, schoolY - 12);
+      ctx.lineTo(gableX, schoolY - 17);
+      ctx.moveTo(gableX, schoolY - 12);
+      ctx.lineTo(gableX + 4, schoolY - 12);
+      ctx.stroke();
+
+      // Roof Text Sign: "C O L E G I O"
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '900 13px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('C O L E G I O', schoolX + schoolW / 2, roofBarY + roofBarH / 2);
+
+      // 4. SIDEWALK
+      ctx.fillStyle = '#A49C90';
+      ctx.fillRect(0, roadY - 4, W, 8);
+      ctx.strokeStyle = outline;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(0, roadY - 4, W, 8);
+
+      // 5. 16-BIT TREES
+      const trees = [
+        { xR: 0.40, scale: 0.9 },
+        { xR: 0.74, scale: 1.1 },
+        { xR: 0.88, scale: 1.0 }
+      ];
+
+      trees.forEach(t => {
+        const tx = t.xR * W;
+        const s = t.scale;
+        const trunkW = 12 * s;
+        const trunkH = 34 * s;
+        const folW = 44 * s;
+        const folH = 46 * s;
+        const ty = roadY - trunkH;
+
+        ctx.fillStyle = '#5A3D28';
+        ctx.fillRect(tx - trunkW / 2, ty, trunkW, trunkH);
+        ctx.strokeStyle = outline;
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(tx - trunkW / 2, ty, trunkW, trunkH);
+
+        const fy = ty - folH + 6;
+        ctx.fillStyle = '#4C7A3E';
+        ctx.fillRect(tx - folW / 2, fy, folW, folH);
+        ctx.strokeStyle = outline;
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(tx - folW / 2, fy, folW, folH);
+
+        ctx.fillStyle = '#3A5E2F';
+        ctx.fillRect(tx - folW / 2 + 5, fy + 5, folW / 2 - 3, folH / 2 - 3);
+      });
+
+      // 6. ROAD AND DASHED LANE LINES
+      ctx.fillStyle = '#363A3E';
+      ctx.fillRect(0, roadY + 4, W, H - (roadY + 4));
+
+      ctx.strokeStyle = outline;
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(0, roadY + 4);
+      ctx.lineTo(W, roadY + 4);
+      ctx.stroke();
+
+      ctx.fillStyle = '#F4C430';
+      const dashY = roadY + 4 + (H - (roadY + 4)) * 0.45;
+      const dashW = 30;
+      const dashGap = 22;
+
+      for (let x = 10; x < W; x += dashW + dashGap) {
+        ctx.fillRect(x, dashY, dashW, 5);
+      }
     }
 
-    drawHomePreview();
-    window.addEventListener('resize', drawHomePreview);
+    function drawHomePreview() {
+      const canvas = document.getElementById('home-preview-canvas');
+      if (!canvas) return;
+      const parent = canvas.parentElement;
+      if (!parent || parent.clientWidth === 0) return;
+      canvas.width = parent.clientWidth;
+      canvas.height = parent.clientHeight;
+      const ctx = canvas.getContext('2d');
+      drawDetailedCity(ctx, canvas.width, canvas.height, false);
+    }
+
+    function drawAventuraPreview() {
+      const canvas = document.getElementById('aventura-preview-canvas');
+      if (!canvas) return;
+      const parent = canvas.parentElement;
+      if (!parent || parent.clientWidth === 0) return;
+      canvas.width = parent.clientWidth;
+      canvas.height = parent.clientHeight;
+      const ctx = canvas.getContext('2d');
+      drawDetailedCity(ctx, canvas.width, canvas.height, true);
+    }
+
+    window.ZR = window.ZR || {};
+    window.ZR.drawHomePreview = drawHomePreview;
+    window.ZR.drawAventuraPreview = drawAventuraPreview;
+
+    function renderAllPreviews() {
+      drawHomePreview();
+      drawAventuraPreview();
+    }
+
+    renderAllPreviews();
+    window.addEventListener('resize', renderAllPreviews);
   })();
 </script>
 
