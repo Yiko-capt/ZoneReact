@@ -96,7 +96,7 @@ h1, h2, h3, h4 {
   z-index: 1000;
   background: var(--surface);
   border-bottom: var(--border);
-  height: 64px;
+  height: 80px;
   display: flex;
   align-items: stretch;
 }
@@ -111,7 +111,7 @@ h1, h2, h3, h4 {
   background: var(--surface);
   transition: background 0.1s;
   font-weight: 900;
-  font-size: 18px;
+  font-size: 20px;
   letter-spacing: -0.03em;
 }
 
@@ -120,15 +120,15 @@ h1, h2, h3, h4 {
 }
 
 .nav-brand-icon {
-  width: 36px;
-  height: 36px;
+  width: 45px;
+  height: 45px;
   background: var(--yellow);
   border: var(--border);
   box-shadow: 3px 3px 0 var(--ink);
   display: grid;
   place-items: center;
   font-size: 18px;
-  font-weight: 900;
+  font-weight: 700;
   transform: rotate(-3deg);
   flex-shrink: 0;
 }
