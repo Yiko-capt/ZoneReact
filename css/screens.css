@@ -593,7 +593,7 @@
    ========================================= */
 #screen-cinematic {
   display: none;
-  background: url('../images/pueblo_marron.jpg') no-repeat center center / cover;
+  background: url('../images/historia.jpg') no-repeat center center / cover;
   position: relative;
   min-height: calc(100vh - 64px);
   align-items: center;
