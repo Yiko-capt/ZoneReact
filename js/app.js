@@ -178,7 +178,17 @@ window.ZR.renderAvatarInContainer = function (containerId, avatar, extraEffect) 
   if (!container) return;
 
   container.innerHTML = '';
-  container.className = 'avatar-display' + (extraEffect ? ` effect-${extraEffect}` : '');
+  if (!container.classList.contains('avatar-display')) {
+    container.classList.add('avatar-display');
+  }
+
+  Array.from(container.classList).forEach(cls => {
+    if (cls.startsWith('effect-')) container.classList.remove(cls);
+  });
+
+  if (extraEffect) {
+    container.classList.add(`effect-${extraEffect}`);
+  }
 
   const layers = window.ZR.getAvatarLayers(avatar);
 

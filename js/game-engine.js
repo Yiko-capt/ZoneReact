@@ -16,7 +16,9 @@ const TILE = {
   PARK:         8,
   SIDEWALK:     9,
   SCHOOL:      10,
-  WATER:       11
+  WATER:       11,
+  FLOWERS:     12,
+  TREES_GRID:  13
 };
 
 const TILE_SIZE = 32;
@@ -46,6 +48,7 @@ function generateTilemap() {
           map[r][c] = type;
   }
 
+  // 1. ROADS (Horizontal & Vertical Avenues)
   const hRoads = [[4, 6], [15, 17], [26, 28]];
   const vRoads = [[7, 9], [22, 24], [37, 39]];
 
@@ -56,6 +59,7 @@ function generateTilemap() {
     vRoads.forEach(c => fill(r[0], c[0], r[1], c[1], TILE.ROAD_INT));
   });
 
+  // 2. SIDEWALK PERIMETERS AROUND ALL BLOCKS
   for (let r = 0; r < MAP_ROWS; r++) {
     for (let c = 0; c < MAP_COLS; c++) {
       if (map[r][c] === TILE.GRASS) {
@@ -75,29 +79,45 @@ function generateTilemap() {
     }
   }
 
-  fill(8, 11, 13, 20, TILE.PARK);
-  fill(1, 26, 3, 35, TILE.SCHOOL);
+  // 3. FILL CITY BLOCKS (Matching screenshot)
 
-  fill(1, 1, 3, 5, TILE.BUILDING_RED);
-  fill(1, 11, 3, 19, TILE.BUILDING_BLUE);
+  // ROW 1 BLOCKS (rows 0..3)
+  fill(0, 0, 3, 6, TILE.BUILDING_RED);
+  fill(0, 10, 3, 21, TILE.BUILDING_BLUE);
+  fill(0, 25, 3, 36, TILE.FLOWERS);        // Flower garden block (Pin 1)
+  fill(0, 40, 3, 47, TILE.TREES_GRID);     // Tree orchard block
 
-  fill(8, 1, 10, 5, TILE.BUILDING_TAN);
-  fill(11, 1, 13, 5, TILE.BUILDING_DARK);
-  fill(8, 26, 10, 35, TILE.BUILDING_RED);
-  fill(11, 26, 13, 35, TILE.BUILDING_BLUE);
+  // ROW 2 BLOCKS (rows 7..14)
+  fill(7, 0, 10, 6, TILE.BUILDING_TAN);
+  fill(11, 0, 14, 6, TILE.BUILDING_DARK);
 
-  fill(18, 1, 21, 5, TILE.BUILDING_BLUE);
-  fill(18, 11, 21, 20, TILE.BUILDING_TAN);
-  fill(18, 26, 21, 35, TILE.BUILDING_DARK);
+  // CENTER PARK (rows 7..14, cols 10..21)
+  fill(7, 10, 14, 21, TILE.PARK);
+  fill(9, 13, 12, 18, TILE.WATER);         // Central lake pool (Pin 2)
 
-  fill(23, 1, 24, 5, TILE.BUILDING_DARK);
-  fill(30, 1, 33, 5, TILE.BUILDING_RED);
-  fill(30, 11, 33, 20, TILE.BUILDING_BLUE);
+  fill(7, 25, 10, 36, TILE.BUILDING_RED);
+  fill(11, 25, 14, 36, TILE.BUILDING_BLUE);
 
-  fill(30, 26, 33, 35, TILE.BUILDING_TAN);
-  fill(30, 41, 33, 46, TILE.BUILDING_RED);
+  fill(7, 40, 14, 47, TILE.TREES_GRID);    // Tree orchard block
 
-  fill(9, 13, 11, 17, TILE.WATER);
+  // ROW 3 BLOCKS (rows 18..25)
+  fill(18, 0, 21, 6, TILE.BUILDING_BLUE);
+  fill(22, 0, 25, 6, TILE.BUILDING_DARK);
+
+  fill(18, 10, 21, 21, TILE.BUILDING_TAN);
+  fill(22, 10, 25, 21, TILE.BUILDING_DARK);
+
+  fill(18, 25, 21, 36, TILE.BUILDING_RED);
+  fill(22, 25, 25, 36, TILE.BUILDING_BLUE);
+
+  fill(18, 40, 25, 47, TILE.TREES_GRID);
+
+  // ROW 4 BLOCKS (rows 29..35)
+  fill(29, 0, 35, 6, TILE.BUILDING_BLUE);
+  fill(29, 10, 31, 21, TILE.BUILDING_TAN);  // Tan building block (Pin 4)
+  fill(32, 10, 35, 21, TILE.BUILDING_DARK);
+  fill(29, 25, 35, 36, TILE.BUILDING_DARK);
+  fill(29, 40, 35, 47, TILE.TREES_GRID);
 
   return map;
 }
@@ -422,53 +442,83 @@ class GameEngine {
     const S = TILE_SIZE;
 
     if (tile === TILE.GRASS) {
-      if (pastoImg.complete && pastoImg.naturalWidth > 0) {
-        ctx.drawImage(pastoImg, sx, sy, S, S);
-      } else {
-        ctx.fillStyle = '#68B04D';
-        ctx.fillRect(sx, sy, S, S);
-      }
-    }
-    else if (tile === TILE.SCHOOL) {
-      if (escuelaImg.complete && escuelaImg.naturalWidth > 0) {
-        ctx.drawImage(escuelaImg, sx, sy, S, S);
-      } else {
-        ctx.fillStyle = '#E0AC28';
-        ctx.fillRect(sx, sy, S, S);
-      }
+      ctx.fillStyle = '#68B04D';
+      ctx.fillRect(sx, sy, S, S);
     }
     else if (tile === TILE.SIDEWALK) {
-      ctx.fillStyle = '#C2B8A3';
+      // Light beige sidewalk with grid lines (matching screenshot)
+      ctx.fillStyle = '#D6CEBE';
       ctx.fillRect(sx, sy, S, S);
-      ctx.fillStyle = '#A49A84';
-      ctx.fillRect(sx, sy, S, 2);
-      ctx.fillRect(sx, sy, 2, S);
+      ctx.strokeStyle = '#BCAE9A';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(sx, sy, S, S);
     }
     else if (tile === TILE.ROAD_H || tile === TILE.ROAD_V || tile === TILE.ROAD_INT) {
-      ctx.fillStyle = '#424549';
+      ctx.fillStyle = '#3C4045';
       ctx.fillRect(sx, sy, S, S);
-      ctx.fillStyle = '#343639';
-      if ((col + row) % 2 === 0) ctx.fillRect(sx + 6, sy + 12, 3, 2);
+      ctx.fillStyle = '#2E3236';
+      if ((col + row) % 2 === 0) ctx.fillRect(sx + 8, sy + 12, 3, 3);
     }
     else if (tile === TILE.PARK) {
-      ctx.fillStyle = '#4E963D';
+      ctx.fillStyle = '#68B04D';
       ctx.fillRect(sx, sy, S, S);
     }
     else if (tile === TILE.WATER) {
       ctx.fillStyle = '#4284C4';
       ctx.fillRect(sx, sy, S, S);
       const wave = Math.floor(Date.now() / 300 + col + row) % 3;
-      ctx.fillStyle = '#78B4EC';
-      ctx.fillRect(sx + 4 + wave * 4, sy + 8, 8, 2);
+      ctx.fillStyle = '#79B4E8';
+      ctx.fillRect(sx + 4 + wave * 4, sy + 10, 10, 3);
+    }
+    else if (tile === TILE.FLOWERS) {
+      // Grass base with pink flower garden grid (matching screenshot)
+      ctx.fillStyle = '#68B04D';
+      ctx.fillRect(sx, sy, S, S);
+
+      const fX = sx + 4;
+      const fY = sy + 4;
+      ctx.fillStyle = '#4E963D';
+      ctx.fillRect(fX, fY, 24, 24);
+      ctx.strokeStyle = '#1A1A1A';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(fX, fY, 24, 24);
+
+      // Pink flowers
+      ctx.fillStyle = '#E888A0';
+      ctx.fillRect(fX + 4, fY + 4, 6, 6);
+      ctx.fillRect(fX + 14, fY + 4, 6, 6);
+      ctx.fillRect(fX + 4, fY + 14, 6, 6);
+      ctx.fillRect(fX + 14, fY + 14, 6, 6);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(fX + 6, fY + 6, 2, 2);
+      ctx.fillRect(fX + 16, fY + 6, 2, 2);
+      ctx.fillRect(fX + 6, fY + 16, 2, 2);
+      ctx.fillRect(fX + 16, fY + 16, 2, 2);
+    }
+    else if (tile === TILE.TREES_GRID) {
+      // Tree orchard block (matching screenshot)
+      ctx.fillStyle = '#68B04D';
+      ctx.fillRect(sx, sy, S, S);
+
+      const tX = sx + 4;
+      const tY = sy + 4;
+      ctx.fillStyle = '#4C7A3E';
+      ctx.fillRect(tX, tY, 24, 24);
+      ctx.fillStyle = '#3E6632';
+      ctx.fillRect(tX + 3, tY + 3, 8, 8);
+      ctx.strokeStyle = '#1A1A1A';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(tX, tY, 24, 24);
     }
     else {
-      const isRoof = (row % 4 === 0);
-      let wallColor = '#C85238', shadowColor = '#9E3824', roofColor = '#802618';
+      // Building blocks (matching screenshot)
+      const isRoof = (row % 4 === 0 || row % 4 === 1);
+      let wallColor = '#C85238', shadowColor = '#A03824', roofColor = '#802618';
 
       if (tile === TILE.BUILDING_BLUE) {
-        wallColor = '#4268A0'; shadowColor = '#2E4B75'; roofColor = '#1F3454';
+        wallColor = '#3B5982'; shadowColor = '#2B4263'; roofColor = '#1F324D';
       } else if (tile === TILE.BUILDING_DARK) {
-        wallColor = '#5C5C78'; shadowColor = '#42425A'; roofColor = '#2D2D3E';
+        wallColor = '#4A4A68'; shadowColor = '#36364D'; roofColor = '#262638';
       } else if (tile === TILE.BUILDING_TAN) {
         wallColor = '#D4A462'; shadowColor = '#AA7E40'; roofColor = '#7E5B28';
       }
@@ -476,22 +526,31 @@ class GameEngine {
       if (isRoof) {
         ctx.fillStyle = roofColor;
         ctx.fillRect(sx, sy, S, S);
-        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
         ctx.fillRect(sx, sy, S, 4);
+        ctx.strokeStyle = '#1A1A1A';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(sx, sy, S, S);
       } else {
         ctx.fillStyle = wallColor;
         ctx.fillRect(sx, sy, S, S);
         ctx.fillStyle = shadowColor;
-        ctx.fillRect(sx, sy, S, 2);
+        ctx.fillRect(sx, sy, S, 3);
+        ctx.strokeStyle = '#1A1A1A';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(sx, sy, S, S);
 
+        // Windows (pairs of lit yellow windows matching screenshot)
         ctx.fillStyle = '#FCE883';
-        ctx.fillRect(sx + 6, sy + 6, 8, 10);
-        ctx.fillRect(sx + 18, sy + 6, 8, 10);
+        ctx.fillRect(sx + 4, sy + 10, 9, 12);
+        ctx.fillRect(sx + 19, sy + 10, 9, 12);
+
+        ctx.strokeStyle = '#1A1A1A';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(sx + 4, sy + 10, 9, 12);
+        ctx.strokeRect(sx + 19, sy + 10, 9, 12);
       }
     }
-
-    ctx.fillStyle = 'rgba(0,0,0,0.06)';
-    ctx.fillRect(sx, sy + S - 1, S, 1);
   }
 
   _drawRoadMarkings16Bit(ctx, startRow, endRow, startCol, endCol) {
@@ -517,8 +576,11 @@ class GameEngine {
   _drawParkFoliage16Bit(ctx, startRow, endRow, startCol, endCol) {
     const S = TILE_SIZE;
     const trees = [
-      {r:8,c:12},{r:8,c:20},{r:9,c:14},{r:9,c:18},{r:10,c:12},
-      {r:10,c:20},{r:12,c:12},{r:12,c:20},{r:13,c:14},{r:13,c:18}
+      {r:7,c:11},{r:7,c:15},{r:7,c:20},
+      {r:8,c:11},{r:8,c:20},
+      {r:10,c:11},{r:10,c:20},
+      {r:13,c:11},{r:13,c:15},{r:13,c:20},
+      {r:14,c:11},{r:14,c:17},{r:14,c:20}
     ];
 
     trees.forEach(t => {
@@ -526,22 +588,27 @@ class GameEngine {
         const sx = t.c * S - Math.floor(this.camera.x) + 16;
         const sy = t.r * S - Math.floor(this.camera.y) + 16;
 
-        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        // Ground shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.25)';
         ctx.beginPath();
-        ctx.ellipse(sx, sy + 12, 14, 6, 0, 0, Math.PI*2);
+        ctx.ellipse(sx, sy + 10, 10, 4, 0, 0, Math.PI*2);
         ctx.fill();
 
-        ctx.fillStyle = '#6E4223';
-        ctx.fillRect(sx - 4, sy + 2, 8, 12);
+        // Trunk
+        ctx.fillStyle = '#593E28';
+        ctx.fillRect(sx - 3, sy + 2, 6, 10);
+        ctx.strokeStyle = '#1A1A1A';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(sx - 3, sy + 2, 6, 10);
 
-        ctx.fillStyle = '#2A7A22';
-        ctx.fillRect(sx - 16, sy - 18, 32, 22);
-        ctx.fillStyle = '#3E9E34';
-        ctx.fillRect(sx - 14, sy - 22, 28, 20);
-
+        // Square 16-bit Foliage Block (matching screenshot)
+        ctx.fillStyle = '#4C7A3E';
+        ctx.fillRect(sx - 12, sy - 14, 24, 20);
+        ctx.fillStyle = '#3A5E2F';
+        ctx.fillRect(sx - 9, sy - 11, 7, 7);
         ctx.strokeStyle = '#1A1A1A';
         ctx.lineWidth = 2;
-        ctx.strokeRect(sx - 14, sy - 22, 28, 20);
+        ctx.strokeRect(sx - 12, sy - 14, 24, 20);
       }
     });
   }

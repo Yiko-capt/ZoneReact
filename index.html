@@ -533,58 +533,177 @@
     </div>
   </div>
 
-  <!-- ===== PANTALLA 15/16: TU CUERPO (RESPUESTA VISUAL DIRECTA) ===== -->
+  <!-- ===== PANTALLA 15: TU CUERPO (LABORATORIO DEL AVATAR) ===== -->
   <div id="screen-body-select" class="screen">
-    <div class="body-select-head">
-      <div class="home-eyebrow">Módulo educativo 16-Bit</div>
-      <h1>¿Qué pasa en tu cuerpo?</h1>
-      <p>Toca una sustancia para ver cómo altera tu cuerpo y presiona cualquier órgano para ver su efecto detallado.</p>
-    </div>
+    <div class="body-select-inner">
+      <div style="text-align:center">
+        <div class="body-header-eyebrow">LABORATORIO DEL AVATAR</div>
+        <h1 class="body-header-title">¿Qué pasa en tu<br>cuerpo?</h1>
+        <p class="body-header-sub" style="margin-left:auto;margin-right:auto">Explora cómo distintas sustancias pueden afectar un cerebro y un cuerpo que todavía están creciendo.</p>
+      </div>
 
-    <div class="body-select-grid">
-      <!-- Left: affected avatar + status banner + organ hotspots -->
-      <div class="body-figure">
-        <div class="body-figure-sprite" id="body-avatar-display"></div>
+    <div class="body-grid-select">
+      <!-- Left Column: 4 Substance Cards -->
+      <div class="substance-cards-grid" id="substance-cards">
+        <div class="substance-card-item" data-substance-id="alcohol" onclick="window.ZR.selectSubstance('alcohol')">
+          <div class="card-icon-box" style="background:#C85238">🍶</div>
+          <div class="card-info">
+            <div class="card-title">Alcohol</div>
+            <div class="card-type-tag" style="background:#FEE2D5;color:#C85238">droga legal</div>
+            <div class="card-sub">Explora sus efectos en tu cuerpo</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
 
-        <!-- Hotspots superimposed on body -->
-        <div class="organ-hotspot brain" data-organ="brain" title="Cerebro">🧠</div>
-        <div class="organ-hotspot lungs" data-organ="lungs" title="Pulmones/Hígado">🫁</div>
-        <div class="organ-hotspot heart" data-organ="heart" title="Corazón">❤️</div>
+        <div class="substance-card-item" data-substance-id="marihuana" onclick="window.ZR.selectSubstance('marihuana')">
+          <div class="card-icon-box" style="background:#587E48">🌿</div>
+          <div class="card-info">
+            <div class="card-title">Marihuana</div>
+            <div class="card-type-tag" style="background:#D8EDCE;color:#587E48">droga ilegal</div>
+            <div class="card-sub">Explora sus efectos en tu cuerpo</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
 
-        <!-- Status banner -->
-        <div class="substance-status-banner" id="substance-status-effect"></div>
+        <div class="substance-card-item" data-substance-id="cocaina" onclick="window.ZR.selectSubstance('cocaina')">
+          <div class="card-icon-box" style="background:#4A6FA5">🔷</div>
+          <div class="card-info">
+            <div class="card-title">Cocaína</div>
+            <div class="card-type-tag" style="background:#D4E0F5;color:#4A6FA5">droga ilegal</div>
+            <div class="card-sub">Explora sus efectos en tu cuerpo</div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
 
-        <!-- Organ quick tabs -->
-        <div style="margin-top:16px;width:100%">
-          <div style="font-size:12px;font-weight:900;margin-bottom:8px;color:var(--gray);text-transform:uppercase">Órganos afectados:</div>
-          <div class="organs-tabs" id="organ-tabs" style="display:flex;gap:8px"></div>
+        <div class="substance-card-item" data-substance-id="nicotina" onclick="window.ZR.selectSubstance('nicotina')">
+          <div class="card-icon-box" style="background:#D4870A">🚬</div>
+          <div class="card-info">
+            <div class="card-title">Nicotina / Vape</div>
+            <div class="card-type-tag" style="background:#FFF0C8;color:#A06500">droga legal</div>
+            <div class="card-sub">Explora sus efectos en tu cuerpo</div>
+          </div>
+          <div class="card-arrow">→</div>
         </div>
       </div>
 
-      <!-- Right: substance cards grid -->
-      <div class="body-substances" id="substance-cards"></div>
+      <!-- Right Column: Avatar Healthy Preview Canvas -->
+      <div class="healthy-avatar-panel">
+        <div class="healthy-avatar-canvas">
+          <div class="target-circle-wrap">
+            <div class="target-circle-bg"></div>
+            <div class="target-horizon-line"></div>
+          </div>
+          <div class="healthy-avatar-sprite" id="body-healthy-avatar">
+            <div class="avatar-display">
+              <img src="assets/Personaje 1/Colores de piel/1 Color 1 piel.png" class="avatar-layer layer-skin" alt="" onerror="this.style.display='none'" />
+              <img src="assets/Personaje 1/Superior color/1 Superior Azul.png" class="avatar-layer layer-polo" alt="" onerror="this.style.display='none'" />
+              <img src="assets/Personaje 1/Inferior/Shorts.png" class="avatar-layer layer-shorts" alt="" onerror="this.style.display='none'" />
+              <img src="assets/Personaje 1/Botas.png" class="avatar-layer layer-boots" alt="" onerror="this.style.display='none'" />
+              <img src="assets/Personaje 1/Delineado ojos/Ojos 1.png" class="avatar-layer layer-eyes" alt="" onerror="this.style.display='none'" />
+              <img src="assets/Personaje 1/Boca/1 boca 1.png" class="avatar-layer layer-mouth" alt="" onerror="this.style.display='none'" />
+              <img src="assets/Personaje 1/Peinado corto/1 corto negro.png" class="avatar-layer layer-hair" alt="" onerror="this.style.display='none'" />
+            </div>
+          </div>
+          <div class="healthy-badge">AVATAR EN ESTADO SALUDABLE</div>
+        </div>
+      </div>
+    </div>  <!-- /body-grid-select -->
+    </div>  <!-- /body-select-inner -->
+  </div>
+
+
+  <!-- ===== PANTALLA 16: EXPLORADOR DE ÓRGANOS ===== -->
+  <div id="screen-body-organs" class="screen">
+
+    <!-- Top Header Row -->
+    <div class="organs-header-row">
+      <div class="organs-header-left">
+        <button class="back-link-btn" id="body-organs-back">← Elegir otra sustancia</button>
+        <div class="substance-banner-badge" id="organ-substance-badge">EFECTOS DE ALCOHOL</div>
+        <h1 class="organs-title">Selecciona una parte del cuerpo</h1>
+        <p class="organs-subtitle">Toca un órgano o un botón para ver qué le ocurre.</p>
+        <!-- Organ Tab Bar -->
+        <div class="organ-tabs-row" id="organ-tabs-bar"></div>
+        <!-- Organ Info Card (below tabs, left col) -->
+        <div class="organ-info-card" id="organ-info-card">
+          <div class="info-card-eyebrow">LO QUE DEBES SABER</div>
+          <h2 class="info-card-title" id="info-organ-name">Cerebro</h2>
+          <p class="info-card-desc" id="info-organ-desc">Reduce coordinación, memoria y capacidad para tomar decisiones. En adolescentes, el cerebro aún está en desarrollo.</p>
+          
+          <button class="info-card-open-btn" id="info-open-modal-btn">
+            🔍 Ver animación y efectos detallados ➔
+          </button>
+
+          <hr class="info-card-divider" />
+          <div class="info-card-footer">
+            💡 <b>Información preventiva:</b> Si necesitas orientación o ayuda, conversa siempre con un profesional de la salud o un adulto de confianza.
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Avatar Panel (Orange Grid Canvas) -->
+      <div class="avatar-organ-panel">
+        <div class="panel-badge-state" id="panel-state-badge">ESTADO DEL AVATAR</div>
+        <div class="panel-badge-substance" id="panel-substance-badge">■ Alcohol</div>
+
+        <div class="panel-avatar-stage">
+          <div class="avatar-display" id="body-organs-avatar" style="width:220px;height:340px"></div>
+
+          <!-- Clickable Target Pins on Body -->
+          <button class="organ-target-pin pin-brain active" data-organ="brain">
+            <span class="pin-icon">🧠</span>
+          </button>
+          <button class="organ-target-pin pin-heart" data-organ="heart">
+            <span class="pin-icon">♥</span>
+          </button>
+          <button class="organ-target-pin pin-liver" data-organ="lungs">
+            <span class="pin-icon">🫁</span>
+          </button>
+          <button class="organ-target-pin pin-nerves" data-organ="nerves">
+            <span class="pin-icon">⚡</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
 </main><!-- /#app -->
 
-<!-- ===== MODAL ÓRGANO GRANDE (P17) ===== -->
+<!-- ===== MODAL ÓRGANO GRANDE ===== -->
 <div id="organ-modal-backdrop">
-  <div class="organ-modal" role="dialog" aria-modal="true" aria-label="Detalle del órgano">
-    <button class="modal-close-btn" id="organ-modal-close" aria-label="Cerrar">✕</button>
+  <div class="organ-modal-card" role="dialog" aria-modal="true" aria-label="Detalle del órgano">
+    <button class="organ-modal-close-circle" id="organ-modal-close" aria-label="Cerrar">✕</button>
 
-    <div class="organ-modal-inner">
-      <!-- Left: LARGE ORGAN IMAGE -->
-      <div class="organ-modal-image">
-        <img id="modal-organ-image" src="" alt="Imagen del órgano 16-bit" onerror="this.style.display='none'" />
+    <div class="organ-modal-header">
+      <div class="modal-badge-lab">LABORATORIO ANIMADO</div>
+      <h1 class="modal-title-main" id="modal-organ-title-text">Dentro del hígado</h1>
+      <p class="modal-sub-text" id="modal-organ-subtitle">El hígado transforma el alcohol primero en acetaldehído, un compuesto tóxico, antes de seguir procesándolo.</p>
+    </div>
+
+    <div class="organ-modal-body-grid">
+      <!-- Left Box: Organ Graphic -->
+      <div class="modal-organ-visual-box">
+        <div class="modal-visual-inner">
+          <img id="modal-organ-image" src="images/liver_16bit.jpg" alt="Gráfico del órgano" />
+        </div>
+        <div class="modal-flow-bar">
+          <span>ETANOL / SUSTANCIA</span> ➔ <span>PROCESAMIENTO</span> ➔ <span>METABOLITOS</span>
+        </div>
       </div>
 
-      <!-- Right: content -->
-      <div class="organ-modal-content">
-        <div id="modal-organ-title"></div>
-        <div id="modal-organ-effects" class="organ-modal-effects"></div>
-        <div class="organ-modal-warning" id="modal-organ-warning"></div>
+      <!-- Right Box: Impact Breakdown Card -->
+      <div class="modal-impact-card">
+        <div class="impact-header-title">QUÉ ESTÁ CAMBIANDO</div>
+        <div class="impact-list" id="modal-impact-list"></div>
+        <div class="impact-info-box">
+          <b>Importante</b>
+          <span>La animación simplifica procesos complejos. Los efectos cambian según dosis, frecuencia, mezcla de sustancias y características de cada persona.</span>
+        </div>
       </div>
+    </div>
+
+    <div class="organ-modal-footer">
+      <button id="modal-understand-btn" class="btn-understand">Entendido</button>
     </div>
   </div>
 </div>

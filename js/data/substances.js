@@ -163,7 +163,7 @@ window.ZR.substances = [
   {
     id: 'cocaina',
     name: 'Cocaína',
-    icon: '💎',
+    icon: '🔷',
     type: 'droga ilegal',
     typeColor: 'red',
     description: 'Estimulante del SNC de alta adicción. Incluye PBC (pasta básica), crack y clorhidrato. Cada forma tiene efectos devastadores y rápidos.',
@@ -208,6 +208,100 @@ window.ZR.substances = [
           { zone: 'Cocaetileno', description: 'Al combinar cocaína con alcohol se forma cocaetileno, 5 veces más tóxico para el corazón que la cocaína sola. Esta combinación es común en fiestas.' }
         ],
         prevention: 'El corazón no tiene "práctica previa" con la cocaína. El primer infarto puede ser el último. No existe un consumo seguro.'
+      }
+    }
+  },
+  {
+    id: 'tusi',
+    name: 'Tusi / 2C-B',
+    icon: '🟪',
+    type: 'droga ilegal',
+    typeColor: 'red',
+    description: 'Mezcla sintética peligrosa de ketamina, MDMA y estimulantes teñida de rosa. Sus efectos impredecibles dañan múltiples órganos.',
+    avatarExpression: 'trippy',
+    avatarTint: 'rgba(232, 136, 160, 0.5)',
+    statusEffect: '🔮 ALUCINACIÓN & FALLA SINTÉTICA',
+    organs: {
+      brain: {
+        name: 'Cerebro',
+        icon: '🧠',
+        imageFile: 'assets/Organos/cerebro.png',
+        fallbackFile: 'images/brain_16bit.jpg',
+        summary: 'Produce disociación psicodélica grave y daño neurotóxico impredecible debido a la mezcla desconocida de sustancias.',
+        effects: [
+          { zone: 'Receptores Serotoninérgicos', description: 'Altera los niveles de serotonina y dopamina drásticamente, produciendo alucinaciones e hipertermia.' },
+          { zone: 'Neurotoxicidad', description: 'La ketamina y MDMA combinadas dañan receptores NMDA y neuronas de la memoria.' }
+        ],
+        prevention: 'El tusi no es una sustancia pura; es un cóctel químico impredecible con alto riesgo de sobredosis.'
+      },
+      lungs: {
+        name: 'Vejiga y Riñones',
+        icon: '🫁',
+        imageFile: 'assets/Organos/rinones.png',
+        fallbackFile: 'images/lungs_16bit.jpg',
+        summary: 'La ketamina presente en el tusi causa cistitis ulcerativa irreversible en consumidores jóvenes.',
+        effects: [
+          { zone: 'Cistitis por Ketamina', description: 'Destruye las paredes internas de la vejiga produciendo sangrado e incontinencia.' }
+        ],
+        prevention: 'El daño vesicular por tusi puede requerir cirugía reconstructiva antes de los 20 años.'
+      },
+      heart: {
+        name: 'Corazón',
+        icon: '❤️',
+        imageFile: 'assets/Organos/corazon.png',
+        fallbackFile: 'images/heart_16bit.jpg',
+        summary: 'Provoca hipertermia maligna y picos de presión arterial que colapsan el sistema cardiovascular.',
+        effects: [
+          { zone: 'Hipertermia', description: 'Eleva la temperatura corporal por encima de 40°C causando fallo multiorgánico.' }
+        ],
+        prevention: 'Mezclar tusi con alcohol u otras sustancias multiplica exponencialmente el riesgo cardíaco.'
+      }
+    }
+  },
+  {
+    id: 'inhalantes',
+    name: 'Inhalantes',
+    icon: '🌊',
+    type: 'legal / industrial',
+    typeColor: 'blue',
+    description: 'Vapores químicos tóxicos (pegamentos, aerosoles, solventes) que disuelven la mielina neuronal y causan asfixia súbita.',
+    avatarExpression: 'dizzy',
+    avatarTint: 'rgba(120, 100, 140, 0.5)',
+    statusEffect: '😵 ASFIXIA SÚBITA & ASFIXIA NEURONAL',
+    organs: {
+      brain: {
+        name: 'Cerebro',
+        icon: '🧠',
+        imageFile: 'assets/Organos/cerebro.png',
+        fallbackFile: 'images/brain_16bit.jpg',
+        summary: 'Los solventes disuelven la capa de mielina que recubre las neuronas, causando daño cerebral irreversible.',
+        effects: [
+          { zone: 'Mielina', description: 'Destruye la vaina de mielina, haciendo que las neuronas pierdan la capacidad de transmitir impulsos nerviosos.' },
+          { zone: 'Atrofia Cerebral', description: 'Produce contracción de la masa cerebral y pérdida permanente de capacidades intelectuales.' }
+        ],
+        prevention: 'Inhalar solventes puede causar el "Síndrome de Muerte Súbita por Inhalación" en el primer intento.'
+      },
+      lungs: {
+        name: 'Pulmones',
+        icon: '🫁',
+        imageFile: 'assets/Organos/pulmones_fumador.png',
+        fallbackFile: 'images/lungs_16bit.jpg',
+        summary: 'Reemplazan el oxígeno en los alvéolos, produciendo asfixia celular inmediata.',
+        effects: [
+          { zone: 'Hipoxia Aguda', description: 'Privan al cerebro y pulmones de oxígeno, causando paros respiratorios en minutos.' }
+        ],
+        prevention: 'Nunca utilices solventes industriales en espacios cerrados ni inhales sus vapores.'
+      },
+      heart: {
+        name: 'Corazón',
+        icon: '❤️',
+        imageFile: 'assets/Organos/corazon.png',
+        fallbackFile: 'images/heart_16bit.jpg',
+        summary: 'Sensibilizan el corazón a la adrenalina, provocando paros cardíacos repentinos ante cualquier susto.',
+        effects: [
+          { zone: 'Fibrilación Ventricular', description: 'Un susto o esfuerzo físico tras inhalar puede congelar o detener el corazón instantáneamente.' }
+        ],
+        prevention: 'El consumo de inhalantes es altamente peligroso desde la primera inhalación.'
       }
     }
   }

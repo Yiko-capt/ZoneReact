@@ -1160,137 +1160,555 @@
 }
 
 /* =========================================
-   PANTALLA 15/16 - TU CUERPO (EFECTO DIRECTO)
+   PANTALLA TU CUERPO - REFRESH EXACT MATCH TO MOCKUPS
    ========================================= */
-#screen-body-select, #screen-body-organs {
+#screen-body-select, #screen-body-organs, #organ-modal-backdrop {
+  --font-pixel: 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--beige);
   display: none;
-  padding: 40px clamp(20px, 5vw, 60px);
+  padding: 36px 0;
+  min-height: calc(100vh - 64px);
+  width: 100%;
+  box-sizing: border-box;
 }
 
-#screen-body-select.active, #screen-body-organs.active {
+#organ-modal-backdrop {
+  padding: 0;
+}
+
+#screen-body-select.active {
   display: block;
 }
 
-.body-select-head {
-  text-align: center;
-  max-width: 720px;
-  margin: 0 auto 36px;
+#screen-body-organs.active {
+  display: block;
+  padding: 36px 5vw;
 }
 
-.body-select-head h1 {
+/* Centered inner wrapper for Screen 1 */
+.body-select-inner {
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+/* Eyebrow & Titles */
+.body-header-eyebrow {
+  display: inline-block;
+  background: var(--yellow);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  padding: 5px 18px;
   font-family: var(--font-pixel);
-  font-size: clamp(24px, 4vw, 42px);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  margin-bottom: 18px;
+}
+
+.body-header-title {
+  font-family: var(--font-pixel);
+  font-weight: 800;
+  font-size: clamp(37px, 5.2vw, 64px);
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+.body-header-sub {
+  font-size: 18px;
+  color: var(--gray);
+  max-width: 750px;
+  line-height: 1.5;
+  margin-bottom: 42px;
+}
+
+/* SCREEN 1: GRID SELECT — scaled up 30% */
+.body-grid-select {
+  display: grid;
+  grid-template-columns: 754px 494px;
+  gap: 40px;
+  align-items: stretch;
+}
+
+/* 4 Substance Cards in 2x2 Grid */
+.substance-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.substance-card-item {
+  background: #FFFFFF;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 26px 22px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+  min-height: 168px;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.substance-card-item:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+  background: #FFFDF5;
+}
+
+.substance-card-item .card-icon-box {
+  width: 62px;
+  height: 62px;
+  border: 3px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+.substance-card-item .card-info {
+  flex: 1;
+}
+
+.substance-card-item .card-title {
+  font-family: var(--font-pixel);
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+
+.card-type-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: var(--font-pixel);
+  padding: 4px 9px;
+  border-radius: 2px;
+  margin-bottom: 5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.substance-card-item .card-sub {
+  font-size: 14px;
+  color: var(--gray);
+}
+
+.substance-card-item .card-arrow {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--ink);
+  padding-left: 6px;
+}
+
+/* Healthy Avatar Preview (Right Column of Screen 1) */
+.healthy-avatar-panel {
+  width: 100%;
+  max-width: 494px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.healthy-avatar-canvas {
+  background: #6BA8E8;
+  border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+  height: 100%;
+  min-height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.target-circle-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.target-circle-bg {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  box-shadow: 0 0 0 20px rgba(100, 150, 200, 0.4), 0 0 0 40px rgba(100, 150, 200, 0.2);
+}
+
+.target-horizon-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--red);
+  z-index: 1;
+}
+
+.healthy-avatar-sprite {
+  position: relative;
+  z-index: 2;
+  width: 248px;
+  height: 358px;
+  transform: scale(1.0);
+  transform-origin: center center;
+}
+
+.healthy-avatar-sprite .avatar-display,
+.panel-avatar-stage .avatar-display {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute;
+  inset: 0;
+}
+
+.healthy-badge {
+  position: absolute;
+  bottom: 14px;
+  background: var(--ink);
+  color: #FFFFFF;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  padding: 6px 16px;
+  letter-spacing: 0.08em;
+  z-index: 3;
+}
+
+/* SCREEN 2: ORGAN EXPLORER (Screenshot 2) */
+.back-link-btn {
+  background: none;
+  border: none;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  margin-bottom: 16px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.back-link-btn:hover {
+  text-decoration: underline;
+}
+
+.substance-banner-badge {
+  display: inline-block;
+  background: var(--red);
+  color: #FFFFFF;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  padding: 6px 14px;
+  letter-spacing: 0.1em;
+  border: 2px solid var(--ink);
+  margin-bottom: 14px;
+}
+
+.organ-tabs-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.organ-tab-item {
+  background: #FFFFFF;
+  border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 10px 18px;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s;
+}
+
+.organ-tab-item:hover, .organ-tab-item.active {
+  background: var(--yellow);
+  box-shadow: 2px 2px 0 var(--ink);
+  transform: translate(1px, 1px);
+}
+
+.organ-tab-item .arrow-next {
+  font-size: 12px;
+}
+
+/* SCREEN 1: GRID SELECT (2 Cols) */
+.body-grid-select {
+  display: grid;
+  grid-template-columns: calc(57% - 18px) calc(43% - 18px);
+  gap: 36px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: start;
+  width: 100%;
+}
+
+/* Layout principal de pantalla de órganos (2 cols: 57% Izquierda / 43% Derecha) */
+.organs-header-row {
+  display: grid;
+  grid-template-columns: calc(57% - 18px) calc(43% - 18px);
+  gap: 36px;
+  align-items: stretch;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.organs-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.organs-title {
+  font-family: var(--font-pixel);
+  font-size: clamp(24px, 3.2vw, 40px);
+  color: var(--ink);
+  margin: 10px 0 6px;
+  line-height: 1.2;
+}
+
+.organs-subtitle {
+  font-size: 15px;
+  color: var(--gray);
+  margin-bottom: 22px;
+  line-height: 1.4;
+}
+
+/* Organ Tab Bar */
+.organ-tabs-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.organ-tab-item {
+  background: #FFFFFF;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 10px 18px;
+  font-weight: 500;
+  font-size: 15px;
+  font-family: var(--font-pixel);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s;
+}
+
+.organ-tab-item:hover, .organ-tab-item.active {
+  background: var(--yellow);
+  box-shadow: 2px 2px 0 var(--ink);
+  transform: translate(2px, 2px);
+}
+
+.organ-tab-item .arrow-next {
+  font-size: 12px;
+}
+
+/* Left Column Organ Summary Card (Ampliado y estilizado) */
+.organ-info-card {
+  background: #FFFFFF;
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--red);
+  padding: 22px 26px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: auto;
+}
+
+.info-card-eyebrow {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+
+.info-card-title {
+  font-family: var(--font-pixel);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink);
   margin-bottom: 12px;
 }
 
-.body-select-grid {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 40px;
-  max-width: 1100px;
-  margin: 0 auto;
-  align-items: start;
+.info-card-desc {
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-bottom: 18px;
 }
 
-.body-figure {
-  background: var(--surface);
-  border: var(--border);
-  box-shadow: var(--shadow-lg);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
+.info-card-open-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 16px;
-  position: relative;
-}
-
-.body-figure-sprite {
-  width: 280px;
-  height: 440px;
-  position: relative;
-}
-
-.body-substances {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.substance-card {
-  background: var(--surface);
-  border: var(--border);
-  box-shadow: var(--shadow);
-  padding: 22px 18px;
+  gap: 8px;
+  background: var(--yellow);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 18px;
   cursor: pointer;
+  margin-bottom: 16px;
   transition: all 0.15s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  text-align: center;
+  border-radius: 4px;
 }
 
-.substance-card:hover, .substance-card.selected {
-  background: var(--yellow);
-  box-shadow: 6px 6px 0 var(--ink);
-  transform: translateY(-3px);
+.info-card-open-btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+  background: #FFE052;
 }
 
-.substance-icon { font-size: 52px; }
-.substance-name { font-weight: 900; font-size: 18px; }
-
-.substance-status-banner {
-  background: var(--yellow);
-  border: var(--border);
-  box-shadow: var(--shadow);
-  padding: 16px 20px;
-  margin-top: 20px;
-  width: 100%;
-  text-align: left;
+.info-card-divider {
+  border: none;
+  border-top: 1.5px dashed #E0DACC;
+  margin-bottom: 14px;
 }
 
-.body-anatomy-wrap {
-  position: relative;
-  width: 300px;
-  height: 460px;
-  margin: 0 auto;
+.info-card-footer {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.4;
 }
 
-.organ-hotspot {
-  position: absolute;
-  width: 64px;
-  height: 64px;
-  background: var(--yellow);
+/* Right Column Avatar Panel (Orange Grid Canvas) */
+.avatar-organ-panel {
+  background: #E59560;
+  background-image: linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px);
+  background-size: 20px 20px;
   border: 3px solid var(--ink);
-  box-shadow: 4px 4px 0 var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  width: 100%;
+  max-width: 100%;
+  height: 540px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+}
+
+.panel-badge-state {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: #FFFFFF;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 8px 14px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  z-index: 5;
+}
+
+.panel-badge-substance {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--red);
+  color: #FFFFFF;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 8px 14px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  font-weight: 700;
+  z-index: 5;
+}
+
+.panel-avatar-stage {
+  position: relative;
+  width: 280px;
+  height: 410px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(1.18);
+  transform-origin: center center;
+  margin-top: 45px;
+}
+
+/* Organ Target Pins on Body */
+.organ-target-pin {
+  position: absolute;
+  background: #FFFFFF;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
   border-radius: 50%;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
-  font-size: 32px;
+  font-size: 20px;
   cursor: pointer;
-  transition: all 0.15s;
   z-index: 10;
-  animation: pulseHotspot 1.5s ease-in-out infinite alternate;
+  transition: transform 0.15s;
 }
 
-@keyframes pulseHotspot {
-  from { transform: scale(1); }
-  to   { transform: scale(1.12); }
+.organ-target-pin:hover, .organ-target-pin.active {
+  background: var(--yellow);
+  transform: scale(1.15);
 }
 
-.organ-hotspot:hover {
-  background: var(--red);
-  transform: scale(1.2) !important;
+.organ-target-pin.pin-brain {
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.organ-hotspot.brain { top: 10px; left: 50%; transform: translateX(-50%); }
-.organ-hotspot.lungs { top: 160px; left: 50%; transform: translateX(-50%); }
-.organ-hotspot.heart { top: 210px; left: 62%; }
+.organ-target-pin.pin-brain:hover, .organ-target-pin.pin-brain.active {
+  transform: translateX(-50%) scale(1.15);
+}
 
-/* =========================================
-   PANTALLA 17 - MODAL ÓRGANO GRANDE
-   ========================================= */
+.organ-target-pin.pin-heart {
+  top: 140px;
+  right: 60px;
+}
+
+.organ-target-pin.pin-liver {
+  top: 190px;
+  left: 60px;
+}
+
+.organ-target-pin.pin-nerves {
+  top: 230px;
+  right: 70px;
+}
+
+/* SCREEN 3 / MODAL: ORGAN POPUP (Screenshot 3) */
 #organ-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1309,97 +1727,192 @@
   pointer-events: auto;
 }
 
-.organ-modal {
-  background: var(--surface);
+.organ-modal-card {
+  background: #FFFFFF;
   border: 4px solid var(--ink);
-  box-shadow: 14px 14px 0 var(--yellow);
-  width: min(900px, 95vw);
-  max-height: 92vh;
-  overflow-y: auto;
+  box-shadow: 10px 10px 0 var(--yellow);
+  width: min(1060px, 96vw);
+  overflow: visible;
   padding: 40px;
   position: relative;
 }
 
-.organ-modal-inner {
+.organ-modal-close-circle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid var(--ink);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 36px;
-  align-items: start;
+  place-items: center;
 }
 
-.organ-modal-image {
-  width: 320px;
-  height: 320px;
-  background: #FFFFFF;
-  border: 4px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--yellow);
-  padding: 16px;
+.modal-badge-lab {
+  display: inline-block;
+  background: var(--red);
+  color: #FFFFFF;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 2px solid var(--ink);
+  margin-bottom: 8px;
+}
+
+.modal-title-main {
+  font-family: var(--font-pixel);
+  font-size: 32px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.modal-sub-text {
+  font-size: 15px;
+  color: var(--gray);
+  max-width: 650px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.organ-modal-body-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+  align-items: stretch;
+}
+
+.modal-organ-visual-box {
+  background: #1A1A1A;
+  border: 3px solid var(--ink);
+  min-height: 380px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-visual-inner {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.organ-modal-image img {
-  width: 100%;
-  height: 100%;
+.modal-visual-inner img {
+  max-width: 80%;
+  max-height: 180px;
   object-fit: contain;
   image-rendering: pixelated;
 }
 
-.organ-modal-content h2 {
+.modal-flow-bar {
+  font-size: 10px;
+  font-weight: bold;
+  color: #FFFFFF;
   font-family: var(--font-pixel);
-  font-size: 26px;
-  margin-bottom: 20px;
+  text-align: center;
+  border-top: 1px dashed #444;
+  padding-top: 10px;
 }
 
-.organ-modal-effect {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 16px;
+.modal-flow-bar span {
+  color: var(--yellow);
+}
+
+.modal-impact-card {
+  background: #FFFFFF;
+  border: 2px solid var(--ink);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.impact-header-title {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+
+.impact-item {
+  display: flex;
   align-items: center;
-  padding: 14px 18px;
-  background: var(--beige);
-  border: var(--border-thin);
+  gap: 12px;
   margin-bottom: 12px;
 }
 
-.organ-modal-effect-zone {
-  background: var(--yellow);
-  border: var(--border-thin);
-  padding: 8px 12px;
+.impact-box-label {
+  border: 2px solid var(--ink);
+  padding: 4px 8px;
   font-weight: 900;
+  font-size: 12px;
+  min-width: 110px;
+}
+
+.impact-box-label.yellow { background: var(--yellow); }
+.impact-box-label.red { background: var(--red); color: #FFF; }
+.impact-box-label.blue { background: #6BA8E8; }
+
+.impact-item-text {
   font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
 }
 
-.organ-modal-effect-desc {
-  font-size: 15px;
-  line-height: 1.5;
+.impact-info-box {
+  background: #FDFBF7;
+  border: 1.5px solid var(--ink);
+  padding: 12px;
+  font-size: 12px;
+  color: var(--gray);
+  line-height: 1.4;
+  margin-top: 14px;
 }
 
-.organ-modal-warning {
-  margin-top: 24px;
+.impact-info-box b {
+  display: block;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.organ-modal-footer {
+  text-align: left;
+}
+
+.btn-understand {
   background: var(--yellow);
-  border: var(--border);
-  padding: 18px 22px;
-  font-size: 14px;
-  font-weight: 800;
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  padding: 12px 28px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-understand:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--ink);
 }
 
 /* Responsive */
 @media (max-width: 900px) {
-  .home-hero,
-  #screen-menu-aventura.active,
-  .avatar-screen-inner,
-  .body-select-grid,
-  .organ-modal-inner,
-  .decision-options,
-  #screen-situation.active,
-  #screen-result.active {
+  .body-grid-select,
+  .organ-explorer-grid,
+  .organ-modal-body-grid {
     grid-template-columns: 1fr;
-  }
-
-  .organ-modal-image {
-    width: 100%;
-    height: 240px;
   }
 }

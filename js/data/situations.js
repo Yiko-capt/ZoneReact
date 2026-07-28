@@ -13,8 +13,7 @@ window.ZR.situations = [
     context: 'A la salida del colegio, un grupo de chicos mayores aborda a Leo y le ofrecen un vapeador desconocido, diciéndole que "no hace daño". Leo duda y te mira buscando tu apoyo.',
     tip: 'La presión de grupo es la principal puerta de entrada al consumo en adolescentes.',
     emoji: '🚭',
-    sceneEmojis: ['👦', '🚬', '⚠️'],
-    mapPosition: { x: 1080, y: 100 }, // tile coords * TILE_SIZE
+    mapPosition: { x: 992, y: 64 }, // Pin 1 on Flower block
     options: [
       {
         letter: 'A',
@@ -67,7 +66,7 @@ window.ZR.situations = [
     tip: 'Los problemas familiares son el principal factor de riesgo para conductas peligrosas en adolescentes.',
     emoji: '🌙',
     sceneEmojis: ['🌃', '😔', '⚡'],
-    mapPosition: { x: 576, y: 416 },
+    mapPosition: { x: 544, y: 384 }, // Pin 2 in Park near Lake
     options: [
       {
         letter: 'A',
@@ -173,7 +172,7 @@ window.ZR.situations = [
     tip: 'El microtráfico escolar aprovecha las necesidades económicas de los jóvenes. La ley es severa incluso con menores.',
     emoji: '📦',
     sceneEmojis: ['📦', '💰', '🚔'],
-    mapPosition: { x: 416, y: 576 },
+    mapPosition: { x: 448, y: 960 }, // Pin 4 on Tan Building block
     options: [
       {
         letter: 'A',
