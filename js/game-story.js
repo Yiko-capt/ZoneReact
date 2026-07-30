@@ -40,6 +40,7 @@ window.ZR.registerScreen('screen-menu-aventura', function () {
 window.ZR.registerScreen('screen-cinematic', function () {
   window.ZR.state.mode = 'story';
   window.ZR.state.story = { situationIndex: 0, score: 0, decisions: [], completed: false };
+  document.dispatchEvent(new Event('zr:score-updated'));
 
   window.ZR.renderAvatarInContainer('cinematic-player-sprite', window.ZR.state.avatar);
 

@@ -266,6 +266,13 @@
   background: rgba(244, 196, 48, 0.35);
 }
 
+.aventura-avatar-preview .avatar-display {
+  width: 142px;
+  height: 390px;
+  position: relative;
+  z-index: 2;
+}
+
 .aventura-avatar-label {
   position: absolute;
   bottom: 12px;

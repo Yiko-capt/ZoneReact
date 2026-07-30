@@ -354,10 +354,25 @@ document.addEventListener('DOMContentLoaded', function () {
     window.ZR.navigate('screen-home');
   });
 
-  document.addEventListener('zr:score-updated', () => {
-    const scoreEl = document.getElementById('map-player-score');
-    if (scoreEl) scoreEl.textContent = `${window.ZR.state.story.score} XP`;
-  });
+  function updateXPDisplays() {
+    const score = window.ZR.state && window.ZR.state.story ? window.ZR.state.story.score : 0;
+
+    const navXPVal = document.getElementById('nav-xp-value');
+    if (navXPVal) navXPVal.textContent = score;
+
+    const mapScoreEl = document.getElementById('map-player-score');
+    if (mapScoreEl) mapScoreEl.textContent = `${score} XP`;
+
+    const badgeEl = document.getElementById('nav-xp-badge');
+    if (badgeEl) {
+      badgeEl.classList.remove('xp-pop');
+      void badgeEl.offsetWidth; // Reflow para reiniciar la animación
+      badgeEl.classList.add('xp-pop');
+    }
+  }
+
+  document.addEventListener('zr:score-updated', updateXPDisplays);
+  updateXPDisplays();
 
   window.ZR.navigate('screen-home');
 

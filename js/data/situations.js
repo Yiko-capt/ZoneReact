@@ -1,272 +1,320 @@
 /**
  * ZoneReact - Data: Situaciones del Modo Historia
  * "Salvar a tu mejor amigo (Leo)"
+ * Situaciones actualizadas con ubicaciones específicas del mapa
  */
 window.ZR = window.ZR || {};
 
 window.ZR.situations = [
   {
     id: 1,
-    title: '"El Kiosco del Barrio"',
-    tag: 'Presión de vapeo',
+    title: '"Aprobar exámenes"',
+    tag: 'Presión de estudio / Vapeo',
     tagColor: 'red',
-    context: 'Al costado del kiosco del barrio, un grupo de chicos mayores aborda a Leo y le ofrecen un vapeador desconocido, diciéndole que "no hace daño". Leo duda y te mira buscando tu apoyo.',
-    tip: 'La presión de grupo es la principal puerta de entrada al consumo en adolescentes.',
-    emoji: '🚭',
-    mapPosition: { x: 380, y: 980 }, // Kiosco en mapa.png
+    context: 'Tu amigo te propone que se desvelen estudiando, por lo que te ofrece un vape sabor menta para combatir el sueño. Te dice “Este vape menos dañino que los otros, lo compré en una tienda buena. Si lo usamos, estaremos despiertos hasta la madrugada”.',
+    tip: 'La presión de estudio no debe llevarte a consumir sustancias nocivas. El descanso adecuado antes de un examen es fundamental.',
+    emoji: '🏠',
+    mapPosition: { x: 2420, y: 920 }, // CASA en mapa.png
     options: [
       {
         letter: 'A',
-        text: 'Distracción estratégica: intervines diciendo que un profesor busca a Leo con urgencia y lo sacas del lugar sin pelear.',
-        score: 20,
-        isCorrect: true,
-        feedback: '¡Excelente! Retirarte sin confrontar es la decisión más inteligente. Leo está a salvo y no generaste más conflicto.',
-        resultWord: '¡BIEN!',
-        resultType: 'good',
-        quote: '"Proteger a un amigo no siempre es confrontar. A veces es desviar."'
+        text: 'Acepto el vape, solo por esta noche, para aprovechar el tiempo de estudio',
+        score: -10,
+        isCorrect: false,
+        feedback: 'El vapeo contiene nicotina y sustancias tóxicas que generan adicción rápidamente. Usarlo para estudiar es un riesgo innecesario.',
+        resultWord: 'PELIGRO',
+        resultType: 'bad',
+        quote: '"Ninguna sustancia reemplaza un hábito de estudio y descanso saludable."'
       },
       {
         letter: 'B',
-        text: 'Enfrentas violentamente a los sujetos mayores para defender a Leo.',
-        score: 0,
-        isCorrect: false,
-        feedback: 'La confrontación física frente a personas mayores pone a ambos en riesgo. Buscar apoyo adulto era la mejor opción.',
-        resultWord: 'PIENSA',
-        resultType: 'bad',
-        quote: '"Equivocarte aquí sirve para decidir mejor allá afuera."'
+        text: 'Rechazo el vape y termino de estudiar solo, dejando a mi amigo con su plan de desvelarse',
+        score: 5,
+        isCorrect: true,
+        feedback: '¡Bien por rechazar el vape! Evitaste la sustancia, aunque desvelarte no sea la mejor opción para rendir en el examen.',
+        resultWord: '¡BIEN!',
+        resultType: 'good',
+        quote: '"Saber decir que no a las sustancias es cuidar tu salud y tu futuro."'
       },
       {
         letter: 'C',
-        text: 'Te vas solo y le mandas un WhatsApp a Leo diciéndole que se vaya.',
-        score: 0,
+        text: 'Nos desvelamos, pero sin usar nicotina, le digo que mejor tomemos Monster, que es menos dañino',
+        score: -5,
         isCorrect: false,
-        feedback: 'Alejarte sin apoyar a Leo lo deja solo ante la presión. Un amigo de verdad actúa, no solo observa desde lejos.',
-        resultWord: 'PIENSA',
+        feedback: 'Las bebidas energizantes en exceso causan taquicardia y alteran tu organismo antes de un examen.',
+        resultWord: 'CUIDADO',
         resultType: 'bad',
-        quote: '"Un mensaje no reemplaza tu presencia cuando alguien te necesita."'
+        quote: '"Las bebidas energizantes en exceso también ponen en riesgo tu salud."'
       },
       {
         letter: 'D',
-        text: 'Te quedas callado mirando al costado, esperando que Leo decida solo.',
-        score: 0,
-        isCorrect: false,
-        feedback: 'La pasividad también es una decisión. Leo necesitaba tu apoyo activo en ese momento.',
-        resultWord: 'PIENSA',
-        resultType: 'bad',
-        quote: '"Callarse cuando alguien necesita ayuda también tiene consecuencias."'
+        text: 'Le digo que mejor acortemos el repaso para dormir antes de medianoche',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente decisión! Dormir bien y descansar lo suficiente te permite rendir al máximo en los exámenes sin sustancias.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"El descanso y la preparación previa son la verdadera clave del éxito."'
       }
     ]
   },
   {
     id: 2,
-    title: '"La Casa Abandonada"',
-    tag: 'Estrés y vías de escape',
+    title: '"La invitación"',
+    tag: 'Presión social',
     tagColor: 'blue',
-    context: 'Leo tiene problemas familiares serios y quiere meterse a una casa en ruinas con grafitis en el parque "para despejar la mente". Te dice que no le importa lo que le pase.',
-    tip: 'Los problemas familiares son el principal factor de riesgo para conductas peligrosas en adolescentes.',
-    emoji: '🏚️',
-    sceneEmojis: ['🏚️', '😔', '⚡'],
-    mapPosition: { x: 1220, y: 940 }, // Casa abandonada en parque central de mapa.png
+    context: 'Después de los exámenes, estás muy cansado y tus amigos te ofrecen ir a una discoteca por un cumpleaños para relajarse. Sabes que está ubicada en una calle conocida por la venta de drogas y comercio ilegal. Te dicen “siempre hemos pasado por ahí y les hemos comprado, por lo que son de confianza. No nos van a hacer nada”',
+    tip: 'Las zonas de venta de drogas y comercio ilegal representan un alto riesgo para ti y tus amigos, sin importar la hora o con quién vayas.',
+    emoji: '🏫',
+    mapPosition: { x: 1220, y: 940 }, // COLEGIO en mapa.png
     options: [
       {
         letter: 'A',
-        text: 'Validas sus sentimientos y lo invitas a jugar fútbol o comer algo en un lugar iluminado y seguro.',
-        score: 20,
-        isCorrect: true,
-        feedback: '¡Perfecto! Reconocer su dolor y ofrecer una alternativa segura es la respuesta más empática y efectiva.',
-        resultWord: '¡BIEN!',
-        resultType: 'good',
-        quote: '"Cuidarte también es una forma de cuidar a tu comunidad."'
+        text: 'Acepto porque iremos en grupo y eso hace que sea menos peligroso.',
+        score: -10,
+        isCorrect: false,
+        feedback: 'Ir en grupo no disminuye la peligrosidad de un lugar vinculado al comercio ilegal de sustancias.',
+        resultWord: 'PELIGRO',
+        resultType: 'bad',
+        quote: '"El peligro de una zona ilícita no desaparece por ir en grupo."'
       },
       {
         letter: 'B',
-        text: 'Aceptas entrar "solo media hora" porque no quieres que Leo vaya solo.',
-        score: 0,
-        isCorrect: false,
-        feedback: 'Ir juntos a un lugar peligroso no reduce el riesgo, lo duplica. La intención es buena, pero la decisión pone a ambos en peligro.',
-        resultWord: 'PIENSA',
-        resultType: 'bad',
-        quote: '"Acompañar no siempre significa seguir al mismo lugar."'
+        text: 'Rechazo con firmeza y me voy a descansar, puedo reunirme con mis amigos en otro momento y en un lugar más seguro',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente decisión! Decir "no" con firmeza y priorizar tu seguridad frente a la presión social demuestra gran madurez.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"Tu seguridad y bienestar siempre deben estar en primer lugar."'
       },
       {
         letter: 'C',
-        text: 'Lo juzgas y le dices que es un tonto por querer ir a un lugar así.',
-        score: 0,
+        text: 'Acepto, pero solo me quedaré un momento y evitaré acercarme a personas que no conozca.',
+        score: -5,
         isCorrect: false,
-        feedback: 'Juzgar a alguien que sufre lo aleja más. Leo necesitaba comprensión, no crítica.',
-        resultWord: 'PIENSA',
+        feedback: 'Permanecer aunque sea un momento en un lugar peligroso sigue exponiéndote a situaciones ilícitas o violentas.',
+        resultWord: 'CUIDADO',
         resultType: 'bad',
-        quote: '"Escuchar antes de juzgar puede salvar más que cualquier consejo."'
+        quote: '"Estar poco tiempo en un entorno peligroso sigue siendo un riesgo alto."'
       },
       {
         letter: 'D',
-        text: 'Le acusas directamente a su mamá sin hablar primero con él.',
-        score: 0,
-        isCorrect: false,
-        feedback: 'Delatar sin hablar primero puede romper la confianza de Leo. La comunicación directa siempre va primero.',
-        resultWord: 'PIENSA',
-        resultType: 'bad',
-        quote: '"La confianza entre amigos es la base del apoyo real."'
+        text: 'Les digo que iré solo si cambiamos el lugar por uno más seguro.',
+        score: 5,
+        isCorrect: true,
+        feedback: '¡Buena iniciativa! Proponer alternativas seguras demuestra liderazgo y ayuda a cuidar a tus amigos.',
+        resultWord: '¡BIEN!',
+        resultType: 'good',
+        quote: '"Proponer lugares seguros es proteger a todo el grupo."'
       }
     ]
   },
   {
     id: 3,
-    title: '"La Discoteca Neón"',
-    tag: 'Sustancias en pastilla',
+    title: '"Solo para probar"',
+    tag: 'Sustancias ilícitas',
     tagColor: 'purple',
-    context: 'Frente a la discoteca "Neon Disco", un desconocido le ofrece a Leo una pastilla de colores diciéndole que "quita la timidez y alegra la noche". Leo parece tentado.',
-    tip: 'Los adolescentes son más vulnerables al consumo cuando están en entornos sociales de alta presión.',
-    emoji: '💊',
-    sceneEmojis: ['🪩', '💊', '🚨'],
-    mapPosition: { x: 2100, y: 520 }, // Neon Disco en mapa.png
+    context: 'Estás en el cumpleaños de un amigo. Un chico mayor del grupo te ofrece un tipo de droga que no conoces "algo para pasarla mejor". Varios ya aceptaron y sientes que si dices que no, vas a quedar afuera del grupo.',
+    tip: 'Nunca aceptes sustancias desconocidas. Consumir drogas por presión social o por encajar puede tener consecuencias fatales.',
+    emoji: '🪩',
+    mapPosition: { x: 2100, y: 520 }, // DISCO en mapa.png
     options: [
       {
         letter: 'A',
-        text: 'Le pasas agua, dices en voz alta "nosotros no tomamos eso" y juntos buscan al encargado o un adulto responsable.',
-        score: 20,
+        text: 'Le digo que no me provoca ahorita y continúo en el grupo',
+        score: 5,
         isCorrect: true,
-        feedback: '¡Excelente! Actuar con asertividad y buscar apoyo adulto es la respuesta más completa. Leo está protegido.',
+        feedback: '¡Bien por rechazar la sustancia! Sin embargo, quedarte en el mismo entorno de consumo puede mantener la presión sobre ti.',
         resultWord: '¡BIEN!',
         resultType: 'good',
-        quote: '"Tu voz puede marcar la diferencia cuando alguien duda."'
+        quote: '"Firmeza al rechazar, pero atento al entorno que te rodea."'
       },
       {
         letter: 'B',
-        text: 'Te quedas mirando a ver si Leo dice que no por su cuenta.',
-        score: 0,
+        text: 'Acepto un poco, para no quedar como el aguafiestas del grupo',
+        score: -10,
         isCorrect: false,
-        feedback: 'La pasividad en momentos críticos puede costarle caro a Leo. Tu intervención activa era necesaria.',
-        resultWord: 'PIENSA',
+        feedback: 'Probar una droga desconocida por encajar con los demás pone en grave peligro tu salud y tu vida.',
+        resultWord: 'PELIGRO',
         resultType: 'bad',
-        quote: '"Esperar no es una estrategia cuando alguien corre riesgo."'
+        quote: '"No vale la pena arriesgar tu vida para complacer a los demás."'
       },
       {
         letter: 'C',
-        text: 'Sugieres que si quiere relajarse mejor tome "solo un trago de alcohol".',
-        score: 0,
+        text: 'Me alejo del grupo gran parte de la fiesta para evitar que me vuelvan a insistir',
+        score: -5,
         isCorrect: false,
-        feedback: 'Cambiar una sustancia dañina por otra no protege a Leo. Todas las alternativas que implican consumo son incorrectas.',
-        resultWord: 'PIENSA',
+        feedback: 'Alejarte solo dentro de la fiesta sin buscar un adulto o salir del lugar puede dejarte desprotegido en la reunión.',
+        resultWord: 'CUIDADO',
         resultType: 'bad',
-        quote: '"Proteger a un amigo es buscar alternativas libres de riesgo."'
+        quote: '"En lugar de aislarte en un lugar de riesgo, busca salir de allí."'
       },
       {
         letter: 'D',
-        text: 'Te vas a tu casa y lo dejas solo en la fiesta.',
-        score: 0,
-        isCorrect: false,
-        feedback: 'Abandonar a un amigo en una situación de riesgo es lo más peligroso que puedes hacer. Leo te necesitaba ahí.',
-        resultWord: 'PIENSA',
-        resultType: 'bad',
-        quote: '"Un amigo de verdad no desaparece cuando más se le necesita."'
+        text: 'Finjo salir a tomar aire y escribo a un familiar para que me llame con una excusa a recogerme',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente estrategia! Salir de la situación de riesgo sin entrar en conflicto y pedir ayuda a tu familia es la opción más segura.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"Recurrir a tu familia o adultos de confianza es la mejor estrategia de protección."'
       }
     ]
   },
   {
     id: 4,
-    title: '"El Encargo Sospechoso"',
-    tag: 'Microtráfico urbano',
-    tagColor: 'ink',
-    context: 'Cerca a la zona de hoteles y oficinas, un sujeto desconocido le ofrece a Leo S/ 100 por llevar un paquete sellado en su mochila. Leo dice que necesita el dinero para su familia.',
-    tip: 'El microtráfico escolar aprovecha las necesidades económicas de los jóvenes. La ley es severa incluso con menores.',
-    emoji: '📦',
-    sceneEmojis: ['🏢', '📦', '💰'],
-    mapPosition: { x: 650, y: 440 }, // Hotel / Zona Urbana en mapa.png
+    title: '"El camino oscuro"',
+    tag: 'Ruta nocturna',
+    tagColor: 'yellow',
+    context: 'Sales tarde de estudiar en casa de un amigo. Para llegar a tu casa hay dos rutas: un atajo por una calle sola y mal iluminada (10 min), o la calle principal, más iluminada pero más larga (25 min). Tu amigo vive en dirección contraria a la tuya.',
+    tip: 'Las calles mal iluminadas y solitarias son puntos frecuentes de asaltos. Elige siempre caminos iluminados y transitados.',
+    emoji: '🌙',
+    mapPosition: { x: 1450, y: 480 }, // ENTRE LOS EDIFICIOS Y LA NEON DISCO
     options: [
       {
         letter: 'A',
-        text: 'Le muestras a Leo el riesgo legal y lo acompañas a buscar orientación de manera anónima con un adulto de confianza.',
-        score: 20,
-        isCorrect: true,
-        feedback: '¡Correcto! Buscar apoyo adulto de confianza de forma anónima protege a Leo sin exponerlo a represalias.',
-        resultWord: '¡BIEN!',
-        resultType: 'good',
-        quote: '"Pedir ayuda a tiempo es el acto más valiente."'
+        text: 'Voy con mi amigo por el atajo, porque así no voy solo',
+        score: -5,
+        isCorrect: false,
+        feedback: 'Caminar con tu amigo por un atajo que no te lleva a tu casa te desviará y al final quedarás caminando solo por un tramo oscuro.',
+        resultWord: 'CUIDADO',
+        resultType: 'bad',
+        quote: '"Acompañar a un amigo no debe desviarte hacia zonas oscuras solo."'
       },
       {
         letter: 'B',
-        text: 'Le dices a Leo que lo haga "solo una vez" porque realmente necesita el dinero.',
-        score: 0,
-        isCorrect: false,
-        feedback: '"Solo una vez" es la mentira más peligrosa del microtráfico. Una vez puede significar antecedentes penales y peligro real.',
-        resultWord: 'PIENSA',
-        resultType: 'bad',
-        quote: '"Una sola vez puede cambiar una vida para siempre."'
+        text: 'Tomo la calle más iluminada, me separo de mi amigo y me demoro más en llegar a mi casa',
+        score: 5,
+        isCorrect: true,
+        feedback: '¡Buena decisión! Priorizar la calle principal bien iluminada reduce drásticamente el riesgo de ser víctima de un delito.',
+        resultWord: '¡BIEN!',
+        resultType: 'good',
+        quote: '"Llegar unos minutos más tarde por un camino seguro vale la pena."'
       },
       {
         letter: 'C',
-        text: 'Guardas tú el paquete en tu mochila para "proteger" a Leo.',
-        score: 0,
+        text: 'Cruzo solo por el atajo, porque ya conozco esa ruta de cuando la caminé de día',
+        score: -10,
         isCorrect: false,
-        feedback: 'Asumir el riesgo tú mismo no protege a Leo, te pone a ti en serio peligro legal. Ambos necesitaban salir de esa situación.',
-        resultWord: 'PIENSA',
+        feedback: 'Conocer un atajo de día no lo hace seguro de noche. Las calles oscuras esconden riesgos de robos y agresiones.',
+        resultWord: 'PELIGRO',
         resultType: 'bad',
-        quote: '"Proteger a alguien no significa asumir su riesgo."'
+        quote: '"De noche, la falta de iluminación cambia por completo la seguridad de una calle."'
       },
       {
         letter: 'D',
-        text: 'Lo delatas gritando frente a todas las personas de la calle.',
-        score: 0,
-        isCorrect: false,
-        feedback: 'Exponer a Leo públicamente puede poner en riesgo su seguridad ante el sujeto que lo contactó. La discreción era clave.',
-        resultWord: 'PIENSA',
-        resultType: 'bad',
-        quote: '"Ayudar en privado puede ser más poderoso que exponer en público."'
+        text: 'Le pido a mi amigo que se desvíe conmigo por la calle iluminada, aunque a él le tome más tiempo llegar a su casa',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente! Coordinar con tu amigo para recorrer la vía iluminada garantiza la protección de ambos en el camino.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"Acompañarse mutuamente por rutas seguras es verdadero trabajo en equipo."'
       }
     ]
   },
   {
     id: 5,
-    title: '"La Casa de Leo"',
-    tag: 'Riesgo nocturno',
-    tagColor: 'green',
-    context: 'Es de noche al llegar a la zona residencial. Leo quiere tomar un atajo por un callejón sin luz para llegar rápido a su casa. Ya se han reportado robos en ese tramo.',
-    tip: 'Los callejones sin iluminación y con poca gente son los espacios de mayor riesgo para adolescentes.',
-    emoji: '🏡',
-    sceneEmojis: ['🏡', '🛣️', '⚠️'],
-    mapPosition: { x: 2420, y: 920 }, // Casa de Leo (HOME) en mapa.png
-
+    title: '"Desconocido en la calle"',
+    tag: 'Prevención de robos',
+    tagColor: 'ink',
+    context: 'Vas caminando a casa después del colegio, con el celular guardado. Una persona que no conoces se te acerca y te pregunta la hora, insistiendo después en que la ayudes con el mapa de tu celular. Estás en una zona peligrosa con alto índice de un aumento del robo callejero de celulares por distracción.',
+    tip: 'Las preguntas frecuentes sobre la hora o direcciones suelen ser tácticas de distracción para arrebatar objetos de valor.',
+    emoji: '🏪',
+    mapPosition: { x: 380, y: 980 }, // KIOSCO en mapa.png
     options: [
       {
         letter: 'A',
-        text: 'Le muestras en el mapa los reportes de riesgo del callejón y van juntos por la avenida principal aunque tarde más.',
-        score: 20,
-        isCorrect: true,
-        feedback: '¡Excelente! Usar la información disponible y elegir la ruta segura juntos es la decisión más inteligente.',
-        resultWord: '¡BIEN!',
-        resultType: 'good',
-        quote: '"Cinco minutos más pueden ser la diferencia entre llegar o no llegar."'
+        text: 'Sacas el celular rápido para indicarle la hora o la dirección que pide y sigues caminando sin detenerme',
+        score: -10,
+        isCorrect: false,
+        feedback: 'Sacar el celular ante una pregunta de un desconocido en una zona peligrosa es la distracción perfecta para un arrebato rápido.',
+        resultWord: 'PELIGRO',
+        resultType: 'bad',
+        quote: '"No expongas tus pertenencias de valor ante desconocidos en la vía pública."'
       },
       {
         letter: 'B',
-        text: 'Aceptas cruzar agarrando piedras en la mano "por si acaso".',
-        score: 0,
+        text: 'Le dices que no sabes y sigues caminando a tu ritmo normal, por la misma ruta',
+        score: -5,
         isCorrect: false,
-        feedback: 'Las piedras no son protección real. Entrar a un lugar de riesgo con esa "precaución" sigue siendo una mala decisión.',
-        resultWord: 'PIENSA',
+        feedback: 'Responder pero mantener la misma ruta poco transitada mantiene la proximidad del posible sospechoso.',
+        resultWord: 'CUIDADO',
         resultType: 'bad',
-        quote: '"Evitar el riesgo es siempre mejor que enfrentarlo."'
+        quote: '"Mantente alerta y busca avenidas más concurridas."'
       },
       {
         letter: 'C',
-        text: 'Te vas solo por tu lado seguro y dejas que Leo decida cruzar el callejón.',
-        score: 0,
-        isCorrect: false,
-        feedback: 'Dejar a Leo solo frente a un riesgo real no es respetar su autonomía, es abandonarlo cuando más te necesita.',
-        resultWord: 'PIENSA',
-        resultType: 'bad',
-        quote: '"Un amigo no te abandona en la puerta del peligro."'
+        text: 'Ignoras a la persona y te metes por una calle más corta que conoces, para llegar antes a tu casa',
+        score: 5,
+        isCorrect: true,
+        feedback: '¡Bien! Evitas la distracción y buscas llegar pronto a tu destino seguro.',
+        resultWord: '¡BIEN!',
+        resultType: 'good',
+        quote: '"Evitar la interacción con desconocidos sospechosos previene el robo."'
       },
       {
         letter: 'D',
-        text: 'Se quedan sentados esperando en la esquina oscura hasta que alguien pase.',
-        score: 0,
+        text: 'Le respondes que no llevas celular ni reloj, sin detenerte, y sigues por tu ruta habitual hacia una avenida con más gente',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente! Responder sin detener la marcha y dirigirte a avenidas transitadas neutraliza el intento de robo.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"La firmeza, la prudencia y dirigirse a zonas transitadas son tu mejor escudo."'
+      }
+    ]
+  },
+  {
+    id: 6,
+    title: '"Intento de arrebato"',
+    tag: 'Reacción ante delitos',
+    tagColor: 'red',
+    context: 'Vas caminando cerca de una avenida peligrosa. Alguien intenta arrebatarte el celular de la mano. Hay personas cerca y negocios abiertos a pocos metros.',
+    tip: 'Ante un intento de robo, nunca opongas resistencia ni persigas al delincuente. Tu vida e integridad valen más que cualquier objeto.',
+    emoji: '🏢',
+    mapPosition: { x: 650, y: 440 }, // EDIFICIOS en mapa.png
+    options: [
+      {
+        letter: 'A',
+        text: 'Forcejeas un momento para no soltar el celular, antes de dejarlo ir',
+        score: -10,
         isCorrect: false,
-        feedback: 'Quedarse en una zona oscura y peligrosa no es una solución. Moverse hacia un lugar iluminado y concurrido era la prioridad.',
-        resultWord: 'PIENSA',
+        feedback: 'Forcejear con un asaltante aumenta drásticamente la posibilidad de sufrir violencia física o agresiones graves.',
+        resultWord: 'PELIGRO',
         resultType: 'bad',
-        quote: '"La espera en el lugar equivocado puede ser tan peligrosa como actuar mal."'
+        quote: '"Un objeto material se recupera, tu salud e integridad física no."'
+      },
+      {
+        letter: 'B',
+        text: 'Sueltas el celular de inmediato y corres detrás del ladrón a corta distancia para intentar ver hacia dónde va',
+        score: -5,
+        isCorrect: false,
+        feedback: 'Perseguir a un delincuente te expone a ser agredido o a caer en una emboscada de posibles cómplices.',
+        resultWord: 'CUIDADO',
+        resultType: 'bad',
+        quote: '"Nunca persigas a un delincuente por tu propia cuenta."'
+      },
+      {
+        letter: 'C',
+        text: 'Sueltas el celular de inmediato, gritas pidiendo ayuda a gente cercana y tratas de memorizar cómo era el ladrón',
+        score: 5,
+        isCorrect: true,
+        feedback: '¡Bien! Entregaste el objeto sin arriesgar tu vida, pediste auxilio y observaste detalles para hacer la denuncia.',
+        resultWord: '¡BIEN!',
+        resultType: 'good',
+        quote: '"Pedir ayuda y conservar la calma es fundamental."'
+      },
+      {
+        letter: 'D',
+        text: 'Sueltas el celular y entras a un negocio a pedir ayuda',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente decisión! Refugiarte de inmediato en un establecimiento comercial seguro con más personas es la reacción más prudente.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"Buscar refugio inmediato en un local comercial protege tu vida e integridad."'
       }
     ]
   }

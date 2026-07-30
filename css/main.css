@@ -177,6 +177,57 @@ h1, h2, h3, h4 {
   font-size: 30px;
 }
 
+/* --- NAV XP BADGE --- */
+.nav-xp-container {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-left: var(--border);
+  background: var(--surface);
+}
+
+.nav-xp-badge {
+  display: flex;
+  align-items: center;
+  border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  border-radius: 6px;
+  overflow: hidden;
+  font-family: Space Grotesk, bold, sans-serif;
+  font-weight: 900;
+  user-select: none;
+}
+
+.nav-xp-badge.xp-pop {
+  animation: xpPulse 0.4s ease;
+}
+
+@keyframes xpPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.nav-xp-label {
+  background: var(--yellow);
+  color: var(--ink);
+  padding: 6px 12px;
+  font-size: 15px;
+  font-weight: 900;
+  border-right: 3px solid var(--ink);
+  letter-spacing: 0.05em;
+}
+
+.nav-xp-value {
+  background: #FFFFFF;
+  color: var(--ink);
+  padding: 6px 16px;
+  font-size: 17px;
+  font-weight: 900;
+  min-width: 42px;
+  text-align: center;
+}
+
 /* =========================================
    APP SHELL
    ========================================= */
