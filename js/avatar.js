@@ -68,18 +68,34 @@ window.ZR.registerScreen('screen-avatar', function () {
    RENDER PRINCIPAL DEL CUSTOMIZADOR
    ========================================= */
 function renderAvatarCustomizer() {
-  const tabBtns = document.querySelectorAll('.avatar-tab-btn');
+  // Mostrar nombre del jugador en el topbar
+  const nameEl = document.getElementById('av-player-name');
+  if (nameEl) nameEl.textContent = window.ZR.state.playerName || 'Jugador';
+
+  // Títulos de cada tab
+  const TAB_TITLES = {
+    piel:     'Tono de Piel',
+    cabello:  'Color de Cabello',
+    superior: 'Ropa Superior',
+    inferior: 'Ropa Inferior',
+    zapatos:  'Zapatos',
+  };
+
+  const tabBtns = document.querySelectorAll('.av-tab');
   tabBtns.forEach(btn => {
     btn.addEventListener('click', function () {
       tabBtns.forEach(b => b.classList.remove('active'));
       this.classList.add('active');
       activeTab = this.dataset.tab;
+      // Actualizar título de sección
+      const titleEl = document.getElementById('av-tab-title');
+      if (titleEl) titleEl.textContent = TAB_TITLES[activeTab] || activeTab;
       renderSwatchGrid(activeTab);
     });
   });
 
-  // Activar el primer tab por defecto
-  const firstTab = document.querySelector('.avatar-tab-btn[data-tab="piel"]');
+  // Activar primer tab
+  const firstTab = document.querySelector('.av-tab[data-tab="piel"]');
   if (firstTab) {
     tabBtns.forEach(b => b.classList.remove('active'));
     firstTab.classList.add('active');
@@ -118,14 +134,8 @@ function renderSwatchGrid(tab) {
       const btn = document.createElement('button');
       btn.className = 'avatar-swatch avatar-swatch-img' + (isSelected ? ' selected' : '');
       btn.title = opt.label;
-      btn.style.cssText = `
-        background-image: url('assets/Avatar/Piel/${opt.file}.png');
-        background-size: cover;
-        background-position: center top;
-        border: 3px solid ${isSelected ? 'var(--ink, #1A1A1A)' : 'transparent'};
-        box-shadow: ${isSelected ? '3px 3px 0 var(--ink, #1A1A1A)' : 'none'};
-      `;
-      btn.innerHTML = `<span style="font-size:10px;font-weight:900;color:#fff;text-shadow:0 1px 2px #000;margin-top:auto">${opt.label}</span>`;
+      btn.style.backgroundImage = `url('assets/Avatar/Piel/${opt.file}.png')`;
+      btn.innerHTML = `<span style="font-size:12px;font-weight:900;color:#fff;text-shadow:0 1px 3px #000">${opt.label}</span>`;
       btn.addEventListener('click', () => {
         av.skinFile = opt.file;
         renderSwatchGrid('piel');
@@ -156,12 +166,8 @@ function createColorSwatch(hex, label, isSelected, onClick) {
   btn.title = label;
 
   const textColor = isLight(hex) ? '#1A1A1A' : '#FFFFFF';
-  btn.style.cssText = `
-    background: ${hex};
-    border: 3px solid ${isSelected ? 'var(--ink, #1A1A1A)' : 'transparent'};
-    box-shadow: ${isSelected ? '3px 3px 0 var(--ink, #1A1A1A)' : 'none'};
-  `;
-  btn.innerHTML = `<span style="font-size:11px;font-weight:900;color:${textColor}">${label}</span>`;
+  btn.style.backgroundColor = hex;
+  btn.innerHTML = `<span style="font-size:12px;font-weight:900;color:${textColor}">${label}</span>`;
   btn.addEventListener('click', onClick);
   return btn;
 }

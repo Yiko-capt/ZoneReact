@@ -167,44 +167,62 @@
 
   <!-- ===== PANTALLA 3: AVATAR CUSTOMIZER ===== -->
   <div id="screen-avatar" class="screen">
-    <div class="avatar-header">
+
+    <!-- Barra superior: regresar | nombre del jugador | guardar -->
+    <div class="av-topbar">
       <button class="btn btn-secondary btn-sm" id="avatar-back-btn">← Regresar</button>
-      <h1>Personaliza tu Avatar 16-Bit</h1>
+      <div class="av-topbar-center">
+        <span class="av-topbar-label">Personalizando a</span>
+        <span class="av-topbar-name" id="av-player-name">Jugador</span>
+      </div>
+      <button id="avatar-save-btn" class="btn btn-primary">💾 Guardar</button>
     </div>
 
-    <div class="avatar-screen-inner">
-      <div class="avatar-options-panel">
-        <h3>Opciones de Color & Estilo</h3>
-        <div class="avatar-swatch-grid" id="avatar-swatch-grid"></div>
+    <!-- Layout principal -->
+    <div class="av-layout">
+
+      <!-- IZQUIERDA: Personaje en frame tipo carnet -->
+      <div class="av-character-panel">
+        <div class="av-character-frame">
+          <div class="avatar-display" id="avatar-stage-display"></div>
+        </div>
+        <div class="av-character-label">Tu personaje</div>
       </div>
 
-      <div class="avatar-stage">
-        <div class="avatar-stage-platform"></div>
-        <div class="avatar-display" id="avatar-stage-display"></div>
-      </div>
+      <!-- DERECHA: Tabs + Swatches -->
+      <div class="av-controls">
 
-      <div class="avatar-controls-panel">
-        <button class="avatar-tab-btn active" data-tab="piel">
-          <span class="tab-icon">🎨</span> Piel
-        </button>
-        <button class="avatar-tab-btn" data-tab="cabello">
-          <span class="tab-icon">💇</span> Cabello
-        </button>
-        <button class="avatar-tab-btn" data-tab="superior">
-          <span class="tab-icon">👕</span> Superior
-        </button>
-        <button class="avatar-tab-btn" data-tab="inferior">
-          <span class="tab-icon">🩳</span> Inferior
-        </button>
-        <button class="avatar-tab-btn" data-tab="zapatos">
-          <span class="tab-icon">👟</span> Zapatos
-        </button>
-      </div>
-    </div>
+        <!-- Fila de tabs horizontales con icono grande -->
+        <div class="av-tabs-row">
+          <button class="av-tab active" data-tab="piel">
+            <span class="av-tab-icon">🎨</span>
+            <span class="av-tab-label">Piel</span>
+          </button>
+          <button class="av-tab" data-tab="cabello">
+            <span class="av-tab-icon">💇</span>
+            <span class="av-tab-label">Cabello</span>
+          </button>
+          <button class="av-tab" data-tab="superior">
+            <span class="av-tab-icon">👕</span>
+            <span class="av-tab-label">Superior</span>
+          </button>
+          <button class="av-tab" data-tab="inferior">
+            <span class="av-tab-icon">🩳</span>
+            <span class="av-tab-label">Inferior</span>
+          </button>
+          <button class="av-tab" data-tab="zapatos">
+            <span class="av-tab-icon">👟</span>
+            <span class="av-tab-label">Zapatos</span>
+          </button>
+        </div>
 
-    <div class="avatar-save-bar">
-      <p style="font-size:13px;color:var(--gray)">Tu personaje en 16-bit se actualizará en todo el juego</p>
-      <button id="avatar-save-btn" class="btn btn-primary btn-lg">💾 Guardar Avatar</button>
+        <!-- Área de swatches / opciones -->
+        <div class="av-options-area">
+          <div class="av-section-title" id="av-tab-title">Tono de Piel</div>
+          <div class="av-swatch-grid" id="avatar-swatch-grid"></div>
+        </div>
+
+      </div>
     </div>
   </div>
 

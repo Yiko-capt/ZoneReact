@@ -96,7 +96,7 @@
 
 .home-avatar-preview {
   position: absolute;
-  bottom: 0;
+  bottom: 45px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
@@ -354,105 +354,259 @@
 }
 
 /* =========================================
-   PANTALLA 3 - AVATAR CUSTOMIZER (ENLARGED)
+   PANTALLA 3 - AVATAR CUSTOMIZER (Estilo Pasaporte)
    ========================================= */
 #screen-avatar {
   background: var(--beige);
+  min-height: calc(100vh - 64px);
+  display: none;
+  flex-direction: column;
   padding: 0;
 }
 
-.avatar-screen-inner {
-  display: grid;
-  grid-template-columns: 340px 1fr 240px;
-  min-height: calc(100vh - 64px - 70px);
+#screen-avatar.active {
+  display: flex !important;
+  flex-direction: column;
 }
 
-.avatar-options-panel {
+/* --- Barra superior --- */
+.av-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 40px;
   background: var(--surface);
-  border-right: var(--border);
-  padding: 28px 24px;
+  border-bottom: 3px solid var(--ink);
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.av-topbar-center {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  overflow-y: auto;
+  align-items: center;
+  gap: 4px;
 }
 
-.avatar-options-panel h3 {
-  font-size: 13px;
-  font-weight: 900;
+.av-topbar-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--gray);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--gray);
-  margin-top: 12px;
-  margin-bottom: 6px;
 }
 
-.avatar-swatch-grid {
+.av-topbar-name {
+  font-family: var(--font-pixel);
+  font-size: 22px;
+  color: var(--ink);
+}
+
+/* --- Layout principal (dos columnas con margen lateral igual) --- */
+.av-layout {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 36px 24px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: 320px 1fr;
+  gap: 40px;
+  align-items: start;
+  flex: 1;
 }
 
-.avatar-swatch {
-  border: var(--border-thin);
-  background: var(--surface);
-  padding: 10px;
-  cursor: pointer;
-  transition: all 0.1s;
-  min-height: 52px;
-  display: grid;
-  place-items: center;
-  border-radius: 0;
+@media (max-width: 850px) {
+  .av-layout {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 24px;
+  }
 }
 
-.avatar-swatch.selected {
-  border-color: var(--ink);
-  border-width: 3px;
-  background: var(--yellow) !important;
-  box-shadow: 4px 4px 0 var(--ink);
-  transform: translateY(-2px);
-}
-
-.avatar-stage {
-  background: var(--blue-light);
+/* --- IZQUIERDA: Panel del personaje --- */
+.av-character-panel {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.av-character-frame {
+  background: #B8D8F0;
+  border: 4px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  width: 320px;
+  height: 440px;
+  display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
-  padding: 40px;
+  /* Grid pixelado de fondo */
+  background-image:
+    linear-gradient(rgba(0,0,0,0.06) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(0,0,0,0.06) 2px, transparent 2px);
+  background-size: 24px 24px;
 }
 
-.avatar-stage::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(rgba(0,0,0,0.06) 2px, transparent 2px),
-                    linear-gradient(90deg, rgba(0,0,0,0.06) 2px, transparent 2px);
-  background-size: 32px 32px;
+.av-character-frame .avatar-display {
+  width: 240px;
+  height: 380px;
+  position: relative;
 }
 
+.av-character-label {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: var(--gray);
+  text-align: center;
+}
+
+/* --- DERECHA: Controles --- */
+.av-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* --- Fila de Tabs (iconos grandes horizontales) --- */
+.av-tabs-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.av-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 8px;
+  background: var(--surface);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  font-family: var(--font-pixel);
+}
+
+.av-tab-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.av-tab-label {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+}
+
+.av-tab:hover {
+  background: #FFF3CD;
+  transform: translateY(-2px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.av-tab.active {
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+  transform: translateY(-3px);
+}
+
+/* --- Área de opciones / swatches --- */
+.av-options-area {
+  background: var(--surface);
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.av-section-title {
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 3px solid var(--ink);
+  padding-bottom: 10px;
+}
+
+/* Grid de swatches grandes */
+.av-swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+  gap: 14px;
+}
+
+/* Swatches de color */
+.avatar-swatch {
+  border: 3px solid var(--ink) !important;
+  padding: 12px 8px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-family: var(--font-pixel);
+  box-shadow: 3px 3px 0 var(--ink) !important;
+  position: relative;
+  border-radius: 0;
+}
+
+.avatar-swatch span {
+  font-size: 12px;
+  font-weight: 900;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.avatar-swatch:hover {
+  transform: translateY(-3px);
+  box-shadow: 5px 5px 0 var(--ink) !important;
+}
+
+.avatar-swatch.selected {
+  border: 4px solid var(--ink) !important;
+  box-shadow: 5px 5px 0 var(--ink) !important;
+  outline: 3px solid var(--yellow);
+  outline-offset: -1px;
+  transform: translateY(-3px) scale(1.03);
+}
+
+/* Swatches de imagen (piel) */
+.avatar-swatch-img {
+  min-height: 85px;
+  background-size: 180% auto !important;
+  background-position: center 10% !important;
+  background-repeat: no-repeat !important;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+}
+
+/* Plataforma sombra del personaje */
 .avatar-stage-platform {
   position: absolute;
-  bottom: 40px;
-  width: 260px;
-  height: 24px;
+  bottom: 20px;
+  width: 120px;
+  height: 16px;
   background: var(--ink);
-  opacity: 0.2;
+  opacity: 0.15;
   border-radius: 50%;
 }
 
-.avatar-display {
-  position: relative;
-  width: 320px;
-  height: 480px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+/* Capas del avatar */
 .avatar-layer {
   position: absolute;
   inset: 0;
@@ -464,79 +618,14 @@
   pointer-events: none;
 }
 
-.avatar-controls-panel {
-  background: var(--surface);
-  border-left: var(--border);
-  padding: 28px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.avatar-tab-btn {
-  width: 100%;
-  padding: 16px 14px;
-  background: var(--beige);
-  border: var(--border-thin);
-  font-weight: 900;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.1s;
+.avatar-display {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
 }
 
-.avatar-tab-btn:hover, .avatar-tab-btn.active {
-  background: var(--yellow);
-  border: var(--border);
-  box-shadow: 4px 4px 0 var(--ink);
-}
-
-.avatar-header {
-  padding: 24px 28px 12px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: var(--surface);
-  border-bottom: var(--border-thin);
-}
-
-.avatar-header h1 {
-  font-family: var(--font-pixel);
-  font-size: 24px;
-}
-
-.avatar-gender-switch {
-  display: flex;
-  border: var(--border-thin);
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-.gender-btn {
-  padding: 10px 20px;
-  font-weight: 800;
-  font-size: 13px;
-  background: var(--beige);
-  border: none;
-  cursor: pointer;
-  border-right: 1px solid var(--gray-light);
-}
-
-.gender-btn.active {
-  background: var(--yellow);
-}
-
-.avatar-save-bar {
-  background: var(--surface);
-  border-top: var(--border);
-  padding: 16px 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 100;
-}
 
 /* =========================================
    PANTALLA 4 - MULTIJUGADOR JOIN
