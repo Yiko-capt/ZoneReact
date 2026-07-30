@@ -234,28 +234,71 @@
 
   <!-- ===== PANTALLA 4: MULTI JOIN ===== -->
   <div id="screen-multi-join" class="screen">
-    <div class="multi-join-card">
-      <button class="btn btn-secondary btn-sm" id="multi-join-back" style="margin-bottom:24px;align-self:flex-start">← Regresar</button>
-      <h1>Únete a tu comunidad</h1>
-      <p>Escribe el código de tu comunidad</p>
 
-      <input
-        type="text"
-        id="multi-code-input"
-        class="form-input code"
-        placeholder="CÓDIGO"
-        maxlength="8"
-      />
-      <button id="multi-join-btn" class="btn btn-primary btn-full btn-lg" style="margin-bottom:8px">
-        Unirse →
-      </button>
+    <!-- Pixel scanlines overlay -->
+    <div class="mj-scanlines"></div>
 
-      <div class="multi-divider">o</div>
+    <div class="mj-wrapper">
 
-      <button id="multi-create-btn" class="btn btn-secondary btn-full">
-        ✨ Crear grupo
-      </button>
-    </div>
+      <!-- Back button -->
+      <button class="mj-back-btn" id="multi-join-back">← Regresar</button>
+
+      <!-- Header -->
+      <div class="mj-header">
+        <div class="mj-pixel-logo">🎮</div>
+        <h1 class="mj-title">MULTIJUGADOR</h1>
+        <p class="mj-subtitle">Elige cómo ingresar al barrio</p>
+      </div>
+
+      <!-- Two option cards -->
+      <div class="mj-cards-grid">
+
+        <!-- CARD: UNIRSE -->
+        <div class="mj-card mj-card-blue">
+          <div class="mj-card-icon">📡</div>
+          <div class="mj-card-tag">YA TENGO UN CÓDIGO</div>
+          <h2 class="mj-card-title">Unirse a<br>comunidad</h2>
+          <p class="mj-card-desc">Ingresa el código que te compartió tu líder de equipo</p>
+          <input
+            type="text"
+            id="multi-code-input"
+            class="mj-code-input"
+            placeholder="ESCRIBE EL CÓDIGO"
+            maxlength="8"
+          />
+          <button id="multi-join-btn" class="mj-btn mj-btn-blue">
+            ▶ &nbsp;INGRESAR
+          </button>
+        </div>
+
+        <!-- DIVIDER -->
+        <div class="mj-or-divider">
+          <div class="mj-or-line"></div>
+          <span class="mj-or-text">O</span>
+          <div class="mj-or-line"></div>
+        </div>
+
+        <!-- CARD: CREAR -->
+        <div class="mj-card mj-card-yellow">
+          <div class="mj-card-icon">🏗️</div>
+          <div class="mj-card-tag">SER EL LÍDER</div>
+          <h2 class="mj-card-title">Crear<br>comunidad</h2>
+          <p class="mj-card-desc">Genera un código para que tus compañeros se unan a tu barrio</p>
+          <div class="mj-create-spacer"></div>
+          <button id="multi-create-btn" class="mj-btn mj-btn-yellow">
+            ✦ &nbsp;CREAR GRUPO
+          </button>
+        </div>
+
+      </div><!-- /mj-cards-grid -->
+
+      <!-- Pixel decorations -->
+      <div class="mj-pixel-decor mj-pixel-decor-1">👾</div>
+      <div class="mj-pixel-decor mj-pixel-decor-2">🔫</div>
+      <div class="mj-pixel-decor mj-pixel-decor-3">⚡</div>
+      <div class="mj-pixel-decor mj-pixel-decor-4">👾</div>
+
+    </div><!-- /mj-wrapper -->
   </div>
 
   <!-- ===== PANTALLA 5: MULTI LOBBY ===== -->
@@ -287,69 +330,113 @@
 
   <!-- ===== PANTALLA 6: VS SCREEN ===== -->
   <div id="screen-vs" class="screen">
-    <div class="vs-team">
-      <div class="vs-team-icons">
-        <span class="vs-team-icon-char">👾</span>
-        <span class="vs-team-icon-char">👾</span>
-        <span class="vs-team-icon-char">👾</span>
-      </div>
-      <div class="vs-team-name" id="vs-my-squad">SchoolSJL</div>
+    <!-- Rayos del fondo -->
+    <div class="vs-rays">
+      <div class="vs-ray-blue"></div>
+      <div class="vs-ray-red"></div>
     </div>
 
-    <div class="vs-separator">
-      <div class="vs-badge">VS</div>
+    <!-- Dots halftone overlay -->
+    <div class="vs-halftone"></div>
+
+    <!-- Hi Score -->
+    <div class="vs-hiscore">HI SCORE<br><span id="vs-hiscore-val">000000</span></div>
+
+    <!-- Left Fighter -->
+    <div class="vs-fighter vs-fighter-left">
+      <div class="vs-fighter-chars">
+        <span class="vs-fighter-emoji">🦸</span>
+        <span class="vs-fighter-emoji">🦸</span>
+        <span class="vs-fighter-emoji">🦸</span>
+      </div>
+      <div class="vs-fighter-nameplate vs-nameplate-blue">
+        <span id="vs-my-squad">MI EQUIPO</span>
+      </div>
     </div>
 
-    <div class="vs-team">
-      <div class="vs-team-icons">
-        <span class="vs-team-icon-char" style="color:#E8543E">👾</span>
-        <span class="vs-team-icon-char" style="color:#E8543E">👾</span>
-        <span class="vs-team-icon-char" style="color:#E8543E">👾</span>
-      </div>
-      <div class="vs-team-name" id="vs-enemy-squad">LuriganchoCity</div>
+    <!-- VS Center -->
+    <div class="vs-center">
+      <div class="vs-badge-pixel">VS</div>
+      <div class="vs-countdown" id="vs-countdown">3</div>
     </div>
+
+    <!-- Right Fighter -->
+    <div class="vs-fighter vs-fighter-right">
+      <div class="vs-fighter-chars">
+        <span class="vs-fighter-emoji vs-red">👿</span>
+        <span class="vs-fighter-emoji vs-red">👿</span>
+        <span class="vs-fighter-emoji vs-red">👿</span>
+      </div>
+      <div class="vs-fighter-nameplate vs-nameplate-red">
+        <span id="vs-enemy-squad">RIVAL</span>
+      </div>
+    </div>
+
+    <!-- Flash overlay for entrance animation -->
+    <div class="vs-flash" id="vs-flash"></div>
   </div>
 
   <!-- ===== PANTALLA 7: CREAR COMUNIDAD ===== -->
   <div id="screen-multi-create" class="screen">
-    <div class="create-left">
-      <button class="btn btn-secondary btn-sm" id="create-back-btn" style="margin-bottom:24px">← Regresar</button>
-      <h1>Escribe el nombre de tu comunidad</h1>
+    <div class="mc-scanlines"></div>
 
-      <div class="form-group" style="margin-bottom:20px">
-        <input
-          type="text"
-          id="squad-name-input"
-          class="form-input"
-          placeholder="Ej. SchoolSJL"
-          maxlength="20"
-        />
-      </div>
+    <div class="mc-wrapper">
+      <button class="mj-back-btn" id="create-back-btn">← Regresar</button>
 
-      <button id="generate-code-btn" class="btn btn-primary" style="margin-bottom:16px">
-        🔑 Generar código
-      </button>
+      <div class="mc-layout">
 
-      <div class="generated-code" id="generated-code-display">——————</div>
-      <p style="font-size:13px;color:var(--gray);margin-top:12px">Comparte este código con tu equipo para que se unan</p>
+        <!-- LEFT: Formulario -->
+        <div class="mc-left-panel">
+          <div class="mc-panel-header">
+            <span class="mc-panel-icon">🏗️</span>
+            <h1 class="mc-panel-title">CREAR<br><span class="mc-title-yellow">COMUNIDAD</span></h1>
+          </div>
 
-      <button id="create-ready-btn" class="btn btn-success" style="margin-top:32px">
-        ✅ ¡Estamos listos!
-      </button>
-    </div>
+          <div class="mc-field-group">
+            <label class="mc-label">NOMBRE DE TU COMUNIDAD</label>
+            <input
+              type="text"
+              id="squad-name-input"
+              class="mc-input"
+              placeholder="Ej. SchoolSJL"
+              maxlength="20"
+            />
+          </div>
 
-    <div class="create-right">
-      <h2>Miembros en sala</h2>
-      <p style="color:var(--gray);font-size:13px;margin-bottom:16px">Esperando que se unan...</p>
-      <div class="leaderboard-table">
-        <div class="lb-header">
-          <div>#</div>
-          <div>Nombre</div>
-          <div style="text-align:right">Pts</div>
+          <button id="generate-code-btn" class="mc-btn mc-btn-generate">
+            🔑 &nbsp;GENERAR CÓDIGO
+          </button>
+
+          <div class="mc-code-display">
+            <div class="mc-code-label">CÓDIGO DE SALA</div>
+            <div class="mc-code-value" id="generated-code-display">- - - - - -</div>
+            <div class="mc-code-hint">Comparte este código con tu equipo</div>
+          </div>
+
+          <button id="create-ready-btn" class="mc-btn mc-btn-ready">
+            ✅ &nbsp;¡ESTAMOS LISTOS!
+          </button>
         </div>
-        <div id="create-members-list"></div>
-      </div>
-    </div>
+
+        <!-- RIGHT: Sala de espera -->
+        <div class="mc-right-panel">
+          <div class="mc-room-header">
+            <span class="mc-room-dot mc-dot-blink"></span>
+            <span class="mc-room-title">SALA DE ESPERA</span>
+            <span class="mc-room-status" id="mc-member-count">1 / 5</span>
+          </div>
+
+          <div class="mc-players-grid" id="create-members-list">
+            <!-- Populated by JS -->
+          </div>
+
+          <div class="mc-waiting-msg">
+            <span class="mc-wait-dots">⏳</span> Esperando jugadores...
+          </div>
+        </div>
+
+      </div><!-- /mc-layout -->
+    </div><!-- /mc-wrapper -->
   </div>
 
   <!-- ===== PANTALLA 8: CINEMÁTICA LEO (16-BIT DESIGN) ===== -->

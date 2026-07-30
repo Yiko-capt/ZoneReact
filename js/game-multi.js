@@ -100,18 +100,29 @@ window.ZR.registerScreen('screen-multi-create', function () {
   backBtn?.parentNode?.replaceChild(newBack, backBtn);
   newBack?.addEventListener('click', () => window.ZR.navigate('screen-multi-join'));
 
-  // Members list
+  // Members list with new mc-player-slot style
   const membersList = document.getElementById('create-members-list');
+  const playerName = window.ZR.state.playerName || 'Tú';
   if (membersList) {
     membersList.innerHTML = `
-      <div class="lb-row is-you">
-        <div class="lb-rank">1</div>
-        <div class="lb-name">${window.ZR.state.playerName || 'Tú'} <small>TÚ</small></div>
-        <div class="lb-score">0</div>
+      <div class="mc-player-slot">
+        <div class="mc-player-rank">1</div>
+        <div class="mc-player-avatar">🧑</div>
+        <div class="mc-player-name">${playerName}</div>
+        <div class="mc-player-you">TÚ</div>
+        <div class="mc-player-score">0 XP</div>
       </div>
     `;
   }
+  updateMemberCount(1);
 });
+
+function updateMemberCount(count) {
+  const el = document.getElementById('mc-member-count');
+  if (el) el.textContent = `${count} / 5`;
+}
+
+const MEMBER_AVATARS = ['🧑','👦','👧','🧒','👩'];
 
 function simulateMembersJoining() {
   const membersList = document.getElementById('create-members-list');
@@ -119,18 +130,26 @@ function simulateMembersJoining() {
 
   const bots = SQUAD_NAMES.filter(n => n !== (window.ZR.state.playerName || '')).slice(0, 4);
   let joined = 0;
+  let total = 1;
 
   const interval = setInterval(() => {
     if (joined >= bots.length) { clearInterval(interval); return; }
-    const botName = bots[joined++];
-    const row = document.createElement('div');
-    row.className = 'lb-row';
-    row.innerHTML = `
-      <div class="lb-rank">${joined + 1}</div>
-      <div class="lb-name">${botName}</div>
-      <div class="lb-score">0</div>
+    const botName = bots[joined];
+    const avatar = MEMBER_AVATARS[(joined + 1) % MEMBER_AVATARS.length];
+    joined++;
+    total++;
+
+    const slot = document.createElement('div');
+    slot.className = 'mc-player-slot';
+    slot.style.animationDelay = `${joined * 0.1}s`;
+    slot.innerHTML = `
+      <div class="mc-player-rank">${total}</div>
+      <div class="mc-player-avatar">${avatar}</div>
+      <div class="mc-player-name">${botName}</div>
+      <div class="mc-player-score">0 XP</div>
     `;
-    membersList.appendChild(row);
+    membersList.appendChild(slot);
+    updateMemberCount(total);
     window.ZR.showToast(`👾 <b>${botName}</b> se unió a tu comunidad`);
   }, 1500);
 }
@@ -205,20 +224,33 @@ function renderLobbyLeaderboard(lb) {
 }
 
 /* =========================================
-   PANTALLA 6 - VS SCREEN
+   PANTALLA 6 - VS SCREEN (Pixel Fighter)
    ========================================= */
 window.ZR.registerScreen('screen-vs', function () {
-  const mySquad  = window.ZR.state.multi.squadName || 'SchoolSJL';
-  const myEl  = document.getElementById('vs-my-squad');
+  const mySquad = window.ZR.state.multi.squadName || 'MI EQUIPO';
+  const myEl    = document.getElementById('vs-my-squad');
   const enemyEl = document.getElementById('vs-enemy-squad');
+  const countEl = document.getElementById('vs-countdown');
+  const hiscoreEl = document.getElementById('vs-hiscore-val');
 
-  if (myEl) myEl.textContent = mySquad;
-  if (enemyEl) enemyEl.textContent = 'LuriganchoCity';
+  if (myEl) myEl.textContent = mySquad.toUpperCase();
+  if (enemyEl) enemyEl.textContent = 'LURIGANCHOCITY';
+  if (hiscoreEl) hiscoreEl.textContent = String(Math.floor(Math.random() * 900000) + 100000);
 
-  // Auto-advance to map after 3 seconds
-  setTimeout(() => {
-    window.ZR.navigate('screen-map', { mode: 'multi' });
-  }, 3200);
+  // Countdown: 3 → 2 → 1 → ¡YA!
+  let count = 3;
+  if (countEl) countEl.textContent = count;
+
+  const ticker = setInterval(() => {
+    count--;
+    if (count <= 0) {
+      clearInterval(ticker);
+      if (countEl) countEl.textContent = '¡YA!';
+      setTimeout(() => window.ZR.navigate('screen-map', { mode: 'multi' }), 900);
+    } else {
+      if (countEl) countEl.textContent = count;
+    }
+  }, 900);
 });
 
 /* =========================================
