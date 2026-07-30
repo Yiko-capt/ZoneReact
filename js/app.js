@@ -1,6 +1,6 @@
 /**
  * ZoneReact - app.js
- * Router SPA y renderizador de avatares usando capas PNG de Perry Platypus
+ * Router SPA + Renderizador de Avatar con Canvas Tinting (HTML5 Canvas Pixel Tinting)
  */
 
 window.ZR = window.ZR || {};
@@ -12,12 +12,11 @@ window.ZR.state = {
   playerName: '',
   mode: null,          // 'story' | 'multi'
   avatar: {
-    skin: 1,           // 1, 2, 3
-    hairStyle: 'corto',// 'corto' | 'cola'
-    hairColor: 'negro',// 'amarillo' | 'marron' | 'negro'
-    eyes: 1,           // 1, 2
-    mouth: 1,          // 1, 2, 3, 4
-    polo: 'Azul',      // 'Azul' | 'Rojo' | 'Rosa' | 'Verde'
+    skinFile:   'piel_media',  // 'piel_clara' | 'piel_media' | 'piel_morena'
+    hairColor:  '#2B2B2B',     // Color de cabello (hex)
+    poloColor:  '#4A6FA5',     // Color de polo (hex)
+    shortColor: '#5B7065',     // Color de short (hex)
+    shoeColor:  '#8B4513',     // Color de zapatos (hex)
     gender: 'hombre'
   },
   story: {
@@ -145,59 +144,156 @@ window.ZR.showToast = function (msg, duration = 3000) {
 };
 
 /* =========================================
-   RENDERIZADOR DE AVATAR (CAPAS PNG PERRY PLATYPUS)
+   MOTOR DE TINTADO CANVAS (HTML5 Canvas Pixel Tinting)
+   Carga un sprite en escala de grises, tinta píxel a píxel con el color deseado
+   preservando brillo/sombras, y devuelve una data URL lista para mostrar.
    ========================================= */
-window.ZR.getAvatarLayers = function (av) {
+
+/**
+ * Convierte un color hex "#RRGGBB" a { r, g, b }
+ */
+function hexToRgb(hex) {
+  const clean = hex.replace('#', '');
+  return {
+    r: parseInt(clean.substring(0, 2), 16),
+    g: parseInt(clean.substring(2, 4), 16),
+    b: parseInt(clean.substring(4, 6), 16)
+  };
+}
+
+/**
+ * Tinta un sprite en escala de grises con el color hex dado.
+ * Usa normalización basada en PERCENTIL 90 como lumMax para evitar que
+ * píxeles muy blancos (ojos, dientes) distorsionen el tintado del resto.
+ */
+const DARK_THRESHOLD = 40;
+
+function tintSprite(imgSrc, hexColor) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width  = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      const { r: tR, g: tG, b: tB } = hexToRgb(hexColor);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      // PASO 1: Recopilar luminosidades de píxeles válidos (no bordes, no transparentes)
+      const lums = [];
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 3] < 10) continue;
+        const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        if (lum > DARK_THRESHOLD) lums.push(lum);
+      }
+
+      // Usar percentil 85 como techo de normalización
+      // → evita que blancos de ojos/dientes aplasten el rango
+      lums.sort((a, b) => a - b);
+      const p85idx  = Math.floor(lums.length * 0.85);
+      const lumMax  = lums.length > 0 ? Math.max(lums[p85idx], DARK_THRESHOLD + 1) : 200;
+      const lumRange = lumMax - DARK_THRESHOLD;
+
+      // PASO 2: Tintado con rango normalizado (clampeado a 1.0)
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 3] < 10) continue;
+        const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        if (lum < DARK_THRESHOLD) continue; // borde negro → sin cambios
+
+        const t = Math.min(1.0, (lum - DARK_THRESHOLD) / lumRange);
+        data[i]     = Math.round(tR * t);
+        data[i + 1] = Math.round(tG * t);
+        data[i + 2] = Math.round(tB * t);
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = () => resolve('');
+    img.src = imgSrc;
+  });
+}
+
+/* =========================================
+   CAPAS DE AVATAR
+   Define los 5 sprites y el color que se les aplica
+   ========================================= */
+window.ZR.getAvatarLayerDefs = function (av) {
   av = av || window.ZR.state.avatar;
-  const base = window.ZR.ASSETS + 'Personaje 1/';
-  const skinNum = av.skin || 1;
-  const eyesNum = av.eyes || 1;
-  const mouthNum = av.mouth || 1;
-  const poloName = av.polo || 'Azul';
-  const hairStyle = av.hairStyle || av.hair?.style || 'corto';
-  const hairColor = av.hairColor || av.hair?.color || 'negro';
-
-  const layers = [
-    { src: `${base}Colores de piel/1 Color ${skinNum} piel.png`, name: 'skin' },
-    { src: `${base}Superior color/1 Superior ${poloName}.png`, name: 'polo' },
-    { src: `${base}Inferior/Shorts.png`, name: 'shorts' },
-    { src: `${base}Botas.png`, name: 'boots' },
-    { src: `${base}Delineado ojos/Ojos ${eyesNum}.png`, name: 'eyes' },
-    { src: `${base}Boca/1 boca ${mouthNum}.png`, name: 'mouth' }
+  const base = window.ZR.ASSETS + 'Avatar/';
+  const skinFile = av.skinFile || 'piel_media';
+  return [
+    // Piel: carga directa sin tintado (sprite ya tiene el color correcto)
+    { src: `${base}Piel/${skinFile}.png`, color: null, name: 'piel' },
+    // Resto: tintado Canvas con el color hex elegido
+    { src: `${base}Inferior/inferior_base.png`,  color: av.shortColor || '#5B7065', name: 'inferior'  },
+    { src: `${base}Superior/superior_base.png`,  color: av.poloColor  || '#4A6FA5', name: 'superior'  },
+    { src: `${base}Zapatos/zapatos_base.png`,    color: av.shoeColor  || '#8B4513', name: 'zapatos'   },
+    { src: `${base}Cabello/cabello_base.png`,    color: av.hairColor  || '#2B2B2B', name: 'cabello'   },
   ];
-
-  const folder = hairStyle === 'cola' ? 'Peinado cola' : 'Peinado corto';
-  const file   = hairStyle === 'cola' ? `1 cola ${hairColor}.png` : `1 corto ${hairColor}.png`;
-  layers.push({ src: `${base}${folder}/${file}`, name: 'hair' });
-
-  return layers;
 };
 
-window.ZR.renderAvatarInContainer = function (containerId, avatar, extraEffect) {
+/* =========================================
+   RENDERIZADOR PRINCIPAL DE AVATAR CON CANVAS TINTING
+   Acepta un containerId donde pintará las capas apiladas.
+   ========================================= */
+// Sprite nativo: 71 x 195 px
+const SPRITE_W = 71;
+const SPRITE_H = 195;
+
+window.ZR.renderAvatarInContainer = async function (containerId, avatar) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
+  // Limpiar el contenedor
   container.innerHTML = '';
-  if (!container.classList.contains('avatar-display')) {
-    container.classList.add('avatar-display');
-  }
+  container.style.position = 'relative';
+  container.style.overflow = 'hidden';
 
-  Array.from(container.classList).forEach(cls => {
-    if (cls.startsWith('effect-')) container.classList.remove(cls);
-  });
+  const layers = window.ZR.getAvatarLayerDefs(avatar || window.ZR.state.avatar);
 
-  if (extraEffect) {
-    container.classList.add(`effect-${extraEffect}`);
-  }
+  // Escalar al contenedor manteniendo proporciones exactas del sprite
+  const containerH = container.offsetHeight || 390;
+  const containerW = container.offsetWidth  || 142;
+  const scaleH = containerH / SPRITE_H;
+  const scaleW = containerW / SPRITE_W;
+  const scale  = Math.min(scaleH, scaleW);  // Ajuste sin distorsión
 
-  const layers = window.ZR.getAvatarLayers(avatar);
+  const renderW = Math.round(SPRITE_W * scale);
+  const renderH = Math.round(SPRITE_H * scale);
 
-  layers.forEach(layer => {
+  // Centrar dentro del contenedor
+  const offsetX = Math.round((containerW - renderW) / 2);
+  const offsetY = Math.round((containerH - renderH) / 2);
+
+  // Procesar capas: si color===null → imagen directa, si no → Canvas tinting
+  const tintedUrls = await Promise.all(
+    layers.map(layer =>
+      layer.color === null
+        ? Promise.resolve(layer.src)   // piel: usar la URL directamente
+        : tintSprite(layer.src, layer.color)
+    )
+  );
+
+  tintedUrls.forEach((url, i) => {
+    if (!url) return;
     const img = document.createElement('img');
-    img.src = layer.src;
-    img.className = 'avatar-layer layer-' + layer.name;
-    img.alt = '';
-    img.onerror = function() { this.style.display = 'none'; };
+    img.src = url;
+    img.alt = layers[i].name;
+    img.style.cssText = `
+      position: absolute;
+      top: ${offsetY}px;
+      left: ${offsetX}px;
+      width: ${renderW}px;
+      height: ${renderH}px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      pointer-events: none;
+    `;
     container.appendChild(img);
   });
 };
@@ -219,6 +315,11 @@ window.ZR.generateCode = function () {
    ========================================= */
 document.addEventListener('DOMContentLoaded', function () {
   window.ZR.loadAvatar();
+
+  // Renderizar avatar genérico en pantalla principal al cargar
+  setTimeout(() => {
+    window.ZR.renderAvatarInContainer('home-avatar-display', window.ZR.state.avatar);
+  }, 100);
 
   document.getElementById('nav-home')?.addEventListener('click', () => {
     window.ZR.navigate('screen-home');
@@ -260,5 +361,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.ZR.navigate('screen-home');
 
-  console.log('[ZR] ZoneReact App Initialized 🕹️ (Perry Platypus Assets)');
+  console.log('[ZR] ZoneReact App Initialized 🕹️ (Canvas Tinting Engine)');
 });

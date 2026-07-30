@@ -85,13 +85,32 @@
 }
 
 .home-visual {
-  background: #6BA8E8;
+  background: #6BA8E8 url('../assets/fondo_manana.png') center center / cover no-repeat;
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   border-left: var(--border);
+}
+
+.home-avatar-preview {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  width: 200px;
+  height: 548px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  filter: drop-shadow(4px 0px 12px rgba(0,0,0,0.5));
+}
+
+.home-avatar-preview .avatar-display {
+  width: 200px;
+  height: 548px;
 }
 
 .home-about {
@@ -214,7 +233,7 @@
 }
 
 .aventura-avatar-area {
-  background: #D84A38;
+  background: #D84A38 url('../assets/fondo_tarde.png') center center / cover no-repeat;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -1,48 +1,72 @@
 /**
  * ZoneReact - avatar.js
- * Customizador de Avatar con Recursos de Perry Platypus
+ * Customizador de Avatar con 5 tabs: Piel, Cabello, Superior, Inferior, Zapatos
+ * Sistema: HTML5 Canvas Pixel Tinting (sprites en escala de grises tintados en tiempo real)
  */
 window.ZR = window.ZR || {};
 
+/* =========================================
+   CONFIGURACIÓN DE COLORES POR CATEGORÍA
+   ========================================= */
 const AVATAR_CONFIG = {
-  skins: [
-    { id: 1, label: 'Tono 1', color: '#FCE0C4' },
-    { id: 2, label: 'Tono 2', color: '#D4A274' },
-    { id: 3, label: 'Tono 3', color: '#8C5838' }
+  piel: [
+    { file: 'piel_clara',  label: 'Clara'  },
+    { file: 'piel_media',  label: 'Media'  },
+    { file: 'piel_morena', label: 'Morena' },
   ],
-  hairs: [
-    { style: 'corto', color: 'negro',    label: 'Corto Negro',  hex: '#2B2B2B' },
-    { style: 'corto', color: 'marron',   label: 'Corto Marrón', hex: '#7B4A28' },
-    { style: 'corto', color: 'amarillo', label: 'Corto Rubio',  hex: '#F4C430' },
-    { style: 'cola',  color: 'negro',    label: 'Cola Negro',   hex: '#2B2B2B' },
-    { style: 'cola',  color: 'marron',   label: 'Cola Marrón',  hex: '#7B4A28' },
-    { style: 'cola',  color: 'amarillo', label: 'Cola Rubio',   hex: '#F4C430' }
+  cabello: [
+    { hex: '#1A1A1A', label: 'Negro'    },
+    { hex: '#C0392B', label: 'Rojo'     },
+    { hex: '#F4C430', label: 'Rubio'    },
+    { hex: '#7B4A28', label: 'Castaño'  },
   ],
-  polos: [
-    { color: 'Azul',  label: 'Azul',  hex: '#4A6FA5' },
-    { color: 'Rojo',  label: 'Rojo',  hex: '#E8543E' },
-    { color: 'Rosa',  label: 'Rosa',  hex: '#E888A0' },
-    { color: 'Verde', label: 'Verde', hex: '#5A8A4A' }
+  superior: [
+    { hex: '#2980B9', label: 'Azul'     },
+    { hex: '#E74C3C', label: 'Rojo'     },
+    { hex: '#27AE60', label: 'Verde'    },
+    { hex: '#F39C12', label: 'Amarillo' },
   ],
-  eyes: [
-    { id: 1, label: 'Ojos 1' },
-    { id: 2, label: 'Ojos 2' }
+  inferior: [
+    { hex: '#2980B9', label: 'Azul'     },
+    { hex: '#E74C3C', label: 'Rojo'     },
+    { hex: '#27AE60', label: 'Verde'    },
+    { hex: '#F39C12', label: 'Amarillo' },
   ],
-  mouths: [
-    { id: 1, label: 'Boca 1' },
-    { id: 2, label: 'Boca 2' },
-    { id: 3, label: 'Boca 3' },
-    { id: 4, label: 'Boca 4' }
-  ]
+  zapatos: [
+    { hex: '#1A1A1A', label: 'Negro'    },
+    { hex: '#FFFFFF', label: 'Blanco'   },
+    { hex: '#8B4513', label: 'Café'     },
+    { hex: '#C0392B', label: 'Rojo'     },
+  ],
 };
 
+/* =========================================
+   TAB ACTIVO
+   ========================================= */
 let activeTab = 'piel';
 
+/* =========================================
+   MAPEO DE TAB → PROPIEDAD DEL ESTADO
+   ========================================= */
+const TAB_TO_STATE_KEY = {
+  piel:     'skinFile',   // guarda el nombre del archivo (ej: 'piel_media')
+  cabello:  'hairColor',
+  superior: 'poloColor',
+  inferior: 'shortColor',
+  zapatos:  'shoeColor',
+};
+
+/* =========================================
+   REGISTRO DE PANTALLA
+   ========================================= */
 window.ZR.registerScreen('screen-avatar', function () {
   renderAvatarCustomizer();
   updateAvatarPreview();
 });
 
+/* =========================================
+   RENDER PRINCIPAL DEL CUSTOMIZADOR
+   ========================================= */
 function renderAvatarCustomizer() {
   const tabBtns = document.querySelectorAll('.avatar-tab-btn');
   tabBtns.forEach(btn => {
@@ -53,6 +77,13 @@ function renderAvatarCustomizer() {
       renderSwatchGrid(activeTab);
     });
   });
+
+  // Activar el primer tab por defecto
+  const firstTab = document.querySelector('.avatar-tab-btn[data-tab="piel"]');
+  if (firstTab) {
+    tabBtns.forEach(b => b.classList.remove('active'));
+    firstTab.classList.add('active');
+  }
 
   renderSwatchGrid(activeTab);
 
@@ -67,60 +98,48 @@ function renderAvatarCustomizer() {
   });
 }
 
+/* =========================================
+   RENDER DE LOS SWATCHES DE COLOR
+   ========================================= */
 function renderSwatchGrid(tab) {
   const grid = document.getElementById('avatar-swatch-grid');
   if (!grid) return;
   grid.innerHTML = '';
 
   const av = window.ZR.state.avatar;
+  const stateKey = TAB_TO_STATE_KEY[tab];
+  const options  = AVATAR_CONFIG[tab];
+  if (!options) return;
 
   if (tab === 'piel') {
-    AVATAR_CONFIG.skins.forEach(s => {
-      const swatch = createColorSwatch(s.color, s.label, av.skin === s.id, () => {
-        av.skin = s.id;
+    // Piel: swatches con imagen directa, sin tintado
+    options.forEach(opt => {
+      const isSelected = (av.skinFile || 'piel_media') === opt.file;
+      const btn = document.createElement('button');
+      btn.className = 'avatar-swatch avatar-swatch-img' + (isSelected ? ' selected' : '');
+      btn.title = opt.label;
+      btn.style.cssText = `
+        background-image: url('assets/Avatar/Piel/${opt.file}.png');
+        background-size: cover;
+        background-position: center top;
+        border: 3px solid ${isSelected ? 'var(--ink, #1A1A1A)' : 'transparent'};
+        box-shadow: ${isSelected ? '3px 3px 0 var(--ink, #1A1A1A)' : 'none'};
+      `;
+      btn.innerHTML = `<span style="font-size:10px;font-weight:900;color:#fff;text-shadow:0 1px 2px #000;margin-top:auto">${opt.label}</span>`;
+      btn.addEventListener('click', () => {
+        av.skinFile = opt.file;
         renderSwatchGrid('piel');
         updateAvatarPreview();
       });
-      grid.appendChild(swatch);
+      grid.appendChild(btn);
     });
-  }
-  else if (tab === 'cabello') {
-    AVATAR_CONFIG.hairs.forEach(h => {
-      const isSel = (av.hairStyle || av.hair?.style) === h.style && (av.hairColor || av.hair?.color) === h.color;
-      const swatch = createColorSwatch(h.hex, h.label, isSel, () => {
-        av.hairStyle = h.style;
-        av.hairColor = h.color;
-        renderSwatchGrid('cabello');
-        updateAvatarPreview();
-      });
-      grid.appendChild(swatch);
-    });
-  }
-  else if (tab === 'polo') {
-    AVATAR_CONFIG.polos.forEach(p => {
-      const swatch = createColorSwatch(p.hex, p.label, av.polo === p.color, () => {
-        av.polo = p.color;
-        renderSwatchGrid('polo');
-        updateAvatarPreview();
-      });
-      grid.appendChild(swatch);
-    });
-  }
-  else if (tab === 'ojos') {
-    AVATAR_CONFIG.eyes.forEach(e => {
-      const swatch = createColorSwatch('#2C3E50', e.label, av.eyes === e.id, () => {
-        av.eyes = e.id;
-        renderSwatchGrid('ojos');
-        updateAvatarPreview();
-      });
-      grid.appendChild(swatch);
-    });
-  }
-  else if (tab === 'boca') {
-    AVATAR_CONFIG.mouths.forEach(m => {
-      const swatch = createColorSwatch('#C0392B', m.label, av.mouth === m.id, () => {
-        av.mouth = m.id;
-        renderSwatchGrid('boca');
+  } else {
+    // Resto de tabs: swatches de color con tintado Canvas
+    options.forEach(opt => {
+      const isSelected = av[stateKey] === opt.hex;
+      const swatch = createColorSwatch(opt.hex, opt.label, isSelected, () => {
+        av[stateKey] = opt.hex;
+        renderSwatchGrid(tab);
         updateAvatarPreview();
       });
       grid.appendChild(swatch);
@@ -128,28 +147,46 @@ function renderSwatchGrid(tab) {
   }
 }
 
+/* =========================================
+   CREACIÓN DE UN SWATCH DE COLOR
+   ========================================= */
 function createColorSwatch(hex, label, isSelected, onClick) {
   const btn = document.createElement('button');
   btn.className = 'avatar-swatch' + (isSelected ? ' selected' : '');
   btn.title = label;
-  btn.style.cssText = `background:${hex}; border:3px solid ${isSelected ? 'var(--ink)' : 'transparent'}; box-shadow:${isSelected ? '3px 3px 0 var(--ink)' : 'none'}`;
-  btn.innerHTML = `<span style="font-size:11px;font-weight:900;color:${isLight(hex) ? '#1A1A1A' : '#FFFFFF'}">${label}</span>`;
+
+  const textColor = isLight(hex) ? '#1A1A1A' : '#FFFFFF';
+  btn.style.cssText = `
+    background: ${hex};
+    border: 3px solid ${isSelected ? 'var(--ink, #1A1A1A)' : 'transparent'};
+    box-shadow: ${isSelected ? '3px 3px 0 var(--ink, #1A1A1A)' : 'none'};
+  `;
+  btn.innerHTML = `<span style="font-size:11px;font-weight:900;color:${textColor}">${label}</span>`;
   btn.addEventListener('click', onClick);
   return btn;
 }
 
-function isLight(color) {
-  const hex = color.replace('#', '');
-  const r = parseInt(hex.substr(0, 2), 16);
-  const g = parseInt(hex.substr(2, 2), 16);
-  const b = parseInt(hex.substr(4, 2), 16);
+/* =========================================
+   UTILIDAD: ¿El color es claro?
+   ========================================= */
+function isLight(hex) {
+  const clean = hex.replace('#', '');
+  const r = parseInt(clean.substring(0, 2), 16);
+  const g = parseInt(clean.substring(2, 4), 16);
+  const b = parseInt(clean.substring(4, 6), 16);
   return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }
 
+/* =========================================
+   ACTUALIZAR TODAS LAS PREVISUALIZACIONES
+   ========================================= */
 function updateAvatarPreview() {
-  window.ZR.renderAvatarInContainer('avatar-stage-display', window.ZR.state.avatar);
-  window.ZR.renderAvatarInContainer('aventura-avatar-display', window.ZR.state.avatar);
-  window.ZR.renderAvatarInContainer('lobby-avatar-display', window.ZR.state.avatar);
+  const av = window.ZR.state.avatar;
+  window.ZR.renderAvatarInContainer('home-avatar-display', av);
+  window.ZR.renderAvatarInContainer('avatar-stage-display', av);
+  window.ZR.renderAvatarInContainer('aventura-avatar-display', av);
+  window.ZR.renderAvatarInContainer('lobby-avatar-display', av);
+  window.ZR.renderAvatarInContainer('healthy-avatar-display', av);
 }
 
 window.ZR.updateAvatarPreviews = updateAvatarPreview;

@@ -79,7 +79,9 @@
       </div>
 
       <div class="home-visual">
-        <canvas id="home-preview-canvas" style="position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated"></canvas>
+        <div class="home-avatar-preview">
+          <div class="avatar-display" id="home-avatar-display"></div>
+        </div>
         <div class="visual-overlay-mission">
           <span class="mission-tag">MISIÓN</span>
           <div class="mission-text">Haz tu distrito más seguro</div>
@@ -149,7 +151,6 @@
     </div>
 
     <div class="aventura-avatar-area">
-      <canvas id="aventura-preview-canvas" style="position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;z-index:0;"></canvas>
       <div class="visual-overlay-mission">
         <span class="mission-tag">MISIÓN</span>
         <div class="mission-text">Haz tu distrito más seguro</div>
@@ -164,7 +165,7 @@
     </div>
   </div>
 
-  <!-- ===== PANTALLA 3: AVATAR CUSTOMIZER (ENLARGED) ===== -->
+  <!-- ===== PANTALLA 3: AVATAR CUSTOMIZER ===== -->
   <div id="screen-avatar" class="screen">
     <div class="avatar-header">
       <button class="btn btn-secondary btn-sm" id="avatar-back-btn">← Regresar</button>
@@ -175,12 +176,6 @@
       <div class="avatar-options-panel">
         <h3>Opciones de Color & Estilo</h3>
         <div class="avatar-swatch-grid" id="avatar-swatch-grid"></div>
-
-        <h3 style="margin-top:20px">Género</h3>
-        <div class="avatar-gender-switch">
-          <button class="gender-btn active" data-gender="hombre">🧑 Hombre</button>
-          <button class="gender-btn" data-gender="mujer">👧 Mujer</button>
-        </div>
       </div>
 
       <div class="avatar-stage">
@@ -195,11 +190,14 @@
         <button class="avatar-tab-btn" data-tab="cabello">
           <span class="tab-icon">💇</span> Cabello
         </button>
-        <button class="avatar-tab-btn" data-tab="polo">
-          <span class="tab-icon">👕</span> Polo
+        <button class="avatar-tab-btn" data-tab="superior">
+          <span class="tab-icon">👕</span> Superior
         </button>
-        <button class="avatar-tab-btn" data-tab="shorts">
-          <span class="tab-icon">🩳</span> Shorts
+        <button class="avatar-tab-btn" data-tab="inferior">
+          <span class="tab-icon">🩳</span> Inferior
+        </button>
+        <button class="avatar-tab-btn" data-tab="zapatos">
+          <span class="tab-icon">👟</span> Zapatos
         </button>
       </div>
     </div>
