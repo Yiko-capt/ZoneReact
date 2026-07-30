@@ -1,31 +1,12 @@
 /**
  * ZoneReact - game-engine.js
- * Motor de Mapa 2D usando recursos de Perry Platypus (pasto, escuela y capas corriendo Personaje 2)
+ * Motor de Mapa 2D usando assets/mapa.png (2752x1536) y sprites animados de Leo
  */
 window.ZR = window.ZR || {};
 
-const TILE = {
-  GRASS:        0,
-  ROAD_H:       1,
-  ROAD_V:       2,
-  ROAD_INT:     3,
-  BUILDING_RED: 4,
-  BUILDING_BLUE:5,
-  BUILDING_DARK:6,
-  BUILDING_TAN: 7,
-  PARK:         8,
-  SIDEWALK:     9,
-  SCHOOL:      10,
-  WATER:       11,
-  FLOWERS:     12,
-  TREES_GRID:  13
-};
+const MAP_WIDTH  = 2752;
+const MAP_HEIGHT = 1536;
 
-const TILE_SIZE = 32;
-const MAP_COLS  = 48;
-const MAP_ROWS  = 36;
-
-// Preload Perry Platypus map textures
 const ASSET_CACHE = {};
 function preloadAsset(src) {
   if (ASSET_CACHE[src]) return ASSET_CACHE[src];
@@ -35,96 +16,11 @@ function preloadAsset(src) {
   return img;
 }
 
-const pastoImg   = preloadAsset('assets/pasto.png');
-const escuelaImg = preloadAsset('assets/escuela.png');
-
-function generateTilemap() {
-  const map = Array.from({ length: MAP_ROWS }, () => new Array(MAP_COLS).fill(TILE.GRASS));
-
-  function fill(r1, c1, r2, c2, type) {
-    for (let r = r1; r <= r2; r++)
-      for (let c = c1; c <= c2; c++)
-        if (r >= 0 && r < MAP_ROWS && c >= 0 && c < MAP_COLS)
-          map[r][c] = type;
-  }
-
-  // 1. ROADS (Horizontal & Vertical Avenues)
-  const hRoads = [[4, 6], [15, 17], [26, 28]];
-  const vRoads = [[7, 9], [22, 24], [37, 39]];
-
-  hRoads.forEach(r => fill(r[0], 0, r[1], MAP_COLS - 1, TILE.ROAD_H));
-  vRoads.forEach(c => fill(0, c[0], MAP_ROWS - 1, c[1], TILE.ROAD_V));
-
-  hRoads.forEach(r => {
-    vRoads.forEach(c => fill(r[0], c[0], r[1], c[1], TILE.ROAD_INT));
-  });
-
-  // 2. SIDEWALK PERIMETERS AROUND ALL BLOCKS
-  for (let r = 0; r < MAP_ROWS; r++) {
-    for (let c = 0; c < MAP_COLS; c++) {
-      if (map[r][c] === TILE.GRASS) {
-        let nearRoad = false;
-        for (let dr = -1; dr <= 1; dr++) {
-          for (let dc = -1; dc <= 1; dc++) {
-            const nr = r + dr, nc = c + dc;
-            if (nr >= 0 && nr < MAP_ROWS && nc >= 0 && nc < MAP_COLS) {
-              if ([TILE.ROAD_H, TILE.ROAD_V, TILE.ROAD_INT].includes(map[nr][nc])) {
-                nearRoad = true;
-              }
-            }
-          }
-        }
-        if (nearRoad) map[r][c] = TILE.SIDEWALK;
-      }
-    }
-  }
-
-  // 3. FILL CITY BLOCKS (Matching screenshot)
-
-  // ROW 1 BLOCKS (rows 0..3)
-  fill(0, 0, 3, 6, TILE.BUILDING_RED);
-  fill(0, 10, 3, 21, TILE.BUILDING_BLUE);
-  fill(0, 25, 3, 36, TILE.FLOWERS);        // Flower garden block (Pin 1)
-  fill(0, 40, 3, 47, TILE.TREES_GRID);     // Tree orchard block
-
-  // ROW 2 BLOCKS (rows 7..14)
-  fill(7, 0, 10, 6, TILE.BUILDING_TAN);
-  fill(11, 0, 14, 6, TILE.BUILDING_DARK);
-
-  // CENTER PARK (rows 7..14, cols 10..21)
-  fill(7, 10, 14, 21, TILE.PARK);
-  fill(9, 13, 12, 18, TILE.WATER);         // Central lake pool (Pin 2)
-
-  fill(7, 25, 10, 36, TILE.BUILDING_RED);
-  fill(11, 25, 14, 36, TILE.BUILDING_BLUE);
-
-  fill(7, 40, 14, 47, TILE.TREES_GRID);    // Tree orchard block
-
-  // ROW 3 BLOCKS (rows 18..25)
-  fill(18, 0, 21, 6, TILE.BUILDING_BLUE);
-  fill(22, 0, 25, 6, TILE.BUILDING_DARK);
-
-  fill(18, 10, 21, 21, TILE.BUILDING_TAN);
-  fill(22, 10, 25, 21, TILE.BUILDING_DARK);
-
-  fill(18, 25, 21, 36, TILE.BUILDING_RED);
-  fill(22, 25, 25, 36, TILE.BUILDING_BLUE);
-
-  fill(18, 40, 25, 47, TILE.TREES_GRID);
-
-  // ROW 4 BLOCKS (rows 29..35)
-  fill(29, 0, 35, 6, TILE.BUILDING_BLUE);
-  fill(29, 10, 31, 21, TILE.BUILDING_TAN);  // Tan building block (Pin 4)
-  fill(32, 10, 35, 21, TILE.BUILDING_DARK);
-  fill(29, 25, 35, 36, TILE.BUILDING_DARK);
-  fill(29, 40, 35, 47, TILE.TREES_GRID);
-
-  return map;
-}
-
-const WALKABLE = new Set([
-  TILE.GRASS, TILE.ROAD_H, TILE.ROAD_V, TILE.ROAD_INT, TILE.PARK, TILE.SIDEWALK
-]);
+// Preload map and Leo sprites
+preloadAsset('assets/mapa.png');
+preloadAsset('assets/Leo/leo_parado.png');
+preloadAsset('assets/Leo/leo_camina0.png');
+preloadAsset('assets/Leo/leo_camina1.png');
 
 class GameEngine {
   constructor(canvas, options = {}) {
@@ -132,18 +28,16 @@ class GameEngine {
     this.ctx = canvas.getContext('2d');
     this.options = options;
 
-    this.TILE_SIZE = TILE_SIZE;
-    this.MAP_COLS  = MAP_COLS;
-    this.MAP_ROWS  = MAP_ROWS;
+    this.MAP_WIDTH  = MAP_WIDTH;
+    this.MAP_HEIGHT = MAP_HEIGHT;
+    this.camera     = { x: 0, y: 0 };
 
-    this.tilemap = generateTilemap();
-    this.camera  = { x: 0, y: 0 };
-
+    // Posición inicial: Frente a la Casa de Leo (derecha en mapa.png)
     this.player = {
-      wx: 8 * TILE_SIZE + 16,
-      wy: 5 * TILE_SIZE + 16,
-      speed: 3.4,
-      size: 32,
+      wx: 2420,
+      wy: 1020,
+      speed: 4.8,
+      size: 40,
       moving: false,
       dir: 'down',
       animFrame: 0,
@@ -151,10 +45,11 @@ class GameEngine {
     };
 
     this.leo = {
-      wx: 9 * TILE_SIZE + 16,
-      wy: 5 * TILE_SIZE + 16,
-      speed: 3.0,
-      size: 32,
+      wx: 2360,
+      wy: 1020,
+      speed: 4.4,
+      size: 40,
+      moving: false,
       dir: 'down',
       animFrame: 0,
       animTimer: 0
@@ -173,7 +68,6 @@ class GameEngine {
 
     this.nearSituation = null;
     this.completedSituations = new Set();
-
     this.touch = { active: false, x: 0, y: 0 };
 
     this._bindInput();
@@ -184,7 +78,7 @@ class GameEngine {
   _bindInput() {
     this._onKeyDown = (e) => {
       this.keys[e.code] = true;
-      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','Space','PageUp','PageDown'].includes(e.code)) {
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','Space'].includes(e.code)) {
         e.preventDefault();
       }
       if (e.code === 'KeyE' || e.code === 'Space') {
@@ -298,48 +192,26 @@ class GameEngine {
         this.player.dir = dy > 0 ? 'down' : 'up';
       }
 
-      const newX = this.player.wx + dx * spd;
-      const newY = this.player.wy + dy * spd;
-      const halfS = 10;
+      this.player.wx += dx * spd;
+      this.player.wy += dy * spd;
 
-      if (this._canMoveTo(newX, this.player.wy, halfS)) {
-        this.player.wx = newX;
-      } else {
-        if (this._canMoveTo(newX, this.player.wy - 6, halfS)) this.player.wy -= spd * 0.6;
-        else if (this._canMoveTo(newX, this.player.wy + 6, halfS)) this.player.wy += spd * 0.6;
-      }
-
-      if (this._canMoveTo(this.player.wx, newY, halfS)) {
-        this.player.wy = newY;
-      } else {
-        if (this._canMoveTo(this.player.wx - 6, newY, halfS)) this.player.wx -= spd * 0.6;
-        else if (this._canMoveTo(this.player.wx + 6, newY, halfS)) this.player.wx += spd * 0.6;
-      }
-
-      this.player.wx = Math.max(16, Math.min(this.player.wx, MAP_COLS*TILE_SIZE - 16));
-      this.player.wy = Math.max(16, Math.min(this.player.wy, MAP_ROWS*TILE_SIZE - 16));
-
-      this.player.animTimer += dt;
-      if (this.player.animTimer > 6) {
-        this.player.animFrame = (this.player.animFrame + 1) % 4;
-        this.player.animTimer = 0;
-      }
-    } else {
-      this.player.animFrame = 0;
+      // Límites del mapa
+      this.player.wx = Math.max(40, Math.min(this.player.wx, MAP_WIDTH - 40));
+      this.player.wy = Math.max(40, Math.min(this.player.wy, MAP_HEIGHT - 40));
     }
 
+    // Cámara sigue al jugador
     const vw = this.canvas.width;
     const vh = this.canvas.height;
-    this.camera.x = this.player.wx - vw / 2;
-    this.camera.y = this.player.wy - vh / 2;
-    this.camera.x = Math.max(0, Math.min(this.camera.x, MAP_COLS * TILE_SIZE - vw));
-    this.camera.y = Math.max(0, Math.min(this.camera.y, MAP_ROWS * TILE_SIZE - vh));
+    this.camera.x = Math.max(0, Math.min(this.player.wx - vw / 2, MAP_WIDTH - vw));
+    this.camera.y = Math.max(0, Math.min(this.player.wy - vh / 2, MAP_HEIGHT - vh));
 
+    // Comprobar proximidad a situaciones
     this.nearSituation = null;
     this.situations.forEach(s => {
       if (this.completedSituations.has(s.id)) return;
       const dist = Math.hypot(s.wx - this.player.wx, s.wy - this.player.wy);
-      if (dist < TILE_SIZE * 2.2) {
+      if (dist < 90) {
         this.nearSituation = s;
       }
     });
@@ -354,22 +226,28 @@ class GameEngine {
       }
     }
 
+    // Movimiento y Animación de LEO (sigue al personaje en Modo Historia)
     if (this.options.mode === 'story') {
-      const followDist = 44;
+      const followDist = 52;
       const ldx = this.player.wx - this.leo.wx;
       const ldy = this.player.wy - this.leo.wy;
       const ldist = Math.hypot(ldx, ldy);
+
       if (ldist > followDist) {
-        const lspd = this.player.speed * 0.88 * dt;
+        this.leo.moving = true;
+        const lspd = this.player.speed * 0.90 * dt;
         this.leo.wx += (ldx / ldist) * lspd;
         this.leo.wy += (ldy / ldist) * lspd;
         this.leo.dir = Math.abs(ldx) > Math.abs(ldy) ? (ldx > 0 ? 'right' : 'left') : (ldy > 0 ? 'down' : 'up');
+
+        // Animación de caminata de Leo (conmutar frame entre leo_camina0 y leo_camina1)
         this.leo.animTimer += dt;
-        if (this.leo.animTimer > 7) {
-          this.leo.animFrame = (this.leo.animFrame + 1) % 4;
+        if (this.leo.animTimer > 8) {
+          this.leo.animFrame = (this.leo.animFrame + 1) % 2;
           this.leo.animTimer = 0;
         }
       } else {
+        this.leo.moving = false;
         this.leo.animFrame = 0;
       }
     }
@@ -378,21 +256,6 @@ class GameEngine {
       this.options.timer.elapsed += dt * (16.67 / 1000);
       this._updateTimerHUD();
     }
-  }
-
-  _canMoveTo(wx, wy, halfS) {
-    const corners = [
-      { x: wx - halfS, y: wy - halfS },
-      { x: wx + halfS, y: wy - halfS },
-      { x: wx - halfS, y: wy + halfS },
-      { x: wx + halfS, y: wy + halfS }
-    ];
-    return corners.every(pt => {
-      const col = Math.floor(pt.x / TILE_SIZE);
-      const row = Math.floor(pt.y / TILE_SIZE);
-      if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS) return false;
-      return WALKABLE.has(this.tilemap[row][col]);
-    });
   }
 
   _triggerSituation(situation) {
@@ -413,378 +276,181 @@ class GameEngine {
     ctx.clearRect(0, 0, cw, ch);
     ctx.imageSmoothingEnabled = false;
 
-    const startCol = Math.max(0, Math.floor(this.camera.x / TILE_SIZE));
-    const startRow = Math.max(0, Math.floor(this.camera.y / TILE_SIZE));
-    const endCol   = Math.min(MAP_COLS - 1, Math.ceil((this.camera.x + cw) / TILE_SIZE));
-    const endRow   = Math.min(MAP_ROWS - 1, Math.ceil((this.camera.y + ch) / TILE_SIZE));
+    // 1. DIBUJAR MAPA GENERAL (assets/mapa.png)
+    const mapaImg = ASSET_CACHE['assets/mapa.png'] || preloadAsset('assets/mapa.png');
+    if (mapaImg.complete && mapaImg.naturalWidth > 0) {
+      const sx = Math.max(0, Math.floor(this.camera.x));
+      const sy = Math.max(0, Math.floor(this.camera.y));
+      const sw = Math.min(MAP_WIDTH - sx, cw);
+      const sh = Math.min(MAP_HEIGHT - sy, ch);
 
-    for (let r = startRow; r <= endRow; r++) {
-      for (let c = startCol; c <= endCol; c++) {
-        const tile = this.tilemap[r][c];
-        const sx = c * TILE_SIZE - Math.floor(this.camera.x);
-        const sy = r * TILE_SIZE - Math.floor(this.camera.y);
-        this._draw16BitTile(ctx, tile, sx, sy, c, r);
-      }
+      ctx.drawImage(
+        mapaImg,
+        sx, sy, sw, sh,
+        0, 0, sw, sh
+      );
+    } else {
+      ctx.fillStyle = '#1A2B1E';
+      ctx.fillRect(0, 0, cw, ch);
     }
 
-    this._drawRoadMarkings16Bit(ctx, startRow, endRow, startCol, endCol);
-    this._drawParkFoliage16Bit(ctx, startRow, endRow, startCol, endCol);
-    this._drawSituationPins16Bit(ctx);
+    // 2. DIBUJAR PINS DE SITUACIONES
+    this._drawSituationPins(ctx);
 
+    // 3. DIBUJAR A LEO (Animado si camina, leo_parado si está quieto)
     if (this.options.mode === 'story') {
-      this._draw16BitLeo(ctx);
+      this._drawLeo(ctx);
     }
 
-    this._draw16BitPlayer(ctx);
+    // 4. DIBUJAR AVATAR PERSONALIZABLE (Estático por el momento)
+    this._drawPlayerAvatar(ctx);
   }
 
-  _draw16BitTile(ctx, tile, sx, sy, col, row) {
-    const S = TILE_SIZE;
-
-    if (tile === TILE.GRASS) {
-      ctx.fillStyle = '#68B04D';
-      ctx.fillRect(sx, sy, S, S);
-    }
-    else if (tile === TILE.SIDEWALK) {
-      // Light beige sidewalk with grid lines (matching screenshot)
-      ctx.fillStyle = '#D6CEBE';
-      ctx.fillRect(sx, sy, S, S);
-      ctx.strokeStyle = '#BCAE9A';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(sx, sy, S, S);
-    }
-    else if (tile === TILE.ROAD_H || tile === TILE.ROAD_V || tile === TILE.ROAD_INT) {
-      ctx.fillStyle = '#3C4045';
-      ctx.fillRect(sx, sy, S, S);
-      ctx.fillStyle = '#2E3236';
-      if ((col + row) % 2 === 0) ctx.fillRect(sx + 8, sy + 12, 3, 3);
-    }
-    else if (tile === TILE.PARK) {
-      ctx.fillStyle = '#68B04D';
-      ctx.fillRect(sx, sy, S, S);
-    }
-    else if (tile === TILE.WATER) {
-      ctx.fillStyle = '#4284C4';
-      ctx.fillRect(sx, sy, S, S);
-      const wave = Math.floor(Date.now() / 300 + col + row) % 3;
-      ctx.fillStyle = '#79B4E8';
-      ctx.fillRect(sx + 4 + wave * 4, sy + 10, 10, 3);
-    }
-    else if (tile === TILE.FLOWERS) {
-      // Grass base with pink flower garden grid (matching screenshot)
-      ctx.fillStyle = '#68B04D';
-      ctx.fillRect(sx, sy, S, S);
-
-      const fX = sx + 4;
-      const fY = sy + 4;
-      ctx.fillStyle = '#4E963D';
-      ctx.fillRect(fX, fY, 24, 24);
-      ctx.strokeStyle = '#1A1A1A';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(fX, fY, 24, 24);
-
-      // Pink flowers
-      ctx.fillStyle = '#E888A0';
-      ctx.fillRect(fX + 4, fY + 4, 6, 6);
-      ctx.fillRect(fX + 14, fY + 4, 6, 6);
-      ctx.fillRect(fX + 4, fY + 14, 6, 6);
-      ctx.fillRect(fX + 14, fY + 14, 6, 6);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(fX + 6, fY + 6, 2, 2);
-      ctx.fillRect(fX + 16, fY + 6, 2, 2);
-      ctx.fillRect(fX + 6, fY + 16, 2, 2);
-      ctx.fillRect(fX + 16, fY + 16, 2, 2);
-    }
-    else if (tile === TILE.TREES_GRID) {
-      // Tree orchard block (matching screenshot)
-      ctx.fillStyle = '#68B04D';
-      ctx.fillRect(sx, sy, S, S);
-
-      const tX = sx + 4;
-      const tY = sy + 4;
-      ctx.fillStyle = '#4C7A3E';
-      ctx.fillRect(tX, tY, 24, 24);
-      ctx.fillStyle = '#3E6632';
-      ctx.fillRect(tX + 3, tY + 3, 8, 8);
-      ctx.strokeStyle = '#1A1A1A';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(tX, tY, 24, 24);
-    }
-    else {
-      // Building blocks (matching screenshot)
-      const isRoof = (row % 4 === 0 || row % 4 === 1);
-      let wallColor = '#C85238', shadowColor = '#A03824', roofColor = '#802618';
-
-      if (tile === TILE.BUILDING_BLUE) {
-        wallColor = '#3B5982'; shadowColor = '#2B4263'; roofColor = '#1F324D';
-      } else if (tile === TILE.BUILDING_DARK) {
-        wallColor = '#4A4A68'; shadowColor = '#36364D'; roofColor = '#262638';
-      } else if (tile === TILE.BUILDING_TAN) {
-        wallColor = '#D4A462'; shadowColor = '#AA7E40'; roofColor = '#7E5B28';
-      }
-
-      if (isRoof) {
-        ctx.fillStyle = roofColor;
-        ctx.fillRect(sx, sy, S, S);
-        ctx.fillStyle = 'rgba(255,255,255,0.15)';
-        ctx.fillRect(sx, sy, S, 4);
-        ctx.strokeStyle = '#1A1A1A';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(sx, sy, S, S);
-      } else {
-        ctx.fillStyle = wallColor;
-        ctx.fillRect(sx, sy, S, S);
-        ctx.fillStyle = shadowColor;
-        ctx.fillRect(sx, sy, S, 3);
-        ctx.strokeStyle = '#1A1A1A';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(sx, sy, S, S);
-
-        // Windows (pairs of lit yellow windows matching screenshot)
-        ctx.fillStyle = '#FCE883';
-        ctx.fillRect(sx + 4, sy + 10, 9, 12);
-        ctx.fillRect(sx + 19, sy + 10, 9, 12);
-
-        ctx.strokeStyle = '#1A1A1A';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(sx + 4, sy + 10, 9, 12);
-        ctx.strokeRect(sx + 19, sy + 10, 9, 12);
-      }
-    }
-  }
-
-  _drawRoadMarkings16Bit(ctx, startRow, endRow, startCol, endCol) {
-    const S = TILE_SIZE;
-    ctx.fillStyle = '#F4C430';
-
-    for (let r = startRow; r <= endRow; r++) {
-      for (let c = startCol; c <= endCol; c++) {
-        const tile = this.tilemap[r][c];
-        const sx = c * S - Math.floor(this.camera.x);
-        const sy = r * S - Math.floor(this.camera.y);
-
-        if (tile === TILE.ROAD_H && (r === 5 || r === 16 || r === 27)) {
-          ctx.fillRect(sx, sy + 15, 14, 2);
-        }
-        if (tile === TILE.ROAD_V && (c === 8 || c === 23 || c === 38)) {
-          ctx.fillRect(sx + 15, sy, 2, 14);
-        }
-      }
-    }
-  }
-
-  _drawParkFoliage16Bit(ctx, startRow, endRow, startCol, endCol) {
-    const S = TILE_SIZE;
-    const trees = [
-      {r:7,c:11},{r:7,c:15},{r:7,c:20},
-      {r:8,c:11},{r:8,c:20},
-      {r:10,c:11},{r:10,c:20},
-      {r:13,c:11},{r:13,c:15},{r:13,c:20},
-      {r:14,c:11},{r:14,c:17},{r:14,c:20}
-    ];
-
-    trees.forEach(t => {
-      if (t.r >= startRow && t.r <= endRow && t.c >= startCol && t.c <= endCol) {
-        const sx = t.c * S - Math.floor(this.camera.x) + 16;
-        const sy = t.r * S - Math.floor(this.camera.y) + 16;
-
-        // Ground shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.25)';
-        ctx.beginPath();
-        ctx.ellipse(sx, sy + 10, 10, 4, 0, 0, Math.PI*2);
-        ctx.fill();
-
-        // Trunk
-        ctx.fillStyle = '#593E28';
-        ctx.fillRect(sx - 3, sy + 2, 6, 10);
-        ctx.strokeStyle = '#1A1A1A';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(sx - 3, sy + 2, 6, 10);
-
-        // Square 16-bit Foliage Block (matching screenshot)
-        ctx.fillStyle = '#4C7A3E';
-        ctx.fillRect(sx - 12, sy - 14, 24, 20);
-        ctx.fillStyle = '#3A5E2F';
-        ctx.fillRect(sx - 9, sy - 11, 7, 7);
-        ctx.strokeStyle = '#1A1A1A';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(sx - 12, sy - 14, 24, 20);
-      }
-    });
-  }
-
-  _drawSituationPins16Bit(ctx) {
+  _drawSituationPins(ctx) {
     const now = Date.now();
 
     this.situations.forEach((s, idx) => {
-      const sx = s.wx - Math.floor(this.camera.x);
-      const sy = s.wy - Math.floor(this.camera.y);
+      const sx = Math.floor(s.wx - this.camera.x);
+      const sy = Math.floor(s.wy - this.camera.y);
 
-      if (sx < -40 || sx > this.canvas.width + 40 || sy < -40 || sy > this.canvas.height + 40) return;
+      if (sx < -80 || sx > this.canvas.width + 80 || sy < -80 || sy > this.canvas.height + 80) return;
 
       const completed = this.completedSituations.has(s.id);
-      const bounce = completed ? 0 : Math.sin(now / 300 + idx) * 5;
+      const bounce = completed ? 0 : Math.sin(now / 250 + idx) * 6;
 
-      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      // Sombra
+      ctx.fillStyle = 'rgba(0,0,0,0.45)';
       ctx.beginPath();
-      ctx.ellipse(sx, sy + 16, 12, 5, 0, 0, Math.PI*2);
+      ctx.ellipse(sx, sy + 16, 16, 6, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = completed ? '#5A8A4A' : '#E8543E';
-      ctx.fillRect(sx - 14, sy - 24 + bounce, 28, 24);
-      ctx.fillStyle = completed ? '#3A5F2E' : '#B83020';
-      ctx.fillRect(sx - 14, sy - 4 + bounce, 28, 4);
-
+      // Caja de Pin estilo 16-bit
+      ctx.fillStyle = completed ? '#27AE60' : '#E74C3C';
+      ctx.fillRect(sx - 20, sy - 38 + bounce, 40, 34);
       ctx.strokeStyle = '#1A1A1A';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(sx - 14, sy - 24 + bounce, 28, 24);
+      ctx.lineWidth = 3;
+      ctx.strokeRect(sx - 20, sy - 38 + bounce, 40, 34);
 
+      // Icono / Emoji
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 12px "Press Start 2P", monospace';
+      ctx.font = 'bold 16px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(completed ? '✓' : String(s.id), sx, sy - 12 + bounce);
+      ctx.fillText(completed ? '✓' : (s.emoji || String(s.id)), sx, sy - 20 + bounce);
+
+      // Cartel con nombre del lugar abajo
+      const titleShort = (s.title || '').replace(/"/g, '');
+      ctx.fillStyle = 'rgba(26,26,26,0.9)';
+      ctx.fillRect(sx - 65, sy + 4 + bounce, 130, 20);
+      ctx.strokeStyle = completed ? '#27AE60' : '#E74C3C';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(sx - 65, sy + 4 + bounce, 130, 20);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.fillText(titleShort.substring(0, 18), sx, sy + 14 + bounce);
 
       if (this.nearSituation === s) {
-        ctx.strokeStyle = '#F4C430';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(sx - 18, sy - 28 + bounce, 36, 32);
+        ctx.strokeStyle = '#F1C40F';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(sx - 24, sy - 42 + bounce, 48, 42);
       }
     });
   }
 
-  _draw16BitPlayer(ctx) {
-    const sx = Math.floor(this.player.wx - this.camera.x);
-    const sy = Math.floor(this.player.wy - this.camera.y);
-    const av = window.ZR.state.avatar;
-    const skinNum = av.skin || 1;
-    const eyesNum = av.eyes || 1;
-    const mouthNum = av.mouth || 1;
-    const poloName = (av.polo || 'azul').toLowerCase();
-    const hairStyle = av.hairStyle || 'corto';
-    const hairColor = av.hairColor === 'marron' ? 'castano' : (av.hairColor || 'negro');
-
-    const base = 'assets/Personaje 2/';
-    const runningLayers = [
-      `${base}Piel corriendo/piel_${skinNum}_corriendo.png`,
-      `${base}Polo corriendo/polo_${poloName}_corriendo.png`,
-      `${base}Shorts corriendo/shorts_corriendo.png`,
-      `${base}botas_corriendo.png`,
-      `${base}Ojos corriendo/ojos_${eyesNum}_corriendo.png`,
-      `${base}Boca corriendo/boca_${mouthNum}_corriendo.png`,
-      `${base}Cabello corriendo/${hairStyle}_${hairColor}_corriendo.png`
-    ];
+  _drawLeo(ctx) {
+    const sx = Math.floor(this.leo.wx - this.camera.x);
+    const sy = Math.floor(this.leo.wy - this.camera.y);
 
     ctx.save();
     ctx.translate(sx, sy);
+
+    // Sombra en el suelo
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(0, 22, 16, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Invertir si va a la izquierda
+    if (this.leo.dir === 'left') {
+      ctx.scale(-1, 1);
+    }
+
+    // Selección de sprite de Leo:
+    // Si camina -> conmutar entre leo_camina0.png y leo_camina1.png
+    // Si está quieto -> leo_parado.png
+    let spriteSrc = 'assets/Leo/leo_parado.png';
+    if (this.leo.moving) {
+      spriteSrc = (this.leo.animFrame === 0)
+        ? 'assets/Leo/leo_camina0.png'
+        : 'assets/Leo/leo_camina1.png';
+    }
+
+    const leoImg = ASSET_CACHE[spriteSrc] || preloadAsset(spriteSrc);
+    if (leoImg.complete && leoImg.naturalWidth > 0) {
+      ctx.drawImage(leoImg, -28, -52, 56, 72);
+    }
+
+    ctx.restore();
+
+    // Cartel con nombre LEO
+    ctx.fillStyle = '#C0392B';
+    ctx.fillRect(sx - 20, sy + 28, 40, 16);
+    ctx.strokeStyle = '#1A1A1A';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(sx - 20, sy + 28, 40, 16);
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('LEO', sx, sy + 36);
+  }
+
+  _drawPlayerAvatar(ctx) {
+    const sx = Math.floor(this.player.wx - this.camera.x);
+    const sy = Math.floor(this.player.wy - this.camera.y);
+
+    ctx.save();
+    ctx.translate(sx, sy);
+
+    // Sombra en el suelo
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(0, 22, 16, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
 
     if (this.player.dir === 'left') {
       ctx.scale(-1, 1);
     }
 
-    let allLoaded = true;
-    runningLayers.forEach(src => {
-      const img = preloadAsset(src);
-      if (!img.complete || img.naturalWidth === 0) allLoaded = false;
+    // Dibujar capas del avatar personalizable (estático sin animación por el momento)
+    const layerDefs = window.ZR.getAvatarLayerDefs ? window.ZR.getAvatarLayerDefs() : [];
+
+    layerDefs.forEach(layer => {
+      if (layer.src) {
+        const img = ASSET_CACHE[layer.src] || preloadAsset(layer.src);
+        if (img.complete && img.naturalWidth > 0) {
+          ctx.drawImage(img, -28, -52, 56, 72);
+        }
+      }
     });
-
-    if (allLoaded) {
-      runningLayers.forEach(src => {
-        const img = ASSET_CACHE[src];
-        ctx.drawImage(img, -20, -32, 40, 48);
-      });
-    } else {
-      // Fallback 16-bit canvas player
-      ctx.fillStyle = '#1A1A1A';
-      ctx.fillRect(-8, 10, 6, 6);
-      ctx.fillRect(2, 10, 6, 6);
-
-      ctx.fillStyle = '#2C3E50';
-      ctx.fillRect(-7, 2, 5, 10);
-      ctx.fillRect(2, 2, 5, 10);
-
-      ctx.fillStyle = '#4A6FA5';
-      ctx.fillRect(-10, -14, 20, 18);
-
-      ctx.fillStyle = '#FCE0C4';
-      ctx.fillRect(-9, -28, 18, 16);
-
-      ctx.fillStyle = '#2B2B2B';
-      ctx.fillRect(-10, -32, 20, 7);
-    }
 
     ctx.restore();
 
-    ctx.fillStyle = 'rgba(26,26,26,0.85)';
-    ctx.fillRect(sx - 30, sy + 20, 60, 16);
+    // Cartel con nombre del Jugador
+    const pName = (window.ZR.state.playerName || 'TÚ').toUpperCase();
+    ctx.fillStyle = 'rgba(26,26,26,0.9)';
+    ctx.fillRect(sx - 35, sy + 28, 70, 16);
+    ctx.strokeStyle = '#F4C430';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(sx - 35, sy + 28, 70, 16);
+
     ctx.fillStyle = '#F4C430';
     ctx.font = 'bold 9px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText((window.ZR.state.playerName || 'TÚ').substring(0, 9), sx, sy + 28);
-  }
-
-  _draw16BitLeo(ctx) {
-    const sx = Math.floor(this.leo.wx - this.camera.x);
-    const sy = Math.floor(this.leo.wy - this.camera.y);
-    const dir = this.leo.dir;
-    const step = this.leo.animFrame;
-    const legOffset = (step % 2 === 0 ? 0 : (step === 1 ? -3 : 3));
-
-    ctx.save();
-    ctx.translate(sx, sy);
-
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.beginPath();
-    ctx.ellipse(0, 14, 12, 5, 0, 0, Math.PI*2);
-    ctx.fill();
-
-    ctx.fillStyle = '#1A1A1A';
-    ctx.fillRect(-8 + legOffset, 10, 6, 6);
-    ctx.fillRect(2 - legOffset, 10, 6, 6);
-
-    ctx.fillStyle = '#2C3E50';
-    ctx.fillRect(-7 + legOffset, 2, 5, 10);
-    ctx.fillRect(2 - legOffset, 2, 5, 10);
-
-    ctx.fillStyle = '#C0392B';
-    ctx.fillRect(-10, -14, 20, 18);
-    ctx.fillStyle = '#8B1E14';
-    ctx.fillRect(-3, -14, 6, 18);
-    ctx.strokeStyle = '#1A1A1A';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(-10, -14, 20, 18);
-
-    ctx.fillStyle = '#FCE0C4';
-    ctx.fillRect(-14, -8 + legOffset, 4, 10);
-    ctx.fillRect(10, -8 - legOffset, 4, 10);
-
-    ctx.fillStyle = '#FCE0C4';
-    ctx.fillRect(-9, -28, 18, 16);
-    ctx.strokeRect(-9, -28, 18, 16);
-
-    ctx.fillStyle = '#7B4A28';
-    ctx.fillRect(-11, -33, 22, 8);
-    ctx.fillRect(-8, -36, 16, 4);
-
-    ctx.fillStyle = '#1A1A1A';
-    if (dir === 'down') {
-      ctx.fillRect(-5, -22, 3, 4);
-      ctx.fillRect(2, -22, 3, 4);
-    } else if (dir === 'left') {
-      ctx.fillRect(-7, -22, 3, 4);
-    } else if (dir === 'right') {
-      ctx.fillRect(4, -22, 3, 4);
-    }
-
-    ctx.restore();
-    ctx.fillStyle = '#C0392B';
-    ctx.fillRect(sx - 18, sy + 20, 36, 16);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 9px "Press Start 2P", monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('LEO', sx, sy + 28);
+    ctx.fillText(pName.substring(0, 10), sx, sy + 36);
   }
 
   _updateTimerHUD() {

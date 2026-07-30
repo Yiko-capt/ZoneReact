@@ -7,13 +7,13 @@ window.ZR = window.ZR || {};
 window.ZR.situations = [
   {
     id: 1,
-    title: '"La Esquina del Colegio"',
+    title: '"El Kiosco del Barrio"',
     tag: 'Presión de vapeo',
     tagColor: 'red',
-    context: 'A la salida del colegio, un grupo de chicos mayores aborda a Leo y le ofrecen un vapeador desconocido, diciéndole que "no hace daño". Leo duda y te mira buscando tu apoyo.',
+    context: 'Al costado del kiosco del barrio, un grupo de chicos mayores aborda a Leo y le ofrecen un vapeador desconocido, diciéndole que "no hace daño". Leo duda y te mira buscando tu apoyo.',
     tip: 'La presión de grupo es la principal puerta de entrada al consumo en adolescentes.',
     emoji: '🚭',
-    mapPosition: { x: 992, y: 64 }, // Pin 1 on Flower block
+    mapPosition: { x: 380, y: 980 }, // Kiosco en mapa.png
     options: [
       {
         letter: 'A',
@@ -59,14 +59,14 @@ window.ZR.situations = [
   },
   {
     id: 2,
-    title: '"El Parque Nocturno"',
+    title: '"La Casa Abandonada"',
     tag: 'Estrés y vías de escape',
     tagColor: 'blue',
-    context: 'Leo tiene problemas familiares serios y quiere irse de noche a un parque peligroso del barrio "para despejar la mente". Te dice que no le importa lo que le pase.',
+    context: 'Leo tiene problemas familiares serios y quiere meterse a una casa en ruinas con grafitis en el parque "para despejar la mente". Te dice que no le importa lo que le pase.',
     tip: 'Los problemas familiares son el principal factor de riesgo para conductas peligrosas en adolescentes.',
-    emoji: '🌙',
-    sceneEmojis: ['🌃', '😔', '⚡'],
-    mapPosition: { x: 544, y: 384 }, // Pin 2 in Park near Lake
+    emoji: '🏚️',
+    sceneEmojis: ['🏚️', '😔', '⚡'],
+    mapPosition: { x: 1220, y: 940 }, // Casa abandonada en parque central de mapa.png
     options: [
       {
         letter: 'A',
@@ -80,7 +80,7 @@ window.ZR.situations = [
       },
       {
         letter: 'B',
-        text: 'Aceptas ir "solo media hora" porque no quieres que Leo vaya solo.',
+        text: 'Aceptas entrar "solo media hora" porque no quieres que Leo vaya solo.',
         score: 0,
         isCorrect: false,
         feedback: 'Ir juntos a un lugar peligroso no reduce el riesgo, lo duplica. La intención es buena, pero la decisión pone a ambos en peligro.',
@@ -112,18 +112,18 @@ window.ZR.situations = [
   },
   {
     id: 3,
-    title: '"La Fiesta del Barrio"',
+    title: '"La Discoteca Neón"',
     tag: 'Sustancias en pastilla',
     tagColor: 'purple',
-    context: 'En una fiesta del barrio, alguien le ofrece a Leo una pastilla de colores diciéndole que "quita la timidez". Leo parece tentado. Hay mucho ruido y personas alrededor.',
+    context: 'Frente a la discoteca "Neon Disco", un desconocido le ofrece a Leo una pastilla de colores diciéndole que "quita la timidez y alegra la noche". Leo parece tentado.',
     tip: 'Los adolescentes son más vulnerables al consumo cuando están en entornos sociales de alta presión.',
     emoji: '💊',
-    sceneEmojis: ['🎉', '💊', '🚨'],
-    mapPosition: { x: 160, y: 768 },
+    sceneEmojis: ['🪩', '💊', '🚨'],
+    mapPosition: { x: 2100, y: 520 }, // Neon Disco en mapa.png
     options: [
       {
         letter: 'A',
-        text: 'Le pasas agua, dices en voz alta "nosotros no tomamos eso" y juntos buscan al organizador de la fiesta.',
+        text: 'Le pasas agua, dices en voz alta "nosotros no tomamos eso" y juntos buscan al encargado o un adulto responsable.',
         score: 20,
         isCorrect: true,
         feedback: '¡Excelente! Actuar con asertividad y buscar apoyo adulto es la respuesta más completa. Leo está protegido.',
@@ -166,17 +166,17 @@ window.ZR.situations = [
   {
     id: 4,
     title: '"El Encargo Sospechoso"',
-    tag: 'Microtráfico escolar',
+    tag: 'Microtráfico urbano',
     tagColor: 'ink',
-    context: 'Un sujeto desconocido le ofrece a Leo S/ 100 a cambio de llevar un paquete sellado en su mochila hasta otra dirección. Leo dice que necesita el dinero para su familia.',
+    context: 'Cerca a la zona de hoteles y oficinas, un sujeto desconocido le ofrece a Leo S/ 100 por llevar un paquete sellado en su mochila. Leo dice que necesita el dinero para su familia.',
     tip: 'El microtráfico escolar aprovecha las necesidades económicas de los jóvenes. La ley es severa incluso con menores.',
     emoji: '📦',
-    sceneEmojis: ['📦', '💰', '🚔'],
-    mapPosition: { x: 448, y: 960 }, // Pin 4 on Tan Building block
+    sceneEmojis: ['🏢', '📦', '💰'],
+    mapPosition: { x: 650, y: 440 }, // Hotel / Zona Urbana en mapa.png
     options: [
       {
         letter: 'A',
-        text: 'Le muestras a Leo el riesgo legal y lo acompañas al tutor escolar para buscar orientación de manera anónima.',
+        text: 'Le muestras a Leo el riesgo legal y lo acompañas a buscar orientación de manera anónima con un adulto de confianza.',
         score: 20,
         isCorrect: true,
         feedback: '¡Correcto! Buscar apoyo adulto de confianza de forma anónima protege a Leo sin exponerlo a represalias.',
@@ -206,7 +206,7 @@ window.ZR.situations = [
       },
       {
         letter: 'D',
-        text: 'Lo delatas gritando frente a todo el patio escolar.',
+        text: 'Lo delatas gritando frente a todas las personas de la calle.',
         score: 0,
         isCorrect: false,
         feedback: 'Exponer a Leo públicamente puede poner en riesgo su seguridad ante el sujeto que lo contactó. La discreción era clave.',
@@ -218,14 +218,15 @@ window.ZR.situations = [
   },
   {
     id: 5,
-    title: '"La Ruta de Regreso"',
+    title: '"La Casa de Leo"',
     tag: 'Riesgo nocturno',
     tagColor: 'green',
-    context: 'Es de noche y Leo quiere cruzar un callejón oscuro y solitario para ahorrar 5 minutos en el camino a casa. Ya han reportado robos en esa zona esta semana.',
+    context: 'Es de noche al llegar a la zona residencial. Leo quiere tomar un atajo por un callejón sin luz para llegar rápido a su casa. Ya se han reportado robos en ese tramo.',
     tip: 'Los callejones sin iluminación y con poca gente son los espacios de mayor riesgo para adolescentes.',
-    emoji: '🌑',
-    sceneEmojis: ['🌑', '🛣️', '⚠️'],
-    mapPosition: { x: 1120, y: 832 },
+    emoji: '🏡',
+    sceneEmojis: ['🏡', '🛣️', '⚠️'],
+    mapPosition: { x: 2420, y: 920 }, // Casa de Leo (HOME) en mapa.png
+
     options: [
       {
         letter: 'A',
