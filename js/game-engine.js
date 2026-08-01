@@ -368,7 +368,7 @@ class GameEngine {
     // Sombra en el suelo
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.beginPath();
-    ctx.ellipse(0, 22, 16, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 22, 28, 10, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Invertir si va a la izquierda
@@ -376,9 +376,6 @@ class GameEngine {
       ctx.scale(-1, 1);
     }
 
-    // Selección de sprite de Leo:
-    // Si camina -> conmutar entre leo_camina0.png y leo_camina1.png
-    // Si está quieto -> leo_parado.png
     let spriteSrc = 'assets/Leo/leo_parado.png';
     if (this.leo.moving) {
       spriteSrc = (this.leo.animFrame === 0)
@@ -388,23 +385,24 @@ class GameEngine {
 
     const leoImg = ASSET_CACHE[spriteSrc] || preloadAsset(spriteSrc);
     if (leoImg.complete && leoImg.naturalWidth > 0) {
-      ctx.drawImage(leoImg, -28, -52, 56, 72);
+      // Tamaño ampliado (+20% adicional) manteniendo proporción (108 x 138 px)
+      ctx.drawImage(leoImg, -54, -110, 108, 138);
     }
 
     ctx.restore();
 
     // Cartel con nombre LEO
     ctx.fillStyle = '#C0392B';
-    ctx.fillRect(sx - 20, sy + 28, 40, 16);
+    ctx.fillRect(sx - 24, sy + 28, 48, 18);
     ctx.strokeStyle = '#1A1A1A';
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(sx - 20, sy + 28, 40, 16);
+    ctx.strokeRect(sx - 24, sy + 28, 48, 18);
 
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 9px sans-serif';
+    ctx.font = 'bold 10px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('LEO', sx, sy + 36);
+    ctx.fillText('LEO', sx, sy + 37);
   }
 
   _drawPlayerAvatar(ctx) {
@@ -417,40 +415,47 @@ class GameEngine {
     // Sombra en el suelo
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.beginPath();
-    ctx.ellipse(0, 22, 16, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 22, 26, 9, 0, 0, Math.PI * 2);
     ctx.fill();
 
     if (this.player.dir === 'left') {
       ctx.scale(-1, 1);
     }
 
-    // Dibujar capas del avatar personalizable (estático sin animación por el momento)
-    const layerDefs = window.ZR.getAvatarLayerDefs ? window.ZR.getAvatarLayerDefs() : [];
-
-    layerDefs.forEach(layer => {
-      if (layer.src) {
-        const img = ASSET_CACHE[layer.src] || preloadAsset(layer.src);
-        if (img.complete && img.naturalWidth > 0) {
-          ctx.drawImage(img, -28, -52, 56, 72);
+    // Dibujar capas del avatar (+20% adicional) en proporción exacta (340x720 -> 65x138)
+    if (window.ZR.activeAvatarImages && window.ZR.activeAvatarImages.length > 0) {
+      window.ZR.activeAvatarImages.forEach(img => {
+        if (img && img.complete && img.naturalWidth > 0) {
+          ctx.drawImage(img, -32, -110, 65, 138);
         }
-      }
-    });
+      });
+    } else {
+      const layerDefs = window.ZR.getAvatarLayerDefs ? window.ZR.getAvatarLayerDefs() : [];
+      layerDefs.forEach(layer => {
+        if (layer.src) {
+          const img = ASSET_CACHE[layer.src] || preloadAsset(layer.src);
+          if (img.complete && img.naturalWidth > 0) {
+            ctx.drawImage(img, -32, -110, 65, 138);
+          }
+        }
+      });
+    }
 
     ctx.restore();
 
     // Cartel con nombre del Jugador
     const pName = (window.ZR.state.playerName || 'TÚ').toUpperCase();
     ctx.fillStyle = 'rgba(26,26,26,0.9)';
-    ctx.fillRect(sx - 35, sy + 28, 70, 16);
+    ctx.fillRect(sx - 40, sy + 28, 80, 18);
     ctx.strokeStyle = '#F4C430';
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(sx - 35, sy + 28, 70, 16);
+    ctx.strokeRect(sx - 40, sy + 28, 80, 18);
 
     ctx.fillStyle = '#F4C430';
-    ctx.font = 'bold 9px sans-serif';
+    ctx.font = 'bold 10px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(pName.substring(0, 10), sx, sy + 36);
+    ctx.fillText(pName.substring(0, 10), sx, sy + 37);
   }
 
   _updateTimerHUD() {

@@ -96,7 +96,7 @@
 
 .home-avatar-preview {
   position: absolute;
-  bottom: 45px;
+  bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
@@ -469,6 +469,47 @@
   text-align: center;
 }
 
+/* --- Selector de Género (Hombre / Mujer) --- */
+.av-gender-toggle {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 4px;
+}
+
+.av-gender-btn {
+  flex: 1;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 0;
+}
+
+.av-gender-btn:hover {
+  background: #FFF3CD;
+  transform: translateY(-2px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.av-gender-btn.active {
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+  transform: translateY(-2px);
+}
+
 /* --- DERECHA: Controles --- */
 .av-controls {
   display: flex;
@@ -477,11 +518,11 @@
   width: 100%;
 }
 
-/* --- Fila de Tabs (iconos grandes horizontales) --- */
+/* --- Fila de Tabs (iconos grandes horizontales - 6 cols) --- */
 .av-tabs-row {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
   width: 100%;
 }
 
@@ -590,16 +631,16 @@
   transform: translateY(-3px) scale(1.03);
 }
 
-/* Swatches de imagen (piel) */
+/* Swatches de imagen (piel y boca) */
 .avatar-swatch-img {
   min-height: 85px;
-  background-size: 180% auto !important;
-  background-position: center 10% !important;
+  background-size: contain !important;
+  background-position: center 30% !important;
   background-repeat: no-repeat !important;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding-bottom: 8px;
+  padding-bottom: 6px;
 }
 
 /* Plataforma sombra del personaje */
@@ -940,6 +981,106 @@
   position: relative;
   width: 220px;
   height: 340px;
+}
+
+/* --- Tabla de Posiciones / Leaderboard (Estilo 16-Bit) --- */
+.leaderboard-table {
+  background: #141829;
+  border: 3px solid var(--ink, #1A1A1A);
+  box-shadow: 6px 6px 0 var(--ink, #1A1A1A);
+  margin-top: 24px;
+  overflow: hidden;
+  max-width: 600px;
+  width: 100%;
+}
+
+.lb-header {
+  display: grid;
+  grid-template-columns: 60px 1fr 100px;
+  padding: 14px 20px;
+  background: #1f253d;
+  border-bottom: 3px solid var(--ink, #1A1A1A);
+  font-family: var(--font-pixel, monospace);
+  font-size: 13px;
+  color: var(--yellow, #F4C430);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+#lobby-leaderboard {
+  display: flex;
+  flex-direction: column;
+}
+
+.lb-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 100px;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 2px solid #1a2035;
+  background: #121626;
+  transition: background 0.15s;
+  font-size: 15px;
+  color: #e0e0e0;
+}
+
+.lb-row:last-child {
+  border-bottom: none;
+}
+
+.lb-row:hover {
+  background: #1c223b;
+}
+
+.lb-row.is-you {
+  background: #2a2512;
+  border-left: 4px solid var(--yellow, #F4C430);
+  color: #ffffff;
+}
+
+.lb-rank {
+  font-family: var(--font-pixel, monospace);
+  font-size: 15px;
+  font-weight: bold;
+  color: #8890a6;
+}
+
+.lb-rank.gold {
+  color: #ffd700;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+.lb-rank.silver {
+  color: #c0c0c0;
+}
+
+.lb-rank.bronze {
+  color: #cd7f32;
+}
+
+.lb-name {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lb-name small {
+  background: var(--yellow, #F4C430);
+  color: #1A1A1A;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+}
+
+.lb-score {
+  font-family: var(--font-pixel, monospace);
+  font-size: 15px;
+  font-weight: bold;
+  text-align: right;
+  color: var(--yellow, #F4C430);
 }
 
 /* =========================================

@@ -12,12 +12,13 @@ window.ZR.state = {
   playerName: '',
   mode: null,          // 'story' | 'multi'
   avatar: {
+    gender:     'hombre',      // 'hombre' | 'mujer'
     skinFile:   'piel_media',  // 'piel_clara' | 'piel_media' | 'piel_morena'
+    mouthFile:  'boca_feliz',  // 'boca_feliz' | 'boca_seria' | 'boca_triste'
     hairColor:  '#2B2B2B',     // Color de cabello (hex)
     poloColor:  '#4A6FA5',     // Color de polo (hex)
     shortColor: '#5B7065',     // Color de short (hex)
     shoeColor:  '#8B4513',     // Color de zapatos (hex)
-    gender: 'hombre'
   },
   story: {
     situationIndex: 0,
@@ -167,8 +168,14 @@ function hexToRgb(hex) {
  * píxeles muy blancos (ojos, dientes) distorsionen el tintado del resto.
  */
 const DARK_THRESHOLD = 40;
+const TINT_CACHE = new Map();
 
 function tintSprite(imgSrc, hexColor) {
+  const cacheKey = `${imgSrc}_${hexColor}`;
+  if (TINT_CACHE.has(cacheKey)) {
+    return Promise.resolve(TINT_CACHE.get(cacheKey));
+  }
+
   return new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -183,7 +190,7 @@ function tintSprite(imgSrc, hexColor) {
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
 
-      // PASO 1: Recopilar luminosidades de píxeles válidos (no bordes, no transparentes)
+      // PASO 1: Recopilar luminosidades de píxeles válidos
       const lums = [];
       for (let i = 0; i < data.length; i += 4) {
         if (data[i + 3] < 10) continue;
@@ -191,18 +198,16 @@ function tintSprite(imgSrc, hexColor) {
         if (lum > DARK_THRESHOLD) lums.push(lum);
       }
 
-      // Usar percentil 85 como techo de normalización
-      // → evita que blancos de ojos/dientes aplasten el rango
       lums.sort((a, b) => a - b);
-      const p85idx  = Math.floor(lums.length * 0.85);
-      const lumMax  = lums.length > 0 ? Math.max(lums[p85idx], DARK_THRESHOLD + 1) : 200;
+      const p85idx   = Math.floor(lums.length * 0.85);
+      const lumMax   = lums.length > 0 ? Math.max(lums[p85idx], DARK_THRESHOLD + 1) : 200;
       const lumRange = lumMax - DARK_THRESHOLD;
 
-      // PASO 2: Tintado con rango normalizado (clampeado a 1.0)
+      // PASO 2: Tintado con rango normalizado
       for (let i = 0; i < data.length; i += 4) {
         if (data[i + 3] < 10) continue;
         const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-        if (lum < DARK_THRESHOLD) continue; // borde negro → sin cambios
+        if (lum < DARK_THRESHOLD) continue;
 
         const t = Math.min(1.0, (lum - DARK_THRESHOLD) / lumRange);
         data[i]     = Math.round(tR * t);
@@ -211,7 +216,9 @@ function tintSprite(imgSrc, hexColor) {
       }
 
       ctx.putImageData(imageData, 0, 0);
-      resolve(canvas.toDataURL('image/png'));
+      const resultUrl = canvas.toDataURL('image/png');
+      TINT_CACHE.set(cacheKey, resultUrl);
+      resolve(resultUrl);
     };
     img.onerror = () => resolve('');
     img.src = imgSrc;
@@ -225,15 +232,22 @@ function tintSprite(imgSrc, hexColor) {
 window.ZR.getAvatarLayerDefs = function (av) {
   av = av || window.ZR.state.avatar;
   const base = window.ZR.ASSETS + 'Avatar/';
-  const skinFile = av.skinFile || 'piel_media';
+  const skinFile  = av.skinFile  || 'piel_media';
+  const mouthFile = av.mouthFile || 'boca_feliz';
+  const gender    = (av.gender === 'mujer') ? 'mujer' : 'hombre';
+
+  const genderFolder = (gender === 'mujer') ? 'Mujer' : 'Hombre';
+  const eyesFile     = (gender === 'mujer') ? 'ojos_mujer' : 'ojos_hombre';
+  const hairFile     = (gender === 'mujer') ? 'cabello_mujer' : 'cabello_hombre';
+
   return [
-    // Piel: carga directa sin tintado (sprite ya tiene el color correcto)
     { src: `${base}Piel/${skinFile}.png`, color: null, name: 'piel' },
-    // Resto: tintado Canvas con el color hex elegido
-    { src: `${base}Inferior/inferior_base.png`,  color: av.shortColor || '#5B7065', name: 'inferior'  },
-    { src: `${base}Superior/superior_base.png`,  color: av.poloColor  || '#4A6FA5', name: 'superior'  },
-    { src: `${base}Zapatos/zapatos_base.png`,    color: av.shoeColor  || '#8B4513', name: 'zapatos'   },
-    { src: `${base}Cabello/cabello_base.png`,    color: av.hairColor  || '#2B2B2B', name: 'cabello'   },
+    { src: `${base}Boca/${mouthFile}.png`, color: null, name: 'boca' },
+    { src: `${base}${genderFolder}/${eyesFile}.png`, color: null, name: 'ojos' },
+    { src: `${base}Inferior/inferior_base.png`, color: av.shortColor || '#5B7065', name: 'inferior' },
+    { src: `${base}Superior/superior_base.png`, color: av.poloColor  || '#4A6FA5', name: 'superior' },
+    { src: `${base}Zapatos/zapatos_base.png`,   color: av.shoeColor  || '#8B4513', name: 'zapatos'  },
+    { src: `${base}${genderFolder}/${hairFile}.png`, color: av.hairColor || '#2B2B2B', name: 'cabello' },
   ];
 };
 
@@ -241,9 +255,9 @@ window.ZR.getAvatarLayerDefs = function (av) {
    RENDERIZADOR PRINCIPAL DE AVATAR CON CANVAS TINTING
    Acepta un containerId donde pintará las capas apiladas.
    ========================================= */
-// Sprite nativo: 71 x 195 px
-const SPRITE_W = 71;
-const SPRITE_H = 195;
+// Sprite nativo exacto: 340 x 720 px
+const SPRITE_W = 340;
+const SPRITE_H = 720;
 
 window.ZR.renderAvatarInContainer = async function (containerId, avatar) {
   const container = document.getElementById(containerId);
@@ -256,12 +270,12 @@ window.ZR.renderAvatarInContainer = async function (containerId, avatar) {
 
   const layers = window.ZR.getAvatarLayerDefs(avatar || window.ZR.state.avatar);
 
-  // Escalar al contenedor manteniendo proporciones exactas del sprite
+  // Escalar al contenedor manteniendo proporciones exactas del sprite (340x720)
   const containerH = container.offsetHeight || 390;
-  const containerW = container.offsetWidth  || 142;
+  const containerW = container.offsetWidth  || Math.round(containerH * (SPRITE_W / SPRITE_H));
   const scaleH = containerH / SPRITE_H;
   const scaleW = containerW / SPRITE_W;
-  const scale  = Math.min(scaleH, scaleW);  // Ajuste sin distorsión
+  const scale  = Math.min(scaleH, scaleW);  // Ajuste sin distorsión ni estiramiento
 
   const renderW = Math.round(SPRITE_W * scale);
   const renderH = Math.round(SPRITE_H * scale);
@@ -278,6 +292,25 @@ window.ZR.renderAvatarInContainer = async function (containerId, avatar) {
         : tintSprite(layer.src, layer.color)
     )
   );
+
+  window.ZR.preloadActiveAvatarLayers = async function () {
+    const av = window.ZR.state.avatar;
+    const defs = window.ZR.getAvatarLayerDefs(av);
+    const images = await Promise.all(
+      defs.map(async layer => {
+        const url = layer.color === null ? layer.src : await tintSprite(layer.src, layer.color);
+        return new Promise(resolve => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => resolve(img);
+          img.onerror = () => resolve(null);
+          img.src = url;
+        });
+      })
+    );
+    window.ZR.activeAvatarImages = images.filter(Boolean);
+    return window.ZR.activeAvatarImages;
+  };
 
   tintedUrls.forEach((url, i) => {
     if (!url) return;

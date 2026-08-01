@@ -187,12 +187,22 @@
     <!-- Layout principal -->
     <div class="av-layout">
 
-      <!-- IZQUIERDA: Personaje en frame tipo carnet -->
+      <!-- IZQUIERDA: Personaje en frame tipo carnet + selector de género -->
       <div class="av-character-panel">
         <div class="av-character-frame">
           <div class="avatar-display" id="avatar-stage-display"></div>
         </div>
         <div class="av-character-label">Tu personaje</div>
+
+        <!-- Selector de Género -->
+        <div class="av-gender-toggle">
+          <button class="av-gender-btn active" id="av-gender-hombre" type="button">
+            👨 Hombre
+          </button>
+          <button class="av-gender-btn" id="av-gender-mujer" type="button">
+            👩 Mujer
+          </button>
+        </div>
       </div>
 
       <!-- DERECHA: Tabs + Swatches -->
@@ -203,6 +213,10 @@
           <button class="av-tab active" data-tab="piel">
             <span class="av-tab-icon">🎨</span>
             <span class="av-tab-label">Piel</span>
+          </button>
+          <button class="av-tab" data-tab="boca">
+            <span class="av-tab-icon">👄</span>
+            <span class="av-tab-label">Boca</span>
           </button>
           <button class="av-tab" data-tab="cabello">
             <span class="av-tab-icon">💇</span>
@@ -702,16 +716,8 @@
             <div class="target-circle-bg"></div>
             <div class="target-horizon-line"></div>
           </div>
-          <div class="healthy-avatar-sprite" id="body-healthy-avatar">
-            <div class="avatar-display">
-              <img src="assets/Personaje 1/Colores de piel/1 Color 1 piel.png" class="avatar-layer layer-skin" alt="" onerror="this.style.display='none'" />
-              <img src="assets/Personaje 1/Superior color/1 Superior Azul.png" class="avatar-layer layer-polo" alt="" onerror="this.style.display='none'" />
-              <img src="assets/Personaje 1/Inferior/Shorts.png" class="avatar-layer layer-shorts" alt="" onerror="this.style.display='none'" />
-              <img src="assets/Personaje 1/Botas.png" class="avatar-layer layer-boots" alt="" onerror="this.style.display='none'" />
-              <img src="assets/Personaje 1/Delineado ojos/Ojos 1.png" class="avatar-layer layer-eyes" alt="" onerror="this.style.display='none'" />
-              <img src="assets/Personaje 1/Boca/1 boca 1.png" class="avatar-layer layer-mouth" alt="" onerror="this.style.display='none'" />
-              <img src="assets/Personaje 1/Peinado corto/1 corto negro.png" class="avatar-layer layer-hair" alt="" onerror="this.style.display='none'" />
-            </div>
+          <div class="healthy-avatar-sprite">
+            <div class="avatar-display" id="body-healthy-avatar"></div>
           </div>
           <div class="healthy-badge">AVATAR EN ESTADO SALUDABLE</div>
         </div>
