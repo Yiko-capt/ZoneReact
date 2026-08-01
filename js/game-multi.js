@@ -180,7 +180,7 @@ window.ZR.registerScreen('screen-multi-lobby', function () {
   const avatarBtn = document.getElementById('lobby-avatar-btn');
   const newAvatarBtn = avatarBtn?.cloneNode(true);
   avatarBtn?.parentNode?.replaceChild(newAvatarBtn, avatarBtn);
-  newAvatarBtn?.addEventListener('click', () => window.ZR.navigate('screen-avatar'));
+  newAvatarBtn?.addEventListener('click', () => window.ZR.navigate('screen-avatar', { from: 'screen-multi-lobby' }));
 
   // Ready btn
   const readyBtn = document.getElementById('lobby-ready-btn');
@@ -227,6 +227,7 @@ function renderLobbyLeaderboard(lb) {
    PANTALLA 6 - VS SCREEN (Pixel Fighter)
    ========================================= */
 window.ZR.registerScreen('screen-vs', function () {
+  window.ZR.state.lastPlayerPosition = null;
   const mySquad = window.ZR.state.multi.squadName || 'MI EQUIPO';
   const myEl    = document.getElementById('vs-my-squad');
   const enemyEl = document.getElementById('vs-enemy-squad');

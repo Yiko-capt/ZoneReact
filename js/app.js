@@ -63,6 +63,16 @@ window.ZR.registerScreen = function (id, initFn) {
 };
 
 window.ZR.navigate = function (screenId, data) {
+  if (screenId === 'screen-avatar') {
+    window.ZR.state.avatarReturnScreen = (data && data.from) || window.ZR.state.currentScreen || 'screen-menu-aventura';
+  } else {
+    window.ZR.state.currentScreen = screenId;
+  }
+
+  if (screenId === 'screen-map' && window.ZR.preloadActiveAvatarLayers) {
+    window.ZR.preloadActiveAvatarLayers();
+  }
+
   if (window.ZR.gameEngine && screenId !== 'screen-map') {
     window.ZR.gameEngine.stop();
   }
@@ -406,6 +416,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.addEventListener('zr:score-updated', updateXPDisplays);
   updateXPDisplays();
+
+  if (window.ZR.preloadActiveAvatarLayers) {
+    window.ZR.preloadActiveAvatarLayers();
+  }
 
   window.ZR.navigate('screen-home');
 

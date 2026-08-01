@@ -1,6 +1,6 @@
 /**
  * ZoneReact - Data: Situaciones del Modo Historia
- * "Salvar a tu mejor amigo (Leo)"
+ * "Salvar a tu mejor amigo (Lucas)"
  * Situaciones actualizadas con ubicaciones específicas del mapa
  */
 window.ZR = window.ZR || {};

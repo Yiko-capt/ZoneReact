@@ -39,6 +39,7 @@ window.ZR.registerScreen('screen-menu-aventura', function () {
 // --- Cinemática Historia ---
 window.ZR.registerScreen('screen-cinematic', function () {
   window.ZR.state.mode = 'story';
+  window.ZR.state.lastPlayerPosition = null;
   window.ZR.state.story = { situationIndex: 0, score: 0, decisions: [], completed: false };
   document.dispatchEvent(new Event('zr:score-updated'));
 
@@ -47,7 +48,7 @@ window.ZR.registerScreen('screen-cinematic', function () {
   const leoContainer = document.getElementById('cinematic-leo-sprite');
   if (leoContainer) {
     leoContainer.innerHTML = `
-      <img src="images/leo_16bit.jpg" alt="Leo 16-bit" />
+      <img src="images/leo_16bit.jpg" alt="Lucas 16-bit" />
     `;
   }
 
@@ -59,17 +60,17 @@ window.ZR.registerScreen('screen-cinematic', function () {
   let slide = 0;
   const slides = [
     {
-      title: '¡Tu mejor amigo Leo necesita tu ayuda!',
-      body: ` Leo está en peligro. Su barrio está lleno de situaciones que lo pueden llevar por el mal camino.`
+      title: '¡Tu mejor amigo Lucas necesita tu ayuda!',
+      body: ` Lucas está en peligro. Su barrio está lleno de situaciones que lo pueden llevar por el mal camino.`
     },
     {
-      title: 'Objetivo: Guiar a Leo',
+      title: 'Objetivo: Guiar a Lucas',
       body: 'Debes ayudarlo a tomar las mejores decisiones en 5 momentos críticos para evitar que caiga en la adicción o el microtráfico.'
     },
     {
   title: 'Sistema de puntos',
   body: `
-     cada decisión correcta te dará puntos de experiencia (XP). Cuanto más alto sea tu puntaje, mejor será tu rango al final del juego. ¡Aprende y protege a Leo!
+     cada decisión correcta te dará puntos de experiencia (XP). Cuanto más alto sea tu puntaje, mejor será tu rango al final del juego. ¡Aprende y protege a Lucas!
     `
     }
   ];
@@ -154,6 +155,12 @@ window.ZR.registerScreen('screen-map', function (data) {
 });
 
 function handleSituationTrigger(situation) {
+  if (situation && situation.mapPosition) {
+    window.ZR.state.lastPlayerPosition = {
+      wx: situation.mapPosition.x,
+      wy: situation.mapPosition.y + 40
+    };
+  }
   window.ZR.gameEngine.stop();
   window.ZR.state.story.situationIndex = situation.id - 1;
   window.ZR.navigate('screen-situation', { situation });
@@ -364,6 +371,7 @@ window.ZR.registerScreen('screen-result', function ({ situation, option }) {
 
 // --- Ending ---
 window.ZR.registerScreen('screen-ending', function () {
+  const mode = window.ZR.state.mode || 'story';
   const score = window.ZR.state.story.score;
   const totalSituations = window.ZR.situations.length;
   const maxScore = totalSituations * 20;
@@ -373,15 +381,15 @@ window.ZR.registerScreen('screen-ending', function () {
   if (score >= 80) {
     rank = '🏆 ¡GUARDIÁN COMUNITARIO!';
     rankClass = 'green';
-    rankDesc = `¡Increíble! Guiaste a Leo a través de todos los peligros con sabiduría y valentía. Leo está a salvo gracias a ti. Eres un guardián de tu comunidad.`;
+    rankDesc = `¡Increíble! Guiaste a Lucas a través de todos los peligros con sabiduría y valentía. Lucas está a salvo gracias a ti. Eres un guardián de tu comunidad.`;
   } else if (score >= 40) {
     rank = '🔍 DETECTIVE URBANO';
     rankClass = 'yellow';
-    rankDesc = `Buen trabajo. Acertaste en varias decisiones, pero Leo aún es vulnerable en algunas situaciones. Sigue aprendiendo para protegerlo mejor.`;
+    rankDesc = `Buen trabajo. Acertaste en varias decisiones, pero Lucas aún es vulnerable en algunas situaciones. Sigue aprendiendo para protegerlo mejor.`;
   } else {
     rank = '📚 APRENDIZ PREVENTIVO';
     rankClass = 'red';
-    rankDesc = `Leo estuvo en riesgo varias veces. Pero equivocarte aquí es parte del aprendizaje. Usa lo que aprendiste para proteger a tus amigos en la vida real.`;
+    rankDesc = `Lucas estuvo en riesgo varias veces. Pero equivocarte aquí es parte del aprendizaje. Usa lo que aprendiste para proteger a tus amigos en la vida real.`;
   }
 
   const rankEl = document.getElementById('ending-rank');
@@ -393,8 +401,25 @@ window.ZR.registerScreen('screen-ending', function () {
   const scoreEl = document.getElementById('ending-score');
   if (scoreEl) scoreEl.textContent = `${score} / ${maxScore} XP`;
 
+  const titleEl = document.getElementById('ending-title');
+  if (titleEl) {
+    if (mode === 'multi') {
+      titleEl.style.display = 'none';
+    } else {
+      titleEl.style.display = '';
+      titleEl.textContent = '¡Lucas está a salvo!';
+    }
+  }
+
   const descEl = document.getElementById('ending-desc');
-  if (descEl) descEl.textContent = rankDesc;
+  if (descEl) {
+    if (mode === 'multi') {
+      descEl.style.display = 'none';
+    } else {
+      descEl.style.display = '';
+      descEl.textContent = rankDesc;
+    }
+  }
 
   const reviewEl = document.getElementById('ending-decisions');
   if (reviewEl) {
@@ -417,7 +442,11 @@ window.ZR.registerScreen('screen-ending', function () {
   retryBtn?.parentNode?.replaceChild(newRetryBtn, retryBtn);
   newRetryBtn?.addEventListener('click', () => {
     window.ZR.state.story = { situationIndex: 0, score: 0, decisions: [], completed: false };
-    window.ZR.navigate('screen-cinematic');
+    if (window.ZR.state.mode === 'multi') {
+      window.ZR.navigate('screen-multi-join');
+    } else {
+      window.ZR.navigate('screen-cinematic');
+    }
   });
 
   const homeBtn = document.getElementById('ending-home-btn');

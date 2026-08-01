@@ -56,15 +56,17 @@
   line-height: 1.2;
 }
 
+
 .home-title span {
   color: var(--red);
   -webkit-text-stroke: 2px var(--ink);
   text-shadow: 4px 4px 0 var(--yellow);
 }
 
+
 .home-desc {
-  font-family: var(--font-pixel);
-  font-size: 12px;
+  font-family: var(--font-body);
+  font-size: 20px;
   color: var(--ink);
   max-width: 520px;
   margin-bottom: 32px;
@@ -144,8 +146,8 @@
 }
 
 .home-about p {
-  font-family: var(--font-pixel);
-  font-size: 12px;
+  font-family: var(--font-body);
+  font-size: 20px;
   line-height: 1.7;
   color: var(--ink);
 }
@@ -179,15 +181,25 @@
   border-right: var(--border);
 }
 
-.aventura-copy h1 {
-  font-family: var(--font-pixel);
-  font-size: clamp(32px, 4vw, 56px);
-  margin-bottom: 16px;
+.aventura-copy h1, .aventura-title {
+  font-family: 'Inter', 'Nunito', system-ui, sans-serif;
+  font-weight: 900;
+  font-size: clamp(38px, 4.5vw, 60px);
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+}
+
+.aventura-copy h1 span, .aventura-title span {
+  color: var(--red);
+  -webkit-text-stroke: 2px var(--ink);
+  text-shadow: 4px 4px 0 var(--yellow);
 }
 
 .aventura-copy p {
   font-size: 17px;
-  color: var(--gray);
+  color: var(--ink);
   margin-bottom: 36px;
   line-height: 1.6;
 }
@@ -2222,7 +2234,7 @@
 }
 
 .body-header-title {
-  font-family: var(--font-pixel);
+  
   font-weight: 800;
   font-size: clamp(37px, 5.2vw, 64px);
   color: var(--ink);
@@ -2231,7 +2243,7 @@
 
 .body-header-sub {
   font-size: 18px;
-  color: var(--gray);
+  color: var(--ink);
   max-width: 750px;
   line-height: 1.5;
   margin-bottom: 42px;

@@ -32,10 +32,14 @@ class GameEngine {
     this.MAP_HEIGHT = MAP_HEIGHT;
     this.camera     = { x: 0, y: 0 };
 
-    // Posición inicial: Frente a la Casa de Leo (derecha en mapa.png)
+    // Posición inicial: Usar la última posición conocida o la Casa de Lucas por defecto
+    const startPos = (window.ZR.state && window.ZR.state.lastPlayerPosition)
+      ? window.ZR.state.lastPlayerPosition
+      : { wx: 2420, wy: 1020 };
+
     this.player = {
-      wx: 2420,
-      wy: 1020,
+      wx: startPos.wx,
+      wy: startPos.wy,
       speed: 4.8,
       size: 40,
       moving: false,
@@ -45,8 +49,8 @@ class GameEngine {
     };
 
     this.leo = {
-      wx: 2360,
-      wy: 1020,
+      wx: startPos.wx - 60,
+      wy: startPos.wy,
       speed: 4.4,
       size: 40,
       moving: false,
@@ -391,18 +395,18 @@ class GameEngine {
 
     ctx.restore();
 
-    // Cartel con nombre LEO
+    // Cartel con nombre LUCAS
     ctx.fillStyle = '#C0392B';
-    ctx.fillRect(sx - 24, sy + 28, 48, 18);
+    ctx.fillRect(sx - 30, sy + 28, 60, 18);
     ctx.strokeStyle = '#1A1A1A';
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(sx - 24, sy + 28, 48, 18);
+    ctx.strokeRect(sx - 30, sy + 28, 60, 18);
 
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 10px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('LEO', sx, sy + 37);
+    ctx.fillText('LUCAS', sx, sy + 37);
   }
 
   _drawPlayerAvatar(ctx) {
