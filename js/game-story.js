@@ -60,15 +60,17 @@ window.ZR.registerScreen('screen-cinematic', function () {
   const slides = [
     {
       title: '¡Tu mejor amigo Leo necesita tu ayuda!',
-      body: `${playerName}, Leo está en peligro. Su barrio está lleno de situaciones que lo pueden llevar por el mal camino.`
+      body: ` Leo está en peligro. Su barrio está lleno de situaciones que lo pueden llevar por el mal camino.`
     },
     {
       title: 'Objetivo: Guiar a Leo',
       body: 'Debes ayudarlo a tomar las mejores decisiones en 5 momentos críticos para evitar que caiga en la adicción o el microtráfico.'
     },
     {
-      title: 'Sistema de puntos',
-      body: '🟢 Respuesta correcta = +20 puntos\n❌ Error o pasividad = 0 puntos\n\nAlta puntuación = ¡Guardián Comunitario!'
+  title: 'Sistema de puntos',
+  body: `
+     cada decisión correcta te dará puntos de experiencia (XP). Cuanto más alto sea tu puntaje, mejor será tu rango al final del juego. ¡Aprende y protege a Leo!
+    `
     }
   ];
 
