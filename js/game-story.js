@@ -40,6 +40,7 @@ window.ZR.registerScreen('screen-menu-aventura', function () {
 window.ZR.registerScreen('screen-cinematic', function () {
   window.ZR.state.mode = 'story';
   window.ZR.state.lastPlayerPosition = null;
+  window.ZR.state.storyUnlockedLevel = window.ZR.state.storyUnlockedLevel || 1;
   window.ZR.state.story = { situationIndex: 0, score: 0, decisions: [], completed: false };
   document.dispatchEvent(new Event('zr:score-updated'));
 
@@ -60,18 +61,24 @@ window.ZR.registerScreen('screen-cinematic', function () {
   let slide = 0;
   const slides = [
     {
-      title: '¡Tu mejor amigo Lucas necesita tu ayuda!',
-      body: ` Lucas está en peligro. Su barrio está lleno de situaciones que lo pueden llevar por el mal camino.`
+      title: '1. La historia de Lucas: Una llamada de auxilio',
+      body: `${playerName} y Lucas han sido mejores amigos desde primaria. Sin embargo, en las últimas semanas notaste que Lucas estaba muy preocupado y presionado por malas influencias en el barrio.`
     },
     {
-      title: 'Objetivo: Guiar a Lucas',
-      body: 'Debes ayudarlo a tomar las mejores decisiones en 5 momentos críticos para evitar que caiga en la adicción o el microtráfico.'
+      title: '2. Zonas de riesgo y presiones',
+      body: `Pasajes oscuros a deshoras, ofrecimientos de vapeo, alcohol y personas desconocidas acechan a Lucas en su recorrido diario entre el colegio y su casa.`
     },
     {
-  title: 'Sistema de puntos',
-  body: `
-     cada decisión correcta te dará puntos de experiencia (XP). Cuanto más alto sea tu puntaje, mejor será tu rango al final del juego. ¡Aprende y protege a Lucas!
-    `
+      title: '3. Tu misión como mejor amigo',
+      body: `Lucas confía en tus consejos. Tu misión es acompañarlo por las 10 zonas del distrito y guiarlo en cada momento crítico para tomar decisiones responsables.`
+    },
+    {
+      title: '4. Objetivo de Prevención',
+      body: `Debes superar los 10 niveles del camino estilo mapa en el orden correcto. Cada nivel superado desbloqueará la siguiente zona hasta llegar a la META FINAL.`
+    },
+    {
+      title: '5. Sistema de Puntos XP (+10, +5, -5, -10)',
+      body: `Las decisiones seguras te darán +10 XP o +5 XP. Evita las opciones de riesgo que restan -5 XP o -10 XP. ¡Demuestra tu liderazgo y salva a Lucas!`
     }
   ];
 
@@ -79,11 +86,16 @@ window.ZR.registerScreen('screen-cinematic', function () {
     const titleEl = document.getElementById('cinematic-title');
     const bodyEl  = document.getElementById('cinematic-body');
     const nextBtn = document.getElementById('cinematic-next-btn');
+    const prevBtn = document.getElementById('cinematic-prev-btn');
     const progEl  = document.getElementById('cinematic-progress');
 
     if (titleEl) titleEl.textContent = slides[i].title;
     if (bodyEl)  bodyEl.textContent  = slides[i].body;
     if (progEl)  progEl.textContent  = `${i + 1} / ${slides.length}`;
+
+    if (prevBtn) {
+      prevBtn.style.display = i === 0 ? 'none' : 'inline-block';
+    }
 
     if (nextBtn) {
       nextBtn.textContent = i < slides.length - 1 ? 'Siguiente →' : '¡Empezar! →';
@@ -93,10 +105,9 @@ window.ZR.registerScreen('screen-cinematic', function () {
   showSlide(0);
 
   const nextBtn = document.getElementById('cinematic-next-btn');
-  const newBtn = nextBtn?.cloneNode(true);
-  nextBtn?.parentNode?.replaceChild(newBtn, nextBtn);
-
-  newBtn?.addEventListener('click', () => {
+  const newNextBtn = nextBtn?.cloneNode(true);
+  nextBtn?.parentNode?.replaceChild(newNextBtn, nextBtn);
+  newNextBtn?.addEventListener('click', () => {
     slide++;
     if (slide < slides.length) {
       showSlide(slide);
@@ -105,7 +116,20 @@ window.ZR.registerScreen('screen-cinematic', function () {
     }
   });
 
-  document.getElementById('cinematic-skip-btn')?.addEventListener('click', () => {
+  const prevBtn = document.getElementById('cinematic-prev-btn');
+  const newPrevBtn = prevBtn?.cloneNode(true);
+  prevBtn?.parentNode?.replaceChild(newPrevBtn, prevBtn);
+  newPrevBtn?.addEventListener('click', () => {
+    if (slide > 0) {
+      slide--;
+      showSlide(slide);
+    }
+  });
+
+  const skipBtn = document.getElementById('cinematic-skip-btn');
+  const newSkipBtn = skipBtn?.cloneNode(true);
+  skipBtn?.parentNode?.replaceChild(newSkipBtn, skipBtn);
+  newSkipBtn?.addEventListener('click', () => {
     window.ZR.navigate('screen-map', { mode: 'story' });
   });
 });
@@ -139,9 +163,13 @@ window.ZR.registerScreen('screen-map', function (data) {
 
   const timerConfig = mode === 'multi' ? { total: 7 * 60, elapsed: 0 } : null;
 
+  const activeSituations = mode === 'story'
+    ? (window.ZR.storySituations || window.ZR.situations)
+    : window.ZR.situations;
+
   window.ZR.gameEngine = new window.ZR.GameEngine(canvas, {
     mode: mode,
-    situations: window.ZR.situations,
+    situations: activeSituations,
     timer: timerConfig,
     onSituationTrigger: handleSituationTrigger,
     onTimerEnd: handleTimerEnd
@@ -173,9 +201,13 @@ function handleTimerEnd() {
 
 // --- Situación ---
 window.ZR.registerScreen('screen-situation', function ({ situation }) {
+  const activeSituations = window.ZR.state.mode === 'story'
+    ? (window.ZR.storySituations || window.ZR.situations)
+    : window.ZR.situations;
+
   if (!situation) {
     const idx = window.ZR.state.story.situationIndex;
-    situation = window.ZR.situations[idx];
+    situation = activeSituations[idx];
   }
   if (!situation) { window.ZR.navigate('screen-map', { mode: window.ZR.state.mode }); return; }
 
@@ -218,9 +250,13 @@ window.ZR.registerScreen('screen-situation', function ({ situation }) {
 
 // --- Decisión ---
 window.ZR.registerScreen('screen-decision', function ({ situation }) {
+  const activeSituations = window.ZR.state.mode === 'story'
+    ? (window.ZR.storySituations || window.ZR.situations)
+    : window.ZR.situations;
+
   if (!situation) {
     const idx = window.ZR.state.story.situationIndex;
-    situation = window.ZR.situations[idx];
+    situation = activeSituations[idx];
   }
   if (!situation) return;
 
@@ -277,6 +313,13 @@ window.ZR.registerScreen('screen-decision', function ({ situation }) {
       isCorrect: selectedOption.isCorrect
     });
 
+    if (window.ZR.state.mode === 'story') {
+      window.ZR.state.storyUnlockedLevel = Math.max(
+        window.ZR.state.storyUnlockedLevel || 1,
+        situation.id + 1
+      );
+    }
+
     if (window.ZR.gameEngine) {
       window.ZR.gameEngine.markSituationComplete(situation.id);
     }
@@ -322,7 +365,7 @@ window.ZR.registerScreen('screen-result', function ({ situation, option }) {
   const xpNumEl = document.getElementById('result-xp-num');
   const xpTotalEl = document.getElementById('result-xp-total');
   if (xpNumEl) {
-    xpNumEl.textContent = option.score > 0 ? `+${option.score}` : `–10`;
+    xpNumEl.textContent = option.score > 0 ? `+${option.score}` : `${option.score}`;
     xpNumEl.className = 'xp-badge-num' + (option.score > 0 ? '' : ' negative');
   }
   if (xpTotalEl) xpTotalEl.textContent = `Total: ${window.ZR.state.story.score} XP`;
@@ -336,10 +379,14 @@ window.ZR.registerScreen('screen-result', function ({ situation, option }) {
   const quoteEl = document.getElementById('result-quote');
   if (quoteEl) quoteEl.textContent = option.quote || '';
 
+  const activeSituations = window.ZR.state.mode === 'story'
+    ? (window.ZR.storySituations || window.ZR.situations)
+    : window.ZR.situations;
+
   const barEl = document.getElementById('result-score-bar-fill');
   const pctLabel = document.getElementById('result-score-pct');
   const totalScore = window.ZR.state.story.score;
-  const maxScore = window.ZR.situations.length * 20;
+  const maxScore = activeSituations.length * 20;
 
   if (barEl) {
     const pct = Math.max(0, Math.min(100, (totalScore / maxScore) * 100));
@@ -350,7 +397,7 @@ window.ZR.registerScreen('screen-result', function ({ situation, option }) {
   document.dispatchEvent(new Event('zr:score-updated'));
 
   const allDecisions = window.ZR.state.story.decisions.length;
-  const totalSituations = window.ZR.situations.length;
+  const totalSituations = activeSituations.length;
   const isDone = allDecisions >= totalSituations;
 
   const mapBtn = document.getElementById('result-map-btn');
@@ -372,17 +419,21 @@ window.ZR.registerScreen('screen-result', function ({ situation, option }) {
 // --- Ending ---
 window.ZR.registerScreen('screen-ending', function () {
   const mode = window.ZR.state.mode || 'story';
+  const activeSituations = mode === 'story'
+    ? (window.ZR.storySituations || window.ZR.situations)
+    : window.ZR.situations;
+
   const score = window.ZR.state.story.score;
-  const totalSituations = window.ZR.situations.length;
-  const maxScore = totalSituations * 20;
+  const totalSituations = activeSituations.length;
+  const maxScore = totalSituations * 10;
 
   let rank, rankClass, rankDesc;
 
-  if (score >= 80) {
+  if (score >= 70) {
     rank = '🏆 ¡GUARDIÁN COMUNITARIO!';
     rankClass = 'green';
-    rankDesc = `¡Increíble! Guiaste a Lucas a través de todos los peligros con sabiduría y valentía. Lucas está a salvo gracias a ti. Eres un guardián de tu comunidad.`;
-  } else if (score >= 40) {
+    rankDesc = `¡Increíble! Guiaste a Lucas a través de todos los 10 niveles del mapa con sabiduría y valentía. Lucas está a salvo gracias a ti. Eres un guardián de tu comunidad.`;
+  } else if (score >= 35) {
     rank = '🔍 DETECTIVE URBANO';
     rankClass = 'yellow';
     rankDesc = `Buen trabajo. Acertaste en varias decisiones, pero Lucas aún es vulnerable en algunas situaciones. Sigue aprendiendo para protegerlo mejor.`;
@@ -425,13 +476,13 @@ window.ZR.registerScreen('screen-ending', function () {
   if (reviewEl) {
     reviewEl.innerHTML = '';
     window.ZR.state.story.decisions.forEach((d, i) => {
-      const sit = window.ZR.situations[i];
+      const sit = activeSituations[i];
       const div = document.createElement('div');
       div.style.cssText = `display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #E0DAD0;font-size:13px;`;
       div.innerHTML = `
         <span style="font-size:18px">${d.isCorrect ? '✅' : '❌'}</span>
-        <span style="flex:1;font-weight:700">${sit ? sit.title : `Situación ${i+1}`}</span>
-        <span style="font-family:'Press Start 2P',monospace;font-size:11px;color:${d.score > 0 ? '#5A8A4A' : '#E8543E'}">${d.score > 0 ? `+${d.score}` : '0'} XP</span>
+        <span style="flex:1;font-weight:700">${sit ? sit.title : `Nivel ${i+1}`}</span>
+        <span style="font-family:'Press Start 2P',monospace;font-size:11px;color:${d.score > 0 ? '#5A8A4A' : '#E8543E'}">${d.score > 0 ? `+${d.score}` : `${d.score}`} XP</span>
       `;
       reviewEl.appendChild(div);
     });
@@ -445,6 +496,7 @@ window.ZR.registerScreen('screen-ending', function () {
     if (window.ZR.state.mode === 'multi') {
       window.ZR.navigate('screen-multi-join');
     } else {
+      window.ZR.state.storyUnlockedLevel = 1;
       window.ZR.navigate('screen-cinematic');
     }
   });

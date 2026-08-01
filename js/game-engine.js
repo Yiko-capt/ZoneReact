@@ -18,6 +18,7 @@ function preloadAsset(src) {
 
 // Preload map and Leo sprites
 preloadAsset('assets/mapa.png');
+preloadAsset('assets/story_map.jpg');
 preloadAsset('assets/Leo/leo_parado.png');
 preloadAsset('assets/Leo/leo_camina0.png');
 preloadAsset('assets/Leo/leo_camina1.png');
@@ -28,14 +29,20 @@ class GameEngine {
     this.ctx = canvas.getContext('2d');
     this.options = options;
 
-    this.MAP_WIDTH  = MAP_WIDTH;
-    this.MAP_HEIGHT = MAP_HEIGHT;
+    // En modo historia usamos un espacio de mundo igual al tamaño del canvas (sin scroll)
+    // En multijugador usamos el mapa grande 2752x1536
+    this.isStoryMode = options.mode === 'story';
+    this.MAP_WIDTH  = this.isStoryMode ? 1400 : MAP_WIDTH;
+    this.MAP_HEIGHT = this.isStoryMode ? 720  : MAP_HEIGHT;
     this.camera     = { x: 0, y: 0 };
 
-    // Posición inicial: Usar la última posición conocida o la Casa de Lucas por defecto
+    // Posición inicial del jugador
+    const defaultPos = this.isStoryMode
+      ? { wx: 80, wy: 420 }    // Historia: Nivel 1 - Casa de Lucas (izquierda del canvas)
+      : { wx: 2420, wy: 1020 }; // Multijugador - posición original
     const startPos = (window.ZR.state && window.ZR.state.lastPlayerPosition)
       ? window.ZR.state.lastPlayerPosition
-      : { wx: 2420, wy: 1020 };
+      : defaultPos;
 
     this.player = {
       wx: startPos.wx,
@@ -50,7 +57,7 @@ class GameEngine {
 
     this.leo = {
       wx: startPos.wx - 60,
-      wy: startPos.wy,
+      wy: startPos.wy + 20,
       speed: 4.4,
       size: 40,
       moving: false,
@@ -199,21 +206,27 @@ class GameEngine {
       this.player.wx += dx * spd;
       this.player.wy += dy * spd;
 
-      // Límites del mapa
-      this.player.wx = Math.max(40, Math.min(this.player.wx, MAP_WIDTH - 40));
-      this.player.wy = Math.max(40, Math.min(this.player.wy, MAP_HEIGHT - 40));
+      // Límites del mapa (usa this.MAP_WIDTH/HEIGHT que varía según modo)
+      this.player.wx = Math.max(40, Math.min(this.player.wx, this.MAP_WIDTH - 40));
+      this.player.wy = Math.max(40, Math.min(this.player.wy, this.MAP_HEIGHT - 40));
     }
 
-    // Cámara sigue al jugador
-    const vw = this.canvas.width;
-    const vh = this.canvas.height;
-    this.camera.x = Math.max(0, Math.min(this.player.wx - vw / 2, MAP_WIDTH - vw));
-    this.camera.y = Math.max(0, Math.min(this.player.wy - vh / 2, MAP_HEIGHT - vh));
+    // Cámara: en historia se queda fija en 0,0 (pantalla completa sin scroll)
+    // En multijugador sigue al jugador por el mapa grande
+    if (!this.isStoryMode) {
+      const vw = this.canvas.width;
+      const vh = this.canvas.height;
+      this.camera.x = Math.max(0, Math.min(this.player.wx - vw / 2, MAP_WIDTH - vw));
+      this.camera.y = Math.max(0, Math.min(this.player.wy - vh / 2, MAP_HEIGHT - vh));
+    }
 
     // Comprobar proximidad a situaciones
     this.nearSituation = null;
+    const unlockedLevel = (window.ZR.state && window.ZR.state.storyUnlockedLevel) || 1;
     this.situations.forEach(s => {
       if (this.completedSituations.has(s.id)) return;
+      // En modo historia solo se puede interactuar con el nivel desbloqueado actual
+      if (this.options.mode === 'story' && s.id !== unlockedLevel) return;
       const dist = Math.hypot(s.wx - this.player.wx, s.wy - this.player.wy);
       if (dist < 90) {
         this.nearSituation = s;
@@ -280,38 +293,112 @@ class GameEngine {
     ctx.clearRect(0, 0, cw, ch);
     ctx.imageSmoothingEnabled = false;
 
-    // 1. DIBUJAR MAPA GENERAL (assets/mapa.png)
-    const mapaImg = ASSET_CACHE['assets/mapa.png'] || preloadAsset('assets/mapa.png');
-    if (mapaImg.complete && mapaImg.naturalWidth > 0) {
-      const sx = Math.max(0, Math.floor(this.camera.x));
-      const sy = Math.max(0, Math.floor(this.camera.y));
-      const sw = Math.min(MAP_WIDTH - sx, cw);
-      const sh = Math.min(MAP_HEIGHT - sy, ch);
-
-      ctx.drawImage(
-        mapaImg,
-        sx, sy, sw, sh,
-        0, 0, sw, sh
-      );
+    // 1. DIBUJAR MAPA DE FONDO
+    if (this.isStoryMode) {
+      // Historia: story_map.jpg estirado a pantalla completa (sin scroll)
+      const storyImg = ASSET_CACHE['assets/story_map.jpg'] || preloadAsset('assets/story_map.jpg');
+      if (storyImg.complete && storyImg.naturalWidth > 0) {
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(storyImg, 0, 0, cw, ch);
+        ctx.imageSmoothingEnabled = false;
+      } else {
+        ctx.fillStyle = '#1A2B1E';
+        ctx.fillRect(0, 0, cw, ch);
+      }
     } else {
-      ctx.fillStyle = '#1A2B1E';
-      ctx.fillRect(0, 0, cw, ch);
+      // Multijugador: mapa.png con scroll/camera normal
+      const mapaImg = ASSET_CACHE['assets/mapa.png'] || preloadAsset('assets/mapa.png');
+      if (mapaImg.complete && mapaImg.naturalWidth > 0) {
+        const sx = Math.max(0, Math.floor(this.camera.x));
+        const sy = Math.max(0, Math.floor(this.camera.y));
+        const sw = Math.min(MAP_WIDTH - sx, cw);
+        const sh = Math.min(MAP_HEIGHT - sy, ch);
+        ctx.drawImage(mapaImg, sx, sy, sw, sh, 0, 0, sw, sh);
+      } else {
+        ctx.fillStyle = '#1A2B1E';
+        ctx.fillRect(0, 0, cw, ch);
+      }
     }
 
-    // 2. DIBUJAR PINS DE SITUACIONES
+    // 2. DIBUJAR CAMINO OVERCOOKED (solo en historia, antes de los pins)
+    if (this.isStoryMode) {
+      this._drawStoryPath(ctx);
+    }
+
+    // 3. DIBUJAR PINS DE SITUACIONES
     this._drawSituationPins(ctx);
 
-    // 3. DIBUJAR A LEO (Animado si camina, leo_parado si está quieto)
-    if (this.options.mode === 'story') {
+    // 4. DIBUJAR A LEO (Animado si camina, leo_parado si está quieto)
+    if (this.isStoryMode) {
       this._drawLeo(ctx);
     }
 
-    // 4. DIBUJAR AVATAR PERSONALIZABLE (Estático por el momento)
+    // 5. DIBUJAR AVATAR PERSONALIZABLE
     this._drawPlayerAvatar(ctx);
   }
 
+
+  _drawStoryPath(ctx) {
+    if (this.situations.length < 2) return;
+
+    for (let i = 0; i < this.situations.length - 1; i++) {
+      const a = this.situations[i];
+      const b = this.situations[i + 1];
+      const ax = Math.floor(a.wx - this.camera.x);
+      const ay = Math.floor(a.wy - this.camera.y);
+      const bx = Math.floor(b.wx - this.camera.x);
+      const by = Math.floor(b.wy - this.camera.y);
+
+      const aCompleted = this.completedSituations.has(a.id);
+
+      ctx.save();
+
+      // Sombra / halo oscuro de fondo para que se vea sobre el mapa
+      ctx.setLineDash([]);
+      ctx.lineWidth = 14;
+      ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+
+      // Línea punteada principal
+      ctx.setLineDash([16, 10]);
+      ctx.lineWidth = 7;
+      ctx.strokeStyle = aCompleted ? 'rgba(80,220,120,0.95)' : 'rgba(255,255,255,0.75)';
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    // Halo META al completar todos
+    const last = this.situations[this.situations.length - 1];
+    const lx = Math.floor(last.wx - this.camera.x);
+    const ly = Math.floor(last.wy - this.camera.y);
+    const allDone = this.situations.every(s => this.completedSituations.has(s.id));
+
+    if (allDone) {
+      const grd = ctx.createRadialGradient(lx, ly - 60, 8, lx, ly - 60, 60);
+      grd.addColorStop(0, 'rgba(255,215,0,0.95)');
+      grd.addColorStop(1, 'rgba(255,140,0,0.0)');
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(lx, ly - 60, 60, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+
   _drawSituationPins(ctx) {
     const now = Date.now();
+    const isStory = this.options.mode === 'story';
+    const unlockedLevel = (window.ZR.state && window.ZR.state.storyUnlockedLevel) || 1;
 
     this.situations.forEach((s, idx) => {
       const sx = Math.floor(s.wx - this.camera.x);
@@ -320,44 +407,130 @@ class GameEngine {
       if (sx < -80 || sx > this.canvas.width + 80 || sy < -80 || sy > this.canvas.height + 80) return;
 
       const completed = this.completedSituations.has(s.id);
-      const bounce = completed ? 0 : Math.sin(now / 250 + idx) * 6;
 
-      // Sombra
-      ctx.fillStyle = 'rgba(0,0,0,0.45)';
-      ctx.beginPath();
-      ctx.ellipse(sx, sy + 16, 16, 6, 0, 0, Math.PI * 2);
-      ctx.fill();
+      if (isStory) {
+        // --- Nodo estilo Overcooked ---
+        const isUnlocked = s.id <= unlockedLevel;
+        const isCurrent = s.id === unlockedLevel && !completed;
+        const bounce = isCurrent ? Math.sin(now / 220 + idx) * 5 : 0;
+        const radius = 28;
 
-      // Caja de Pin estilo 16-bit
-      ctx.fillStyle = completed ? '#27AE60' : '#E74C3C';
-      ctx.fillRect(sx - 20, sy - 38 + bounce, 40, 34);
-      ctx.strokeStyle = '#1A1A1A';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(sx - 20, sy - 38 + bounce, 40, 34);
+        // Sombra circular
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        ctx.beginPath();
+        ctx.ellipse(sx, sy + radius + 6, radius * 0.7, radius * 0.27, 0, 0, Math.PI * 2);
+        ctx.fill();
 
-      // Icono / Emoji
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 16px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(completed ? '✓' : (s.emoji || String(s.id)), sx, sy - 20 + bounce);
+        // Pulso animado para nivel actual
+        if (isCurrent) {
+          const pulse = (Math.sin(now / 400) * 0.5 + 0.5) * 14;
+          ctx.beginPath();
+          ctx.arc(sx, sy - bounce, radius + pulse, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(241,196,15,0.18)';
+          ctx.fill();
+        }
 
-      // Cartel con nombre del lugar abajo
-      const titleShort = (s.title || '').replace(/"/g, '');
-      ctx.fillStyle = 'rgba(26,26,26,0.9)';
-      ctx.fillRect(sx - 65, sy + 4 + bounce, 130, 20);
-      ctx.strokeStyle = completed ? '#27AE60' : '#E74C3C';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(sx - 65, sy + 4 + bounce, 130, 20);
+        // Círculo del nodo
+        let fillColor, strokeColor;
+        if (completed) {
+          fillColor = '#27AE60'; strokeColor = '#1D8348';
+        } else if (isCurrent) {
+          fillColor = '#E74C3C'; strokeColor = '#F1C40F';
+        } else {
+          fillColor = '#2C2C3A'; strokeColor = '#555';
+        }
 
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 9px sans-serif';
-      ctx.fillText(titleShort.substring(0, 18), sx, sy + 14 + bounce);
+        ctx.beginPath();
+        ctx.arc(sx, sy - bounce, radius, 0, Math.PI * 2);
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = isCurrent ? 4 : 3;
+        ctx.stroke();
 
-      if (this.nearSituation === s) {
-        ctx.strokeStyle = '#F1C40F';
-        ctx.lineWidth = 4;
-        ctx.strokeRect(sx - 24, sy - 42 + bounce, 48, 42);
+        // Icono/Emoji dentro del nodo
+        ctx.font = completed ? 'bold 20px sans-serif' : (isUnlocked ? '18px sans-serif' : '20px sans-serif');
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#FFFFFF';
+        if (completed) {
+          ctx.fillText('✓', sx, sy - bounce);
+        } else if (isUnlocked) {
+          ctx.fillText(s.emoji || String(s.id), sx, sy - bounce);
+        } else {
+          ctx.fillText('🔒', sx, sy - bounce);
+        }
+
+        // Número de nivel en la esquina superior izquierda del nodo
+        ctx.beginPath();
+        ctx.arc(sx - radius + 8, sy - bounce - radius + 8, 11, 0, Math.PI * 2);
+        ctx.fillStyle = '#1A1A1A';
+        ctx.fill();
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillStyle = '#F4C430';
+        ctx.fillText(String(s.id), sx - radius + 8, sy - bounce - radius + 8);
+
+        // Etiqueta del nombre debajo
+        const titleShort = (s.title || '').replace(/"/g, '');
+        ctx.fillStyle = completed ? 'rgba(39,174,96,0.92)' : (isCurrent ? 'rgba(231,76,60,0.92)' : 'rgba(40,40,50,0.88)');
+        ctx.fillRect(sx - 68, sy + radius - bounce + 8, 136, 20);
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(sx - 68, sy + radius - bounce + 8, 136, 20);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText(titleShort.substring(0, 20), sx, sy + radius - bounce + 18);
+
+        // Halo amarillo si es el nodo cercano al jugador
+        if (this.nearSituation === s) {
+          ctx.beginPath();
+          ctx.arc(sx, sy - bounce, radius + 7, 0, Math.PI * 2);
+          ctx.strokeStyle = '#F1C40F';
+          ctx.lineWidth = 4;
+          ctx.stroke();
+        }
+
+      } else {
+        // --- Pin original (multijugador) ---
+        const bounce = completed ? 0 : Math.sin(now / 250 + idx) * 6;
+
+        // Sombra
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        ctx.beginPath();
+        ctx.ellipse(sx, sy + 16, 16, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Caja de Pin estilo 16-bit
+        ctx.fillStyle = completed ? '#27AE60' : '#E74C3C';
+        ctx.fillRect(sx - 20, sy - 38 + bounce, 40, 34);
+        ctx.strokeStyle = '#1A1A1A';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(sx - 20, sy - 38 + bounce, 40, 34);
+
+        // Icono / Emoji
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(completed ? '✓' : (s.emoji || String(s.id)), sx, sy - 20 + bounce);
+
+        // Cartel con nombre del lugar abajo
+        const titleShort = (s.title || '').replace(/"/g, '');
+        ctx.fillStyle = 'rgba(26,26,26,0.9)';
+        ctx.fillRect(sx - 65, sy + 4 + bounce, 130, 20);
+        ctx.strokeStyle = completed ? '#27AE60' : '#E74C3C';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(sx - 65, sy + 4 + bounce, 130, 20);
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText(titleShort.substring(0, 18), sx, sy + 14 + bounce);
+
+        if (this.nearSituation === s) {
+          ctx.strokeStyle = '#F1C40F';
+          ctx.lineWidth = 4;
+          ctx.strokeRect(sx - 24, sy - 42 + bounce, 48, 42);
+        }
       }
     });
   }
