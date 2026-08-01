@@ -487,7 +487,11 @@ footer {
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-
+.footer-gif {
+  width: 100px;
+  height: 50px;
+  flex-shrink: 0;
+}
 /* 2. Limpiamos los estilos individuales para que no interfieran */
 .site-footer,
 .site-footer-right {
