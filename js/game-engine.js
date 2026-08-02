@@ -617,6 +617,10 @@ class GameEngine {
     }
 
     // Dibujar capas del avatar (+20% adicional) en proporción exacta (340x720 -> 65x138)
+    const prevSmoothing = ctx.imageSmoothingEnabled;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
     if (window.ZR.activeAvatarImages && window.ZR.activeAvatarImages.length > 0) {
       window.ZR.activeAvatarImages.forEach(img => {
         if (img && img.complete && img.naturalWidth > 0) {
@@ -635,6 +639,7 @@ class GameEngine {
       });
     }
 
+    ctx.imageSmoothingEnabled = prevSmoothing;
     ctx.restore();
 
     // Cartel con nombre del Jugador
@@ -684,64 +689,92 @@ class GameEngine {
       ctx.ellipse(sx, sy + 8, 14, 5, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // --- Cuerpo pixel (proporción similar al player principal: ~65x138 escala) ---
-      // Piernas
-      ctx.fillStyle = '#2D3748';
-      ctx.fillRect(sx - 10, sy - 12, 8, 16);
-      ctx.fillRect(sx + 2,  sy - 12, 8, 16);
+      if (p.avatarImages && p.avatarImages.length > 0) {
+        ctx.translate(sx, sy);
+        
+        const prevSmoothing = ctx.imageSmoothingEnabled;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
 
-      // Zapatos
-      ctx.fillStyle = '#1A202C';
-      ctx.fillRect(sx - 12, sy + 2, 10, 6);
-      ctx.fillRect(sx + 2,  sy + 2, 10, 6);
+        p.avatarImages.forEach(img => {
+          if (img && img.complete && img.naturalWidth > 0) {
+            ctx.drawImage(img, -32, -110, 65, 138);
+          }
+        });
 
-      // Cuerpo / Camiseta
-      ctx.fillStyle = teamColor;
-      ctx.fillRect(sx - 12, sy - 38, 24, 26);
+        ctx.imageSmoothingEnabled = prevSmoothing;
+        
+        // Indicador de equipo sobre la cabeza del avatar (offset Y aprox -125)
+        ctx.fillStyle = teamLight;
+        ctx.beginPath();
+        ctx.arc(0, -125, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = teamColor;
+        ctx.beginPath();
+        ctx.arc(0, -125, 3, 0, Math.PI * 2);
+        ctx.fill();
 
-      // Detalle camiseta (línea central)
-      ctx.fillStyle = teamDark;
-      ctx.fillRect(sx - 1, sy - 38, 2, 26);
+        ctx.restore();
+      } else {
+        // --- Cuerpo pixel genérico de fallback ---
+        // Piernas
+        ctx.fillStyle = '#2D3748';
+        ctx.fillRect(sx - 10, sy - 12, 8, 16);
+        ctx.fillRect(sx + 2,  sy - 12, 8, 16);
 
-      // Brazos
-      ctx.fillStyle = teamColor;
-      ctx.fillRect(sx - 18, sy - 36, 6, 18);
-      ctx.fillRect(sx + 12, sy - 36, 6, 18);
+        // Zapatos
+        ctx.fillStyle = '#1A202C';
+        ctx.fillRect(sx - 12, sy + 2, 10, 6);
+        ctx.fillRect(sx + 2,  sy + 2, 10, 6);
 
-      // Cuello / piel
-      ctx.fillStyle = '#F6AD55';
-      ctx.fillRect(sx - 4, sy - 44, 8, 8);
+        // Cuerpo / Camiseta
+        ctx.fillStyle = teamColor;
+        ctx.fillRect(sx - 12, sy - 38, 24, 26);
 
-      // Cabeza
-      ctx.fillStyle = '#F6AD55';
-      ctx.fillRect(sx - 10, sy - 64, 20, 22);
+        // Detalle camiseta (línea central)
+        ctx.fillStyle = teamDark;
+        ctx.fillRect(sx - 1, sy - 38, 2, 26);
 
-      // Ojos
-      ctx.fillStyle = '#1A202C';
-      ctx.fillRect(sx - 7, sy - 58, 4, 4);
-      ctx.fillRect(sx + 3, sy - 58, 4, 4);
+        // Brazos
+        ctx.fillStyle = teamColor;
+        ctx.fillRect(sx - 18, sy - 36, 6, 18);
+        ctx.fillRect(sx + 12, sy - 36, 6, 18);
 
-      // Boca
-      ctx.fillStyle = '#C05621';
-      ctx.fillRect(sx - 4, sy - 50, 8, 2);
+        // Cuello / piel
+        ctx.fillStyle = '#F6AD55';
+        ctx.fillRect(sx - 4, sy - 44, 8, 8);
 
-      // Cabello (color según equipo)
-      ctx.fillStyle = teamDark;
-      ctx.fillRect(sx - 10, sy - 66, 20, 4);
-      ctx.fillRect(sx - 12, sy - 64, 4, 6);
-      ctx.fillRect(sx + 8, sy - 64, 4, 6);
+        // Cabeza
+        ctx.fillStyle = '#F6AD55';
+        ctx.fillRect(sx - 10, sy - 64, 20, 22);
 
-      // Indicador de equipo (pequeño rombo sobre la cabeza)
-      ctx.fillStyle = teamLight;
-      ctx.beginPath();
-      ctx.arc(sx, sy - 74, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = teamColor;
-      ctx.beginPath();
-      ctx.arc(sx, sy - 74, 3, 0, Math.PI * 2);
-      ctx.fill();
+        // Ojos
+        ctx.fillStyle = '#1A202C';
+        ctx.fillRect(sx - 7, sy - 58, 4, 4);
+        ctx.fillRect(sx + 3, sy - 58, 4, 4);
 
-      ctx.restore();
+        // Boca
+        ctx.fillStyle = '#C05621';
+        ctx.fillRect(sx - 4, sy - 50, 8, 2);
+
+        // Cabello (color según equipo)
+        ctx.fillStyle = teamDark;
+        ctx.fillRect(sx - 10, sy - 66, 20, 4);
+        ctx.fillRect(sx - 12, sy - 64, 4, 6);
+        ctx.fillRect(sx + 8, sy - 64, 4, 6);
+
+        // Indicador de equipo (pequeño rombo sobre la cabeza)
+        ctx.fillStyle = teamLight;
+        ctx.beginPath();
+        ctx.arc(sx, sy - 74, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = teamColor;
+        ctx.beginPath();
+        ctx.arc(sx, sy - 74, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
 
       // --- Etiqueta con nombre ---
       const label = (p.nombre || 'Jugador').substring(0, 10).toUpperCase();

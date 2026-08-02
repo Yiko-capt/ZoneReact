@@ -187,6 +187,7 @@ function hexToRgb(hex) {
 const DARK_THRESHOLD = 40;
 const TINT_CACHE = new Map();
 
+window.ZR.tintSprite = tintSprite;
 function tintSprite(imgSrc, hexColor) {
   const cacheKey = `${imgSrc}_${hexColor}`;
   if (TINT_CACHE.has(cacheKey)) {

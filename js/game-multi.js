@@ -406,7 +406,8 @@ window.ZR.registerScreen('screen-multi-matchmaking', async function () {
       .select('*')
       .eq('estado', 'buscando_partida')
       .eq('es_bot', false)
-      .neq('id', grupoId);
+      .neq('id', grupoId)
+      .gte('created_at', new Date(Date.now() - 3600000).toISOString());
     
     listEl.innerHTML = '';
     if (!data || data.length === 0) {
@@ -586,6 +587,7 @@ window.ZR.startMultiplayerMapSync = async function () {
       // Cualquier jugador puede marcar como finalizada (Supabase ignora si ya está en ese estado)
       if (partidaId) {
         window.ZR.supabase.from('partidas').update({ estado: 'finalizada' }).eq('id', partidaId);
+        window.ZR.supabase.from('grupos').update({ estado: 'finalizado' }).in('id', [myGroupId, rivalGroupId]);
       }
       window.ZR.navigate('screen-multi-ending');
       return;
@@ -660,9 +662,37 @@ window.ZR.startMultiplayerMapSync = async function () {
   posChannel
     .on('broadcast', { event: 'pos' }, ({ payload }) => {
       if (!payload || payload.id === myJugadorId) return;
-      window.ZR.otherPlayers[payload.id] = payload;
+      const existing = window.ZR.otherPlayers[payload.id];
+      if (payload.avatar && (!existing || !existing.avatarImages)) {
+        window.ZR.otherPlayers[payload.id] = payload;
+        window.ZR.otherPlayers[payload.id].avatarImages = []; // mark as loading
+        buildRemoteAvatar(payload.id, payload.avatar);
+      } else {
+        payload.avatarImages = existing ? existing.avatarImages : null;
+        window.ZR.otherPlayers[payload.id] = payload;
+      }
     })
     .subscribe();
+
+  async function buildRemoteAvatar(playerId, avatarState) {
+    if (!window.ZR.getAvatarLayerDefs || !window.ZR.tintSprite) return;
+    const defs = window.ZR.getAvatarLayerDefs(avatarState);
+    const images = await Promise.all(
+      defs.map(async layer => {
+        const url = layer.color === null ? layer.src : await window.ZR.tintSprite(layer.src, layer.color);
+        return new Promise(resolve => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => resolve(img);
+          img.onerror = () => resolve(null);
+          img.src = url;
+        });
+      })
+    );
+    if (window.ZR.otherPlayers[playerId]) {
+      window.ZR.otherPlayers[playerId].avatarImages = images.filter(Boolean);
+    }
+  }
 
   // Guardar referencia para limpiar
   window.ZR._posChannel = posChannel;
@@ -682,6 +712,7 @@ window.ZR.startMultiplayerMapSync = async function () {
         wx: engine.player.wx,
         wy: engine.player.wy,
         ts: Date.now(),
+        avatar: window.ZR.state.avatar
       }
     });
   }, 200);
@@ -732,6 +763,9 @@ window.ZR.submitMultiplayerDecision = async function(score, situationId, letter,
         await window.ZR.supabase.from('partidas')
           .update({ estado: 'finalizada' })
           .eq('id', partidaId);
+        await window.ZR.supabase.from('grupos')
+          .update({ estado: 'finalizado' })
+          .in('id', [myGroupId, rivalGroupId]);
       }
     }
   }
