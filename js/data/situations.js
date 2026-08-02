@@ -1,7 +1,6 @@
 /**
- * ZoneReact - Data: Situaciones del Modo Historia
- * "Salvar a tu mejor amigo (Leo)"
- * Situaciones actualizadas con ubicaciones específicas del mapa
+ * ZoneReact - Data: Situaciones del Modo Historia / Multijugador
+ * Situaciones actualizadas con imágenes generadas y ubicaciones del mapa
  */
 window.ZR = window.ZR || {};
 
@@ -9,9 +8,10 @@ window.ZR.situations = [
   {
     id: 1,
     title: '"Aprobar exámenes"',
-    tag: 'Presión de estudio / Vapeo',
+    tag: 'PRESIÓN DE ESTUDIO / VAPEO',
     tagColor: 'red',
-    context: 'Tu amigo te propone que se desvelen estudiando, por lo que te ofrece un vape sabor menta para combatir el sueño. Te dice “Este vape menos dañino que los otros, lo compré en una tienda buena. Si lo usamos, estaremos despiertos hasta la madrugada”.',
+    image: 'assets/Situaciones/situacion_2.jpg',
+    context: 'Tu amigo te propone que se desvelen estudiando, por lo que te ofrece un vape sabor menta para combatir el sueño. Te dice "Este vape es menos dañino que los otros, lo compré en una tienda buena. Si lo usamos, estaremos despiertos hasta la madrugada"',
     tip: 'La presión de estudio no debe llevarte a consumir sustancias nocivas. El descanso adecuado antes de un examen es fundamental.',
     emoji: '🏠',
     mapPosition: { x: 2420, y: 920 }, // CASA en mapa.png
@@ -61,9 +61,10 @@ window.ZR.situations = [
   {
     id: 2,
     title: '"La invitación"',
-    tag: 'Presión social',
+    tag: 'PRESIÓN SOCIAL',
     tagColor: 'blue',
-    context: 'Después de los exámenes, estás muy cansado y tus amigos te ofrecen ir a una discoteca por un cumpleaños para relajarse. Sabes que está ubicada en una calle conocida por la venta de drogas y comercio ilegal. Te dicen “siempre hemos pasado por ahí y les hemos comprado, por lo que son de confianza. No nos van a hacer nada”',
+    image: 'assets/Situaciones/situacion_3.png',
+    context: 'Después de los exámenes, estás muy cansado y tus amigos te ofrecen ir a una discoteca por un cumpleaños para relajarse. Sabes que está ubicada en una calle conocida por la venta de drogas y comercio ilegal. Te dicen "siempre hemos pasado por ahí y les hemos comprado, por lo que son de confianza. No nos van a hacer nada"',
     tip: 'Las zonas de venta de drogas y comercio ilegal representan un alto riesgo para ti y tus amigos, sin importar la hora o con quién vayas.',
     emoji: '🏫',
     mapPosition: { x: 1220, y: 940 }, // COLEGIO en mapa.png
@@ -113,10 +114,11 @@ window.ZR.situations = [
   {
     id: 3,
     title: '"Solo para probar"',
-    tag: 'Sustancias ilícitas',
+    tag: 'SUSTANCIAS ILÍCITAS',
     tagColor: 'purple',
+    image: 'assets/Situaciones/situacion_1.jpg',
     context: 'Estás en el cumpleaños de un amigo. Un chico mayor del grupo te ofrece un tipo de droga que no conoces "algo para pasarla mejor". Varios ya aceptaron y sientes que si dices que no, vas a quedar afuera del grupo.',
-    tip: 'Nunca aceptes sustancias desconocidas. Consumir drogas por presión social o por encajar puede tener consecuencias fatales.',
+    tip: 'Nunca aceptes sustancias desconocidas. Consumir drogas por presión social a por encajar puede tener consecuencias fatales.',
     emoji: '🪩',
     mapPosition: { x: 2100, y: 520 }, // DISCO en mapa.png
     options: [
@@ -165,12 +167,13 @@ window.ZR.situations = [
   {
     id: 4,
     title: '"El camino oscuro"',
-    tag: 'Ruta nocturna',
+    tag: 'RUTA NOCTURNA',
     tagColor: 'yellow',
+    image: 'assets/Situaciones/situacion_3.png',
     context: 'Sales tarde de estudiar en casa de un amigo. Para llegar a tu casa hay dos rutas: un atajo por una calle sola y mal iluminada (10 min), o la calle principal, más iluminada pero más larga (25 min). Tu amigo vive en dirección contraria a la tuya.',
     tip: 'Las calles mal iluminadas y solitarias son puntos frecuentes de asaltos. Elige siempre caminos iluminados y transitados.',
     emoji: '🌙',
-    mapPosition: { x: 1450, y: 480 }, // ENTRE LOS EDIFICIOS Y LA NEON DISCO
+    mapPosition: { x: 1450, y: 480 },
     options: [
       {
         letter: 'A',
@@ -217,8 +220,9 @@ window.ZR.situations = [
   {
     id: 5,
     title: '"Desconocido en la calle"',
-    tag: 'Prevención de robos',
+    tag: 'DESCONOCIDO EN LA CALLE',
     tagColor: 'ink',
+    image: 'assets/Situaciones/situacion_4.png',
     context: 'Vas caminando a casa después del colegio, con el celular guardado. Una persona que no conoces se te acerca y te pregunta la hora, insistiendo después en que la ayudes con el mapa de tu celular. Estás en una zona peligrosa con alto índice de un aumento del robo callejero de celulares por distracción.',
     tip: 'Las preguntas frecuentes sobre la hora o direcciones suelen ser tácticas de distracción para arrebatar objetos de valor.',
     emoji: '🏪',
@@ -268,10 +272,11 @@ window.ZR.situations = [
   },
   {
     id: 6,
-    title: '"Intento de arrebato"',
-    tag: 'Reacción ante delitos',
+    title: '"¡Suelta mi celular!"',
+    tag: 'INTENTO DE ARREBATO',
     tagColor: 'red',
-    context: 'Vas caminando cerca de una avenida peligrosa. Alguien intenta arrebatarte el celular de la mano. Hay personas cerca y negocios abiertos a pocos metros.',
+    image: 'assets/Situaciones/situacion_5.png',
+    context: 'Caminabas cerca de una avenida peligrosa cuando un desconocido intentó quitarte el celular de la mano. Aunque hay gente cerca, el arrebato fue rápido. Tienes suerte de que varios negocios abiertos están a pocos metros.',
     tip: 'Ante un intento de robo, nunca opongas resistencia ni persigas al delincuente. Tu vida e integridad valen más que cualquier objeto.',
     emoji: '🏢',
     mapPosition: { x: 650, y: 440 }, // EDIFICIOS en mapa.png

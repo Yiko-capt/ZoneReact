@@ -170,10 +170,15 @@ window.ZR.registerScreen('screen-situation', function ({ situation }) {
   }
   if (!situation) { window.ZR.navigate('screen-map', { mode: window.ZR.state.mode }); return; }
 
+  const heroImg = document.getElementById('situation-hero-img');
+  if (heroImg && situation.image) {
+    heroImg.src = situation.image;
+  }
+
   const tagEl = document.getElementById('situation-tag');
   if (tagEl) {
     tagEl.textContent = situation.tag;
-    tagEl.className = `tag tag-${situation.tagColor || 'red'} situation-tag`;
+    tagEl.className = 'sit-tag';
   }
 
   const titleEl = document.getElementById('situation-title');
@@ -184,12 +189,6 @@ window.ZR.registerScreen('screen-situation', function ({ situation }) {
 
   const tipEl = document.getElementById('situation-tip');
   if (tipEl) tipEl.textContent = situation.tip;
-
-  const emojiEl = document.getElementById('situation-emoji');
-  if (emojiEl) emojiEl.textContent = situation.emoji || '⚠️';
-
-  const sceneEl = document.getElementById('situation-scene-title');
-  if (sceneEl) sceneEl.textContent = situation.title;
 
   const decideBtn = document.getElementById('situation-decide-btn');
   const backBtn   = document.getElementById('situation-back-btn');

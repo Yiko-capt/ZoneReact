@@ -553,31 +553,30 @@
 
   <!-- ===== PANTALLA 11: SITUACIÓN ===== -->
   <div id="screen-situation" class="screen">
-    <div class="situation-art">
-      <div class="situation-scene">
-        <div class="situation-emoji" id="situation-emoji">⚠️</div>
-        <div class="situation-art-title" id="situation-scene-title"></div>
-      </div>
-    </div>
-
-    <div class="situation-panel">
-      <button class="btn btn-secondary btn-sm" id="situation-back-btn" style="align-self:flex-start;margin-bottom:24px">
+    <!-- Top Area: Full Width Situation Banner Image -->
+    <div class="sit-hero-wrapper">
+      <button class="btn btn-secondary btn-sm sit-back-floating" id="situation-back-btn">
         ← Volver al mapa
       </button>
+      <img id="situation-hero-img" class="sit-hero-img" src="assets/Situaciones/situacion_1.jpg" alt="Situación" />
+    </div>
 
-      <div id="situation-tag" class="tag tag-red situation-tag">PRESIÓN SOCIAL</div>
-      <h1 class="situation-title" id="situation-title">"La Esquina del Colegio"</h1>
-      <div class="situation-context" id="situation-context"></div>
-
-      <div class="situation-tip">
-        <div class="situation-tip-icon">?</div>
-        <span id="situation-tip"></span>
-      </div>
-
-      <div class="situation-actions">
-        <button id="situation-decide-btn" class="btn btn-primary btn-lg">
+    <!-- Bottom Area: Split Panel (Left: Tag, Title, Button; Right: Context, Tip Box) -->
+    <div class="sit-bottom-panel">
+      <div class="sit-panel-left">
+        <div id="situation-tag" class="sit-tag">SUSTANCIAS ILÍCITAS</div>
+        <h1 class="sit-title" id="situation-title">"Solo para probar"</h1>
+        <button id="situation-decide-btn" class="sit-btn-decide">
           Tomar una decisión →
         </button>
+      </div>
+
+      <div class="sit-panel-right">
+        <p class="sit-context" id="situation-context"></p>
+        <div class="sit-tip-box">
+          <div class="sit-tip-icon">?</div>
+          <span id="situation-tip" class="sit-tip-text"></span>
+        </div>
       </div>
     </div>
   </div>
