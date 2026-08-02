@@ -149,8 +149,8 @@ function initBodyOrgansScreen() {
     tabsContainer.innerHTML = '';
     const organDefs = [
       { key: 'brain', icon: '🧠', label: 'Cerebro' },
-      { key: 'heart', icon: '♥', label: 'Corazón' },
-      { key: 'lungs', icon: '🫁', label: selectedSubstance.id === 'alcohol' ? 'Hígado' : 'Pulmones' },
+      { key: 'heart', icon: '❤️', label: 'Corazón' },
+      { key: 'lungs', icon: '🩺', label: selectedSubstance.id === 'alcohol' ? 'Hígado' : 'Pulmones' },
       { key: 'nerves', icon: '⚡', label: 'Sistema nervioso' }
     ];
 

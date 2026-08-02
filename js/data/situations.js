@@ -1,6 +1,12 @@
 /**
+<<<<<<< HEAD
  * ZoneReact - Data: Situaciones del Modo Historia / Multijugador
  * Situaciones actualizadas con imágenes generadas y ubicaciones del mapa
+=======
+ * ZoneReact - Data: Situaciones del Modo Historia
+ * "Salvar a tu mejor amigo (Lucas)"
+ * Situaciones actualizadas con ubicaciones específicas del mapa
+>>>>>>> 89d94972a8e3660184cbd0ecadfd6f9296eec6d2
  */
 window.ZR = window.ZR || {};
 

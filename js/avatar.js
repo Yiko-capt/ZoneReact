@@ -126,13 +126,15 @@ function renderAvatarCustomizer() {
   renderSwatchGrid(activeTab);
 
   document.getElementById('avatar-back-btn')?.addEventListener('click', () => {
-    window.ZR.navigate('screen-menu-aventura');
+    const returnScreen = window.ZR.state.avatarReturnScreen || 'screen-menu-aventura';
+    window.ZR.navigate(returnScreen);
   });
 
   document.getElementById('avatar-save-btn')?.addEventListener('click', () => {
     window.ZR.saveAvatar();
     window.ZR.showToast('✅ <b>Avatar guardado</b> correctamente!');
-    setTimeout(() => window.ZR.navigate('screen-menu-aventura'), 1000);
+    const returnScreen = window.ZR.state.avatarReturnScreen || 'screen-menu-aventura';
+    setTimeout(() => window.ZR.navigate(returnScreen), 1000);
   });
 }
 
