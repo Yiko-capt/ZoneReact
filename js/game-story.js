@@ -165,7 +165,8 @@ window.ZR.registerScreen('screen-map', function (data) {
     window.ZR.gameEngine = null;
   }
 
-  const timerConfig = mode === 'multi' ? { total: 7 * 60, elapsed: 0 } : null;
+  // El timer multijugador es gestionado globalmente por startMultiplayerMapSync desde la hora de inicio de Supabase
+  const timerConfig = null;
 
   const activeSituations = mode === 'story'
     ? (window.ZR.storySituations || window.ZR.situations)
@@ -178,6 +179,9 @@ window.ZR.registerScreen('screen-map', function (data) {
     onSituationTrigger: handleSituationTrigger,
     onTimerEnd: handleTimerEnd
   });
+
+  // Exponer referencia para broadcast de posición en multijugador
+  window.ZR._activeEngine = window.ZR.gameEngine;
 
   window.ZR.state.story.decisions.forEach(d => {
     window.ZR.gameEngine.markSituationComplete(d.situationId);
@@ -426,6 +430,12 @@ window.ZR.registerScreen('screen-result', function ({ situation, option }) {
 // --- Ending ---
 window.ZR.registerScreen('screen-ending', function () {
   const mode = window.ZR.state.mode || 'story';
+
+  if (mode === 'multi') {
+    window.ZR.navigate('screen-multi-ending');
+    return;
+  }
+
   const activeSituations = mode === 'story'
     ? (window.ZR.storySituations || window.ZR.situations)
     : window.ZR.situations;

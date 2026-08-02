@@ -139,6 +139,7 @@ function updateNavActive(screenId) {
     'screen-decision': 'nav-aventura',
     'screen-result': 'nav-aventura',
     'screen-ending': 'nav-aventura',
+    'screen-multi-ending': 'nav-aventura',
     'screen-body-select': 'nav-body',
     'screen-body-organs': 'nav-body'
   };

@@ -348,7 +348,10 @@ class GameEngine {
       this._drawLeo(ctx);
     }
 
-    // 5. DIBUJAR AVATAR PERSONALIZABLE
+    // 5. DIBUJAR OTROS JUGADORES (MULTIJUGADOR EN TIEMPO REAL)
+    this._drawOtherPlayers(ctx);
+
+    // 6. DIBUJAR AVATAR PERSONALIZABLE
     this._drawPlayerAvatar(ctx);
   }
 
@@ -647,6 +650,109 @@ class GameEngine {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(pName.substring(0, 10), sx, sy + 37);
+  }
+
+  _drawOtherPlayers(ctx) {
+    // Solo en modo multijugador
+    if (!this.options || this.options.mode !== 'multi') return;
+    const others = window.ZR.otherPlayers;
+    if (!others || typeof others !== 'object') return;
+
+    const myId = window.ZR.state && window.ZR.state.multi && window.ZR.state.multi.jugadorId;
+    const myGrupo = window.ZR.state && window.ZR.state.multi && window.ZR.state.multi.grupoId;
+
+    Object.values(others).forEach(p => {
+      if (!p || p.wx === undefined || p.wy === undefined) return;
+      if (p.id === myId) return;
+
+      const sx = Math.floor(p.wx - this.camera.x);
+      const sy = Math.floor(p.wy - this.camera.y);
+
+      const isSameTeam = p.grupoId === myGrupo;
+      const teamColor  = isSameTeam ? '#4299E1' : '#E53E3E'; // azul aliado, rojo rival
+      const teamDark   = isSameTeam ? '#2B6CB0' : '#9B2C2C';
+      const teamLight  = isSameTeam ? '#BEE3F8' : '#FED7D7';
+
+      ctx.save();
+
+      // --- Sombra ---
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.beginPath();
+      ctx.ellipse(sx, sy + 8, 14, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // --- Cuerpo pixel (proporción similar al player principal: ~65x138 escala) ---
+      // Piernas
+      ctx.fillStyle = '#2D3748';
+      ctx.fillRect(sx - 10, sy - 12, 8, 16);
+      ctx.fillRect(sx + 2,  sy - 12, 8, 16);
+
+      // Zapatos
+      ctx.fillStyle = '#1A202C';
+      ctx.fillRect(sx - 12, sy + 2, 10, 6);
+      ctx.fillRect(sx + 2,  sy + 2, 10, 6);
+
+      // Cuerpo / Camiseta
+      ctx.fillStyle = teamColor;
+      ctx.fillRect(sx - 12, sy - 38, 24, 26);
+
+      // Detalle camiseta (línea central)
+      ctx.fillStyle = teamDark;
+      ctx.fillRect(sx - 1, sy - 38, 2, 26);
+
+      // Brazos
+      ctx.fillStyle = teamColor;
+      ctx.fillRect(sx - 18, sy - 36, 6, 18);
+      ctx.fillRect(sx + 12, sy - 36, 6, 18);
+
+      // Cuello / piel
+      ctx.fillStyle = '#F6AD55';
+      ctx.fillRect(sx - 4, sy - 44, 8, 8);
+
+      // Cabeza
+      ctx.fillStyle = '#F6AD55';
+      ctx.fillRect(sx - 10, sy - 64, 20, 22);
+
+      // Ojos
+      ctx.fillStyle = '#1A202C';
+      ctx.fillRect(sx - 7, sy - 58, 4, 4);
+      ctx.fillRect(sx + 3, sy - 58, 4, 4);
+
+      // Boca
+      ctx.fillStyle = '#C05621';
+      ctx.fillRect(sx - 4, sy - 50, 8, 2);
+
+      // Cabello (color según equipo)
+      ctx.fillStyle = teamDark;
+      ctx.fillRect(sx - 10, sy - 66, 20, 4);
+      ctx.fillRect(sx - 12, sy - 64, 4, 6);
+      ctx.fillRect(sx + 8, sy - 64, 4, 6);
+
+      // Indicador de equipo (pequeño rombo sobre la cabeza)
+      ctx.fillStyle = teamLight;
+      ctx.beginPath();
+      ctx.arc(sx, sy - 74, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = teamColor;
+      ctx.beginPath();
+      ctx.arc(sx, sy - 74, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+
+      // --- Etiqueta con nombre ---
+      const label = (p.nombre || 'Jugador').substring(0, 10).toUpperCase();
+      const lw = Math.max(56, label.length * 6.5 + 16);
+      ctx.fillStyle = isSameTeam ? 'rgba(43,108,176,0.92)' : 'rgba(155,44,44,0.92)';
+      ctx.beginPath();
+      ctx.roundRect(sx - lw/2, sy + 13, lw, 16, 4);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 8px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, sx, sy + 21);
+    });
   }
 
   _updateTimerHUD() {
