@@ -153,8 +153,8 @@ window.ZR.registerScreen('screen-map', function (data) {
   const modeLabel = document.getElementById('map-mode-label');
   if (modeLabel) modeLabel.textContent = mode === 'story' ? '📖 Modo Historia' : '👥 Multijugador';
 
-  if (mode === 'multi' && window.ZR.startBotSimulation) {
-    window.ZR.startBotSimulation();
+  if (mode === 'multi' && window.ZR.startMultiplayerMapSync) {
+    window.ZR.startMultiplayerMapSync();
   }
 
   const canvas = document.getElementById('game-canvas');
@@ -317,8 +317,9 @@ window.ZR.registerScreen('screen-decision', function ({ situation }) {
     });
 
     if (window.ZR.state.mode === 'multi') {
-      window.ZR.state.multi.myTeamScore = (window.ZR.state.multi.myTeamScore || 0) + selectedOption.score;
-      if (window.ZR.updateMultiHUD) window.ZR.updateMultiHUD();
+      if (window.ZR.submitMultiplayerDecision) {
+        window.ZR.submitMultiplayerDecision(selectedOption.score, situation.id, selectedOption.letter, selectedOption.isCorrect);
+      }
     } else {
       window.ZR.state.storyUnlockedLevel = Math.max(
         window.ZR.state.storyUnlockedLevel || 1,

@@ -5,6 +5,12 @@
 
 window.ZR = window.ZR || {};
 
+// SUPABASE INITIALIZATION
+const SUPABASE_URL = "https://uwkzdwaedritpaibddjs.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3a3pkd2FlZHJpdHBhaWJkZGpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2MzUxODIsImV4cCI6MjEwMTIxMTE4Mn0.TMfRC1grO28iSgRBkqZJX4J1dReI84xBBlf6rcoXz40";
+window.ZR.supabase = supabase.createClient("https://uwkzdwaedritpaibddjs.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3a3pkd2FlZHJpdHBhaWJkZGpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2MzUxODIsImV4cCI6MjEwMTIxMTE4Mn0.TMfRC1grO28iSgRBkqZJX4J1dReI84xBBlf6rcoXz40");
+
+
 /* =========================================
    ESTADO GLOBAL
    ========================================= */
@@ -30,6 +36,10 @@ window.ZR.state = {
     squadName: '',
     code: '',
     role: 'member',
+    grupoId: null,
+    partidaId: null,
+    esLider: false,
+    vsBots: false,
     leaderboard: []
   }
 };
@@ -77,12 +87,8 @@ window.ZR.navigate = function (screenId, data) {
     window.ZR.gameEngine.stop();
   }
 
-  if (screenId !== 'screen-map' && window.ZR.stopBotSimulation) {
-    window.ZR.stopBotSimulation();
-  }
-
-  if (screenId === 'screen-map' && window.ZR.state.mode === 'multi' && window.ZR.startBotSimulation) {
-    setTimeout(() => window.ZR.startBotSimulation(), 500);
+  if (screenId !== 'screen-map' && window.ZR.stopMultiplayerMapSync) {
+    window.ZR.stopMultiplayerMapSync();
   }
 
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));

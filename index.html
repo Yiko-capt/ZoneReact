@@ -431,6 +431,9 @@
           <button id="create-ready-btn" class="mc-btn mc-btn-ready">
             ✅ &nbsp;¡ESTAMOS LISTOS!
           </button>
+          <button id="create-bots-btn" class="mc-btn mc-btn-secondary" style="margin-top: 10px; background-color: #5A3D28; border-color: #8C672A; color: white;">
+            🤖 &nbsp;JUGAR CONTRA BOTS
+          </button>
         </div>
 
         <!-- RIGHT: Sala de espera -->
@@ -452,6 +455,37 @@
 
       </div><!-- /mc-layout -->
     </div><!-- /mc-wrapper -->
+  </div>
+
+  <!-- ===== PANTALLA 7.5: MATCHMAKING ===== -->
+  <div id="screen-multi-matchmaking" class="screen">
+    <div class="mc-scanlines"></div>
+    <div class="mc-wrapper">
+      <div class="mc-layout" style="flex-direction: column; align-items: center; justify-content: center; min-height: 80vh;">
+        <div class="mc-panel-header" style="text-align: center; margin-bottom: 30px;">
+          <span class="mc-panel-icon" style="font-size: 3rem;">⚔️</span>
+          <h1 class="mc-panel-title" style="font-size: 2rem;">BUSCAR<br><span class="mc-title-yellow">RETADOR</span></h1>
+        </div>
+
+        <div id="matchmaking-groups-list" style="width: 100%; max-width: 600px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto;">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="mc-waiting-msg">
+          <span class="mc-wait-dots">📡</span> Buscando otros grupos...
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal for incoming challenge -->
+    <div id="challenge-modal" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center;">
+      <div style="background: #2C3A50; border: 4px solid #fff; padding: 30px; text-align: center; border-radius: 8px;">
+        <h2 style="color: #FFD54F; font-family: 'Press Start 2P', monospace; font-size: 16px; margin-bottom: 20px;">¡TE HAN RETADO!</h2>
+        <p style="color: white; font-family: 'Press Start 2P', monospace; font-size: 12px; margin-bottom: 30px; line-height: 1.5;">El grupo <span id="challenger-name" style="color:#FF5252">Rival</span> quiere jugar.</p>
+        <button id="accept-challenge-btn" class="mc-btn mc-btn-ready" style="margin-right: 10px;">✅ ACEPTAR</button>
+        <button id="reject-challenge-btn" class="mc-btn" style="background: #B84335; border-color: #7A2E20;">❌ RECHAZAR</button>
+      </div>
+    </div>
   </div>
 
   <!-- ===== PANTALLA 8: CINEMÁTICA LEO (16-BIT DESIGN) ===== -->
@@ -843,11 +877,12 @@
 <!-- =========================================
      SCRIPTS
      ========================================= -->
-<script src="js/data/situations.js"></script>
-<script src="js/data/story-situations.js"></script>
-<script src="js/data/substances.js"></script>
-<script src="js/app.js"></script>
-<script src="js/avatar.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/data/situations.js"></script>
+  <script src="js/data/story-situations.js"></script>
+  <script src="js/data/substances.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/avatar.js"></script>
 <script src="js/game-engine.js"></script>
 <script src="js/game-story.js"></script>
 <script src="js/game-multi.js"></script>

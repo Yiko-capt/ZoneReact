@@ -1,43 +1,80 @@
 /**
  * ZoneReact - game-multi.js
- * Modo Multijugador SIMULADO
- * - Crear comunidad / unirse con código
- * - Sala de espera con leaderboard
- * - VS screen
- * - Mapa compartido con timer 7:30
- * - Bots que acumulan puntos aleatoriamente
+ * Modo Multijugador Real (Supabase)
  */
 window.ZR = window.ZR || {};
 
-/* =========================================
-   DATOS SIMULADOS
-   ========================================= */
-const SQUAD_NAMES = ['Fénix', 'Yiko', 'Sage', 'Clove', 'Artulol'];
-const ENEMY_SQUAD = ['Drago', 'Nexus', 'Kira', 'Bolt', 'Zara'];
+let lobbySubscription = null;
+let matchmakingGroupsSub = null;
+let matchmakingPartidasSub = null;
+let mapJugadoresSub = null;
+let mapPartidaSub = null;
+let gameTimerInterval = null;
+let botSimulationInterval = null;
 
-let botInterval = null;
+function cleanupMultiplayer() {
+  if (lobbySubscription) { window.ZR.supabase.removeChannel(lobbySubscription); lobbySubscription = null; }
+  if (matchmakingGroupsSub) { window.ZR.supabase.removeChannel(matchmakingGroupsSub); matchmakingGroupsSub = null; }
+  if (matchmakingPartidasSub) { window.ZR.supabase.removeChannel(matchmakingPartidasSub); matchmakingPartidasSub = null; }
+  if (mapJugadoresSub) { window.ZR.supabase.removeChannel(mapJugadoresSub); mapJugadoresSub = null; }
+  if (mapPartidaSub) { window.ZR.supabase.removeChannel(mapPartidaSub); mapPartidaSub = null; }
+  if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
+  if (botSimulationInterval) { clearInterval(botSimulationInterval); botSimulationInterval = null; }
+}
 
-/* =========================================
-   PANTALLA 4 - JOIN / CREATE
-   ========================================= */
+// ==========================================
+// SCREEN: JOIN
+// ==========================================
 window.ZR.registerScreen('screen-multi-join', function () {
-  // Join button
   const joinBtn = document.getElementById('multi-join-btn');
   const newJoin = joinBtn?.cloneNode(true);
   joinBtn?.parentNode?.replaceChild(newJoin, joinBtn);
-  newJoin?.addEventListener('click', () => {
+
+  newJoin?.addEventListener('click', async () => {
     const code = document.getElementById('multi-code-input')?.value.trim().toUpperCase();
     if (!code || code.length < 4) {
       window.ZR.showToast('📟 <b>Ingresa un código</b> válido para unirte');
       return;
     }
+
+    const { data: grupo, error } = await window.ZR.supabase
+      .from('grupos')
+      .select('*')
+      .eq('codigo', code)
+      .single();
+
+    if (error || !grupo) {
+      window.ZR.showToast('❌ <b>Código no encontrado</b>');
+      return;
+    }
+    if (grupo.estado === 'en_partida') {
+      window.ZR.showToast('⚠️ <b>El grupo ya está jugando</b>');
+      return;
+    }
+
+    const playerName = window.ZR.state.playerName || 'Jugador';
+    const { data: jugador, error: errJug } = await window.ZR.supabase
+      .from('jugadores')
+      .insert({ grupo_id: grupo.id, nombre: playerName })
+      .select()
+      .single();
+
+    if (errJug) {
+      window.ZR.showToast('❌ <b>Error al unirse</b>');
+      return;
+    }
+
     window.ZR.state.multi.code = code;
-    window.ZR.state.multi.squadName = 'SchoolSJL';
+    window.ZR.state.multi.squadName = grupo.nombre;
     window.ZR.state.multi.role = 'member';
+    window.ZR.state.multi.grupoId = grupo.id;
+    window.ZR.state.multi.playerId = jugador.id;
+    window.ZR.state.multi.esLider = false;
+    window.ZR.state.multi.vsBots = grupo.es_bot;
+
     window.ZR.navigate('screen-multi-lobby');
   });
 
-  // Create button
   const createBtn = document.getElementById('multi-create-btn');
   const newCreate = createBtn?.cloneNode(true);
   createBtn?.parentNode?.replaceChild(newCreate, createBtn);
@@ -45,18 +82,16 @@ window.ZR.registerScreen('screen-multi-join', function () {
     window.ZR.navigate('screen-multi-create');
   });
 
-  // Back
   const backBtn = document.getElementById('multi-join-back');
   const newBack = backBtn?.cloneNode(true);
   backBtn?.parentNode?.replaceChild(newBack, backBtn);
   newBack?.addEventListener('click', () => window.ZR.navigate('screen-menu-aventura'));
 });
 
-/* =========================================
-   PANTALLA 7 - CREAR COMUNIDAD
-   ========================================= */
+// ==========================================
+// SCREEN: CREATE
+// ==========================================
 window.ZR.registerScreen('screen-multi-create', function () {
-  // Reset code
   const codeEl = document.getElementById('generated-code-display');
   if (codeEl) codeEl.textContent = '——————';
 
@@ -65,299 +100,448 @@ window.ZR.registerScreen('screen-multi-create', function () {
   const newGenBtn = genBtn?.cloneNode(true);
   genBtn?.parentNode?.replaceChild(newGenBtn, genBtn);
 
+  let generatedCode = null;
+
   newGenBtn?.addEventListener('click', () => {
     const name = nameInput?.value.trim();
     if (!name) {
       window.ZR.showToast('✏️ <b>Escribe el nombre</b> de tu comunidad');
       return;
     }
-    const code = window.ZR.generateCode();
-    window.ZR.state.multi.code = code;
-    window.ZR.state.multi.squadName = name;
-    window.ZR.state.multi.role = 'leader';
-
-    if (codeEl) codeEl.textContent = code;
-
-    // Simulate members joining
-    simulateMembersJoining();
+    generatedCode = window.ZR.generateCode();
+    if (codeEl) codeEl.textContent = generatedCode;
+    window.ZR.showToast('✅ <b>Código generado</b>, elige un modo abajo.');
   });
 
-  // Ready button
-  const readyBtn = document.getElementById('create-ready-btn');
-  const newReady = readyBtn?.cloneNode(true);
-  readyBtn?.parentNode?.replaceChild(newReady, readyBtn);
-  newReady?.addEventListener('click', () => {
-    if (!window.ZR.state.multi.code) {
+  async function createGroupAndJoin(isBot) {
+    if (!generatedCode) {
       window.ZR.showToast('🔑 <b>Genera el código</b> primero');
       return;
     }
-    window.ZR.navigate('screen-multi-lobby');
-  });
+    const name = nameInput?.value.trim() || 'Comunidad';
+    const { data: grupo, error } = await window.ZR.supabase
+      .from('grupos')
+      .insert({ codigo: generatedCode, nombre: name, es_bot: isBot })
+      .select()
+      .single();
 
-  // Back
+    if (error || !grupo) {
+      window.ZR.showToast('❌ <b>Error creando grupo</b>');
+      return;
+    }
+
+    const playerName = window.ZR.state.playerName || 'Líder';
+    const { data: jugador, error: errJug } = await window.ZR.supabase
+      .from('jugadores')
+      .insert({ grupo_id: grupo.id, nombre: playerName })
+      .select()
+      .single();
+
+    if (errJug) {
+      window.ZR.showToast('❌ <b>Error uniéndose</b>');
+      return;
+    }
+
+    window.ZR.state.multi.code = generatedCode;
+    window.ZR.state.multi.squadName = name;
+    window.ZR.state.multi.role = 'leader';
+    window.ZR.state.multi.grupoId = grupo.id;
+    window.ZR.state.multi.playerId = jugador.id;
+    window.ZR.state.multi.esLider = true;
+    window.ZR.state.multi.vsBots = isBot;
+
+    window.ZR.navigate('screen-multi-lobby');
+  }
+
+  const readyBtn = document.getElementById('create-ready-btn');
+  const newReady = readyBtn?.cloneNode(true);
+  readyBtn?.parentNode?.replaceChild(newReady, readyBtn);
+  newReady?.addEventListener('click', () => createGroupAndJoin(false));
+
+  const botsBtn = document.getElementById('create-bots-btn');
+  if (botsBtn) {
+    const newBotsBtn = botsBtn.cloneNode(true);
+    botsBtn.parentNode.replaceChild(newBotsBtn, botsBtn);
+    newBotsBtn.addEventListener('click', () => createGroupAndJoin(true));
+  }
+
   const backBtn = document.getElementById('create-back-btn');
   const newBack = backBtn?.cloneNode(true);
   backBtn?.parentNode?.replaceChild(newBack, backBtn);
   newBack?.addEventListener('click', () => window.ZR.navigate('screen-multi-join'));
 
-  // Members list with new mc-player-slot style
   const membersList = document.getElementById('create-members-list');
-  const playerName = window.ZR.state.playerName || 'Tú';
-  if (membersList) {
-    membersList.innerHTML = `
-      <div class="mc-player-slot">
-        <div class="mc-player-rank">1</div>
-        <div class="mc-player-avatar">🧑</div>
-        <div class="mc-player-name">${playerName}</div>
-        <div class="mc-player-you">TÚ</div>
-        <div class="mc-player-score">0 XP</div>
-      </div>
-    `;
-  }
-  updateMemberCount(1);
+  if (membersList) membersList.innerHTML = '';
+  const memberCount = document.getElementById('mc-member-count');
+  if (memberCount) memberCount.textContent = '0 / 5';
 });
 
-function updateMemberCount(count) {
-  const el = document.getElementById('mc-member-count');
-  if (el) el.textContent = `${count} / 5`;
-}
+// ==========================================
+// SCREEN: LOBBY
+// ==========================================
+window.ZR.registerScreen('screen-multi-lobby', async function () {
+  cleanupMultiplayer();
+  const grupoId = window.ZR.state.multi.grupoId;
 
-const MEMBER_AVATARS = ['🧑','👦','👧','🧒','👩'];
+  const title = document.getElementById('lobby-title');
+  if (title) title.textContent = `Bienvenido a ${window.ZR.state.multi.squadName || 'tu Comunidad'}`;
 
-function simulateMembersJoining() {
-  const membersList = document.getElementById('create-members-list');
-  if (!membersList) return;
+  const playerDisplay = document.getElementById('lobby-player-display-name');
+  if (playerDisplay) playerDisplay.textContent = window.ZR.state.playerName || 'Tú';
 
-  const bots = SQUAD_NAMES.filter(n => n !== (window.ZR.state.playerName || '')).slice(0, 4);
-  let joined = 0;
-  let total = 1;
+  async function fetchMembers() {
+    const { data } = await window.ZR.supabase.from('jugadores').select('*').eq('grupo_id', grupoId);
+    renderLobbyMembers(data || []);
+  }
 
-  const interval = setInterval(() => {
-    if (joined >= bots.length) { clearInterval(interval); return; }
-    const botName = bots[joined];
-    const avatar = MEMBER_AVATARS[(joined + 1) % MEMBER_AVATARS.length];
-    joined++;
-    total++;
+  lobbySubscription = window.ZR.supabase.channel(`grupo-${grupoId}`)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'jugadores', filter: `grupo_id=eq.${grupoId}` }, () => {
+      fetchMembers();
+    })
+    .subscribe();
 
-    const slot = document.createElement('div');
-    slot.className = 'mc-player-slot';
-    slot.style.animationDelay = `${joined * 0.1}s`;
-    slot.innerHTML = `
-      <div class="mc-player-rank">${total}</div>
-      <div class="mc-player-avatar">${avatar}</div>
-      <div class="mc-player-name">${botName}</div>
-      <div class="mc-player-score">0 XP</div>
-    `;
-    membersList.appendChild(slot);
-    updateMemberCount(total);
-    window.ZR.showToast(`👾 <b>${botName}</b> se unió a tu comunidad`);
-  }, 1500);
-}
+  fetchMembers();
 
-/* =========================================
-   PANTALLA 5 - LOBBY / SALA DE ESPERA
-   ========================================= */
-window.ZR.registerScreen('screen-multi-lobby', function () {
-  const squadName = window.ZR.state.multi.squadName || 'SchoolSJL';
-  const playerName = window.ZR.state.playerName || 'Tú';
-
-  // Title
-  const titleEl = document.getElementById('lobby-title');
-  if (titleEl) titleEl.textContent = `Bienvenido a ${squadName}`;
-
-  // Render avatar
-  window.ZR.renderAvatarInContainer('lobby-avatar-display', window.ZR.state.avatar);
-
-  const lobbyNameEl = document.getElementById('lobby-player-display-name');
-  if (lobbyNameEl) lobbyNameEl.textContent = playerName;
-
-  // Build leaderboard (player + bots)
-  const lb = buildSimulatedLeaderboard(playerName);
-  window.ZR.state.multi.leaderboard = lb;
-  renderLobbyLeaderboard(lb);
-
-  // Avatar btn
-  const avatarBtn = document.getElementById('lobby-avatar-btn');
-  const newAvatarBtn = avatarBtn?.cloneNode(true);
-  avatarBtn?.parentNode?.replaceChild(newAvatarBtn, avatarBtn);
-  newAvatarBtn?.addEventListener('click', () => window.ZR.navigate('screen-avatar', { from: 'screen-multi-lobby' }));
-
-  // Ready btn
   const readyBtn = document.getElementById('lobby-ready-btn');
   const newReady = readyBtn?.cloneNode(true);
   readyBtn?.parentNode?.replaceChild(newReady, readyBtn);
-  newReady?.addEventListener('click', () => {
-    window.ZR.navigate('screen-vs');
-  });
 
-  // Back
+  if (window.ZR.state.multi.esLider) {
+    newReady.style.display = 'block';
+    newReady.innerHTML = window.ZR.state.multi.vsBots ? '🤖 INICIAR VS BOTS →' : '⚔️ BUSCAR PARTIDA →';
+    
+    newReady.addEventListener('click', async () => {
+      await window.ZR.supabase.from('grupos').update({ estado: 'buscando_partida' }).eq('id', grupoId);
+      
+      if (window.ZR.state.multi.vsBots) {
+        // Create bot opponent
+        const { data: botGroup } = await window.ZR.supabase.from('grupos').insert({
+          codigo: window.ZR.generateCode(),
+          nombre: 'CPU_' + Math.floor(Math.random() * 1000),
+          estado: 'en_partida',
+          es_bot: true
+        }).select().single();
+
+        await window.ZR.supabase.from('jugadores').insert([
+          { grupo_id: botGroup.id, nombre: 'Bot_Alpha' },
+          { grupo_id: botGroup.id, nombre: 'Bot_Bravo' }
+        ]);
+
+        const { data: partida } = await window.ZR.supabase.from('partidas').insert({
+          grupo_a_id: grupoId,
+          grupo_b_id: botGroup.id,
+          estado: 'jugando',
+          inicio_at: new Date().toISOString(),
+          duracion_segundos: 300
+        }).select().single();
+
+        await window.ZR.supabase.from('grupos').update({ estado: 'en_partida' }).eq('id', grupoId);
+        window.ZR.state.multi.partidaId = partida.id;
+        window.ZR.state.multi.rivalGroupId = botGroup.id;
+        window.ZR.navigate('screen-vs');
+      } else {
+        window.ZR.navigate('screen-multi-matchmaking');
+      }
+    });
+  } else {
+    newReady.style.display = 'none';
+  }
+
+  // Listen if leader changed status to buscando_partida or en_partida
+  const lobbyGroupSub = window.ZR.supabase.channel(`grupo-estado-${grupoId}`)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'grupos', filter: `id=eq.${grupoId}` }, (payload) => {
+      if (!window.ZR.state.multi.esLider && payload.new.estado === 'buscando_partida') {
+        if (!window.ZR.state.multi.vsBots) {
+          window.ZR.navigate('screen-multi-matchmaking');
+        }
+      }
+    }).subscribe();
+
+  const oldCleanup = cleanupMultiplayer;
+  cleanupMultiplayer = function() {
+    oldCleanup();
+    window.ZR.supabase.removeChannel(lobbyGroupSub);
+  };
+
   const backBtn = document.getElementById('lobby-back-btn');
   const newBack = backBtn?.cloneNode(true);
   backBtn?.parentNode?.replaceChild(newBack, backBtn);
   newBack?.addEventListener('click', () => window.ZR.navigate('screen-multi-join'));
 });
 
-function buildSimulatedLeaderboard(playerName) {
-  const mySquad = [
-    { name: playerName, score: 0, isYou: true },
-    ...SQUAD_NAMES.filter(n => n !== playerName).slice(0,4).map(n => ({ name: n, score: 0, isYou: false }))
-  ];
-  return mySquad;
-}
+function renderLobbyMembers(members) {
+  const list = document.getElementById('lobby-leaderboard');
+  if (!list) return;
+  list.innerHTML = '';
 
-function renderLobbyLeaderboard(lb) {
-  const container = document.getElementById('lobby-leaderboard');
-  if (!container) return;
-  container.innerHTML = '';
-
-  lb.forEach((entry, i) => {
-    const row = document.createElement('div');
-    row.className = 'lb-row' + (entry.isYou ? ' is-you' : '');
-    const rankClasses = ['gold','silver','bronze'];
-    row.innerHTML = `
-      <div class="lb-rank ${rankClasses[i] || ''}">${i + 1}</div>
-      <div class="lb-name">${entry.name}${entry.isYou ? ' <small>TÚ</small>' : ''}</div>
-      <div class="lb-score">${entry.score}</div>
+  members.forEach((m, i) => {
+    const isMe = m.id === window.ZR.state.multi.playerId;
+    list.innerHTML += `
+      <div class="lb-row ${isMe ? 'is-you' : ''}">
+        <div class="lb-rank">#${i + 1}</div>
+        <div>${m.nombre} ${isMe ? '⭐ (TÚ)' : ''}</div>
+        <div style="text-align:right">${m.puntaje} XP</div>
+      </div>
     `;
-    container.appendChild(row);
   });
 }
 
-/* =========================================
-   PANTALLA 6 - VS SCREEN (Pixel Fighter)
-   ========================================= */
-window.ZR.registerScreen('screen-vs', function () {
-  window.ZR.state.lastPlayerPosition = null;
-  const mySquad = window.ZR.state.multi.squadName || 'MI EQUIPO';
-  const myEl    = document.getElementById('vs-my-squad');
-  const enemyEl = document.getElementById('vs-enemy-squad');
-  const countEl = document.getElementById('vs-countdown');
-  const hiscoreEl = document.getElementById('vs-hiscore-val');
+// ==========================================
+// SCREEN: MATCHMAKING
+// ==========================================
+window.ZR.registerScreen('screen-multi-matchmaking', async function () {
+  const grupoId = window.ZR.state.multi.grupoId;
+  const listEl = document.getElementById('matchmaking-groups-list');
+  const modal = document.getElementById('challenge-modal');
+  const challengerName = document.getElementById('challenger-name');
+  
+  if (modal) modal.style.display = 'none';
 
-  if (myEl) myEl.textContent = mySquad.toUpperCase();
-  if (enemyEl) enemyEl.textContent = 'LURIGANCHOCITY';
-  if (hiscoreEl) hiscoreEl.textContent = String(Math.floor(Math.random() * 900000) + 100000);
-
-  // Countdown: 3 → 2 → 1 → ¡YA!
-  let count = 3;
-  if (countEl) countEl.textContent = count;
-
-  const ticker = setInterval(() => {
-    count--;
-    if (count <= 0) {
-      clearInterval(ticker);
-      if (countEl) countEl.textContent = '¡YA!';
-      setTimeout(() => window.ZR.navigate('screen-map', { mode: 'multi' }), 900);
-    } else {
-      if (countEl) countEl.textContent = count;
+  async function fetchGroups() {
+    if (!listEl) return;
+    const { data } = await window.ZR.supabase
+      .from('grupos')
+      .select('*')
+      .eq('estado', 'buscando_partida')
+      .eq('es_bot', false)
+      .neq('id', grupoId);
+    
+    listEl.innerHTML = '';
+    if (!data || data.length === 0) {
+      listEl.innerHTML = '<div style="color:white;text-align:center;font-family:\'Press Start 2P\', monospace;font-size:10px;">No hay otros grupos buscando...</div>';
+      return;
     }
-  }, 900);
+
+    data.forEach(g => {
+      const div = document.createElement('div');
+      div.style.background = '#2C3A50';
+      div.style.border = '2px solid white';
+      div.style.padding = '15px';
+      div.style.display = 'flex';
+      div.style.justifyContent = 'space-between';
+      div.style.alignItems = 'center';
+      div.style.fontFamily = "'Press Start 2P', monospace";
+      
+      div.innerHTML = `
+        <div style="color:white; font-size:12px;">${g.nombre}</div>
+      `;
+      if (window.ZR.state.multi.esLider) {
+        const btn = document.createElement('button');
+        btn.className = 'mc-btn mc-btn-ready';
+        btn.style.padding = '10px';
+        btn.style.fontSize = '10px';
+        btn.textContent = 'RETAR';
+        btn.onclick = async () => {
+          await window.ZR.supabase.from('partidas').insert({
+            grupo_a_id: grupoId,
+            grupo_b_id: g.id,
+            estado: 'retando'
+          });
+          btn.textContent = 'ENVIADO';
+          btn.disabled = true;
+          window.ZR.showToast('⏳ Reto enviado. Esperando respuesta...');
+        };
+        div.appendChild(btn);
+      } else {
+        const span = document.createElement('span');
+        span.style.color = '#888';
+        span.style.fontSize = '10px';
+        span.textContent = 'Esperando al líder...';
+        div.appendChild(span);
+      }
+      listEl.appendChild(div);
+    });
+  }
+
+  matchmakingGroupsSub = window.ZR.supabase.channel('matchmaking-groups')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'grupos', filter: "estado=eq.buscando_partida" }, fetchGroups)
+    .subscribe();
+  
+  fetchGroups();
+
+  let incomingPartidaId = null;
+  let rivalGroupIdLocal = null;
+
+  matchmakingPartidasSub = window.ZR.supabase.channel('matchmaking-partidas')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'partidas' }, async (payload) => {
+      const p = payload.new;
+      
+      // We are group B (Challenged)
+      if (p.grupo_b_id === grupoId && p.estado === 'retando') {
+        if (window.ZR.state.multi.esLider) {
+          const { data: gA } = await window.ZR.supabase.from('grupos').select('nombre').eq('id', p.grupo_a_id).single();
+          if (challengerName && gA) challengerName.textContent = gA.nombre;
+          incomingPartidaId = p.id;
+          rivalGroupIdLocal = p.grupo_a_id;
+          if (modal) modal.style.display = 'flex';
+        }
+      }
+      
+      // We are group A (Challenger) and they rejected
+      if (p.grupo_a_id === grupoId && p.estado === 'rechazada') {
+        if (window.ZR.state.multi.esLider) {
+          window.ZR.showToast('❌ <b>Solicitud rechazada</b> por el otro equipo');
+          fetchGroups();
+        }
+      }
+
+      // Either group and it started
+      if ((p.grupo_a_id === grupoId || p.grupo_b_id === grupoId) && p.estado === 'jugando') {
+        window.ZR.state.multi.partidaId = p.id;
+        window.ZR.state.multi.rivalGroupId = (p.grupo_a_id === grupoId) ? p.grupo_b_id : p.grupo_a_id;
+        window.ZR.navigate('screen-vs');
+      }
+    })
+    .subscribe();
+
+  const acceptBtn = document.getElementById('accept-challenge-btn');
+  const newAccept = acceptBtn?.cloneNode(true);
+  acceptBtn?.parentNode?.replaceChild(newAccept, acceptBtn);
+  newAccept?.addEventListener('click', async () => {
+    if (!incomingPartidaId) return;
+    if (modal) modal.style.display = 'none';
+    await window.ZR.supabase.from('partidas').update({ estado: 'jugando', inicio_at: new Date().toISOString(), duracion_segundos: 300 }).eq('id', incomingPartidaId);
+    await window.ZR.supabase.from('grupos').update({ estado: 'en_partida' }).in('id', [grupoId, rivalGroupIdLocal]);
+  });
+
+  const rejectBtn = document.getElementById('reject-challenge-btn');
+  const newReject = rejectBtn?.cloneNode(true);
+  rejectBtn?.parentNode?.replaceChild(newReject, rejectBtn);
+  newReject?.addEventListener('click', async () => {
+    if (!incomingPartidaId) return;
+    if (modal) modal.style.display = 'none';
+    await window.ZR.supabase.from('partidas').update({ estado: 'rechazada' }).eq('id', incomingPartidaId);
+  });
 });
 
-/* =========================================
-   PANTALLA MAP - MULTI MODE
-   ========================================= */
-let matchTimerInterval = null;
+// ==========================================
+// SCREEN: VS (Transition)
+// ==========================================
+window.ZR.registerScreen('screen-vs', async function () {
+  const { data: myG } = await window.ZR.supabase.from('grupos').select('nombre').eq('id', window.ZR.state.multi.grupoId).single();
+  const { data: rivG } = await window.ZR.supabase.from('grupos').select('nombre').eq('id', window.ZR.state.multi.rivalGroupId).single();
 
-window.ZR.initMultiplayerMatch = function () {
-  window.ZR.state.multi.timerSeconds = 300; // 5 minutos (300 segundos)
-  window.ZR.state.multi.myTeamScore = 0;
-  window.ZR.state.multi.rivalTeamScore = 0;
+  const vsMy = document.getElementById('vs-my-squad');
+  const vsRiv = document.getElementById('vs-enemy-squad');
+  if (vsMy && myG) vsMy.textContent = myG.nombre;
+  if (vsRiv && rivG) vsRiv.textContent = rivG.nombre;
 
-  if (window.ZR.gameEngine && window.ZR.gameEngine.resetCompletedSituations) {
-    window.ZR.gameEngine.resetCompletedSituations('multi');
-  }
-};
+  setTimeout(() => {
+    window.ZR.navigate('screen-map', { mode: 'multi' });
+  }, 3000);
+});
 
-window.ZR.updateMultiHUD = function () {
-  const myTeamName  = window.ZR.state.multi.squadName || 'MI EQUIPO';
-  const rivalName   = 'LURIGANCHO';
+// ==========================================
+// MULTIPLAYER MAP SYNC
+// ==========================================
+window.ZR.startMultiplayerMapSync = async function () {
+  if (window.ZR.state.mode !== 'multi') return;
 
-  const myTeamNameEl = document.getElementById('hud-my-team-name');
-  if (myTeamNameEl) myTeamNameEl.textContent = myTeamName.toUpperCase();
+  const partidaId = window.ZR.state.multi.partidaId;
+  const myGroupId = window.ZR.state.multi.grupoId;
+  const rivalGroupId = window.ZR.state.multi.rivalGroupId;
 
-  const rivalNameEl = document.getElementById('hud-rival-team-name');
-  if (rivalNameEl) rivalNameEl.textContent = rivalName;
+  if (!partidaId) return;
 
-  const myScoreEl = document.getElementById('hud-my-team-score');
-  if (myScoreEl) myScoreEl.textContent = `${window.ZR.state.multi.myTeamScore || 0} XP`;
+  const { data: p } = await window.ZR.supabase.from('partidas').select('*').eq('id', partidaId).single();
+  if (!p) return;
 
-  const rivalScoreEl = document.getElementById('hud-rival-team-score');
-  if (rivalScoreEl) rivalScoreEl.textContent = `${window.ZR.state.multi.rivalTeamScore || 0} XP`;
+  const { data: myG } = await window.ZR.supabase.from('grupos').select('nombre').eq('id', myGroupId).single();
+  const { data: rivG } = await window.ZR.supabase.from('grupos').select('nombre, es_bot').eq('id', rivalGroupId).single();
 
-  // Formatear tiempo 5:00
-  const secsTotal = Math.max(0, window.ZR.state.multi.timerSeconds || 0);
-  const m = Math.floor(secsTotal / 60);
-  const s = Math.floor(secsTotal % 60);
-  const timerStr = `${m}:${s < 10 ? '0' : ''}${s}`;
+  const myNameEl = document.getElementById('hud-my-team-name');
+  const rivNameEl = document.getElementById('hud-rival-team-name');
+  if (myNameEl && myG) myNameEl.textContent = myG.nombre;
+  if (rivNameEl && rivG) rivNameEl.textContent = rivG.nombre;
+
+  // Sync Timer
   const timerEl = document.getElementById('map-timer-display');
-  if (timerEl) timerEl.textContent = timerStr;
-};
+  const startTime = new Date(p.inicio_at).getTime();
 
-window.ZR.startBotSimulation = function () {
-  if (botInterval) clearInterval(botInterval);
-  if (matchTimerInterval) clearInterval(matchTimerInterval);
-
-  if (typeof window.ZR.state.multi.timerSeconds !== 'number') {
-    window.ZR.initMultiplayerMatch();
-  }
-
-  // Intervalo de reloj (1 segundo)
-  matchTimerInterval = setInterval(() => {
-    if (window.ZR.state.mode !== 'multi') {
-      window.ZR.stopBotSimulation();
-      return;
+  gameTimerInterval = setInterval(async () => {
+    const now = Date.now();
+    let left = (p.duracion_segundos || 300) - Math.floor((now - startTime) / 1000);
+    
+    if (left <= 0) {
+      left = 0;
+      clearInterval(gameTimerInterval);
+      if (window.ZR.state.multi.esLider) {
+        await window.ZR.supabase.from('partidas').update({ estado: 'finalizada' }).eq('id', partidaId);
+      }
+      window.ZR.navigate('screen-ending');
     }
 
-    if (window.ZR.state.multi.timerSeconds > 0) {
-      window.ZR.state.multi.timerSeconds--;
-    } else {
-      window.ZR.stopBotSimulation();
-      window.ZR.endMultiplayerMatch();
-      return;
+    if (timerEl) {
+      const m = Math.floor(left / 60);
+      const s = left % 60;
+      timerEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
     }
-
-    window.ZR.updateMultiHUD();
   }, 1000);
 
-  // Intervalo de simulación de puntos de bots (cada 4 segundos)
-  botInterval = setInterval(() => {
-    if (window.ZR.state.mode !== 'multi') return;
+  // Sync Scores
+  async function updateScores() {
+    const { data: players } = await window.ZR.supabase.from('jugadores').select('grupo_id, puntaje').in('grupo_id', [myGroupId, rivalGroupId]);
+    let myScore = 0;
+    let rivScore = 0;
+    (players || []).forEach(pl => {
+      if (pl.grupo_id === myGroupId) myScore += pl.puntaje;
+      if (pl.grupo_id === rivalGroupId) rivScore += pl.puntaje;
+    });
 
-    // Suma aleatoria para equipo propio y equipo rival
-    if (Math.random() < 0.6) {
-      window.ZR.state.multi.myTeamScore += Math.floor(Math.random() * 15) + 5;
-    }
-    if (Math.random() < 0.6) {
-      window.ZR.state.multi.rivalTeamScore += Math.floor(Math.random() * 15) + 5;
-    }
+    const myScoreEl = document.getElementById('hud-my-team-score');
+    const rivScoreEl = document.getElementById('hud-rival-team-score');
+    if (myScoreEl) myScoreEl.textContent = `${myScore} XP`;
+    if (rivScoreEl) rivScoreEl.textContent = `${rivScore} XP`;
 
-    window.ZR.updateMultiHUD();
-  }, 4000);
+    window.ZR.state.multi.myScoreTotal = myScore;
+    window.ZR.state.multi.rivalScoreTotal = rivScore;
+  }
+
+  mapJugadoresSub = window.ZR.supabase.channel('map-scores')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'jugadores', filter: `grupo_id=in.(${myGroupId},${rivalGroupId})` }, updateScores)
+    .subscribe();
+  
+  updateScores();
+
+  // Listen to match end
+  mapPartidaSub = window.ZR.supabase.channel('map-partida')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'partidas', filter: `id=eq.${partidaId}` }, (payload) => {
+      if (payload.new.estado === 'finalizada') {
+        window.ZR.navigate('screen-ending');
+      }
+    }).subscribe();
+
+  // If rival is a bot, simulate their points locally (only leader runs this)
+  if (rivG && rivG.es_bot && window.ZR.state.multi.esLider) {
+    botSimulationInterval = setInterval(async () => {
+      if (Math.random() > 0.6) {
+        const { data: bots } = await window.ZR.supabase.from('jugadores').select('*').eq('grupo_id', rivalGroupId);
+        if (bots && bots.length > 0) {
+          const randomBot = bots[Math.floor(Math.random() * bots.length)];
+          await window.ZR.supabase.from('jugadores').update({ puntaje: randomBot.puntaje + 10 }).eq('id', randomBot.id);
+        }
+      }
+    }, 4000);
+  }
 };
 
-window.ZR.stopBotSimulation = function () {
-  if (botInterval) {
-    clearInterval(botInterval);
-    botInterval = null;
-  }
-  if (matchTimerInterval) {
-    clearInterval(matchTimerInterval);
-    matchTimerInterval = null;
-  }
-};
+window.ZR.stopMultiplayerMapSync = cleanupMultiplayer;
 
-window.ZR.endMultiplayerMatch = function () {
-  const myScore = window.ZR.state.multi.myTeamScore || 0;
-  const rivalScore = window.ZR.state.multi.rivalTeamScore || 0;
-  const won = myScore >= rivalScore;
+// Used by game-story.js to submit a decision in multi mode
+window.ZR.submitMultiplayerDecision = async function(score, situationId, letter, isCorrect) {
+  if (!window.ZR.state.multi.playerId) return;
 
-  const msg = won
-    ? `🏆 <b>¡VICTORIA MULTIJUGADOR!</b> Tu equipo ganó ${myScore} XP vs ${rivalScore} XP`
-    : `💔 <b>FIN DE PARTIDA</b> Tu equipo hizo ${myScore} XP vs ${rivalScore} XP del rival`;
+  const { data: player } = await window.ZR.supabase.from('jugadores').select('puntaje, situaciones_completadas').eq('id', window.ZR.state.multi.playerId).single();
+  if (!player) return;
 
-  window.ZR.showToast(msg, 6000);
-  setTimeout(() => {
-    window.ZR.navigate('screen-ending');
-  }, 2000);
+  const currentScore = player.puntaje;
+  const situ = player.situaciones_completadas || [];
+  situ.push({ situationId, letter, isCorrect });
+
+  await window.ZR.supabase.from('jugadores')
+    .update({ 
+      puntaje: currentScore + score,
+      situaciones_completadas: situ
+    })
+    .eq('id', window.ZR.state.multi.playerId);
 };
