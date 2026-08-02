@@ -670,7 +670,8 @@ window.ZR.startMultiplayerMapSync = async function () {
   // Publicar posición del jugador actual cada 150ms
   window.ZR._posBroadcastInterval = setInterval(() => {
     const engine = window.ZR._activeEngine;
-    if (!engine || !engine.player) return;
+    // No transmitir si el motor no está corriendo (jugador en situación)
+    if (!engine || !engine.player || !engine.isRunning) return;
     posChannel.send({
       type: 'broadcast',
       event: 'pos',
@@ -680,9 +681,10 @@ window.ZR.startMultiplayerMapSync = async function () {
         grupoId: myGrupoId,
         wx: engine.player.wx,
         wy: engine.player.wy,
+        ts: Date.now(),
       }
     });
-  }, 150);
+  }, 200);
 };
 
 window.ZR.stopMultiplayerMapSync = cleanupMultiplayer;

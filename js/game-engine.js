@@ -663,7 +663,10 @@ class GameEngine {
 
     Object.values(others).forEach(p => {
       if (!p || p.wx === undefined || p.wy === undefined) return;
+      if (p.wx === 0 && p.wy === 0) return; // Posición inválida
       if (p.id === myId) return;
+      // Ocultar jugadores que no han transmitido en los últimos 4 segundos
+      if (p.ts && (Date.now() - p.ts) > 4000) return;
 
       const sx = Math.floor(p.wx - this.camera.x);
       const sy = Math.floor(p.wy - this.camera.y);
@@ -743,15 +746,16 @@ class GameEngine {
       // --- Etiqueta con nombre ---
       const label = (p.nombre || 'Jugador').substring(0, 10).toUpperCase();
       const lw = Math.max(56, label.length * 6.5 + 16);
+      const lx = sx - lw / 2;
+      const ly = sy + 13;
+      // Dibuja rect redondeado sin roundRect (compatibilidad)
       ctx.fillStyle = isSameTeam ? 'rgba(43,108,176,0.92)' : 'rgba(155,44,44,0.92)';
-      ctx.beginPath();
-      ctx.roundRect(sx - lw/2, sy + 13, lw, 16, 4);
-      ctx.fill();
+      ctx.fillRect(lx, ly, lw, 16);
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 8px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(label, sx, sy + 21);
+      ctx.fillText(label, sx, ly + 8);
     });
   }
 
