@@ -1,12 +1,6 @@
 /**
-<<<<<<< HEAD
  * ZoneReact - Data: Situaciones del Modo Historia / Multijugador
- * Situaciones actualizadas con imágenes generadas y ubicaciones del mapa
-=======
- * ZoneReact - Data: Situaciones del Modo Historia
- * "Salvar a tu mejor amigo (Lucas)"
- * Situaciones actualizadas con ubicaciones específicas del mapa
->>>>>>> 89d94972a8e3660184cbd0ecadfd6f9296eec6d2
+ * 6 Situaciones actualizadas con imágenes generadas y ubicaciones del mapa
  */
 window.ZR = window.ZR || {};
 
@@ -16,7 +10,7 @@ window.ZR.situations = [
     title: '"Aprobar exámenes"',
     tag: 'PRESIÓN DE ESTUDIO / VAPEO',
     tagColor: 'red',
-    image: 'assets/Situaciones/situacion_2.jpg',
+    image: 'assets/Situaciones/situacion_2.png',
     context: 'Tu amigo te propone que se desvelen estudiando, por lo que te ofrece un vape sabor menta para combatir el sueño. Te dice "Este vape es menos dañino que los otros, lo compré en una tienda buena. Si lo usamos, estaremos despiertos hasta la madrugada"',
     tip: 'La presión de estudio no debe llevarte a consumir sustancias nocivas. El descanso adecuado antes de un examen es fundamental.',
     emoji: '🏠',
@@ -175,7 +169,7 @@ window.ZR.situations = [
     title: '"El camino oscuro"',
     tag: 'RUTA NOCTURNA',
     tagColor: 'yellow',
-    image: 'assets/Situaciones/situacion_3.png',
+    image: 'assets/Situaciones/situacion_4.png',
     context: 'Sales tarde de estudiar en casa de un amigo. Para llegar a tu casa hay dos rutas: un atajo por una calle sola y mal iluminada (10 min), o la calle principal, más iluminada pero más larga (25 min). Tu amigo vive en dirección contraria a la tuya.',
     tip: 'Las calles mal iluminadas y solitarias son puntos frecuentes de asaltos. Elige siempre caminos iluminados y transitados.',
     emoji: '🌙',
@@ -228,7 +222,7 @@ window.ZR.situations = [
     title: '"Desconocido en la calle"',
     tag: 'DESCONOCIDO EN LA CALLE',
     tagColor: 'ink',
-    image: 'assets/Situaciones/situacion_4.png',
+    image: 'assets/Situaciones/situacion_5.png',
     context: 'Vas caminando a casa después del colegio, con el celular guardado. Una persona que no conoces se te acerca y te pregunta la hora, insistiendo después en que la ayudes con el mapa de tu celular. Estás en una zona peligrosa con alto índice de un aumento del robo callejero de celulares por distracción.',
     tip: 'Las preguntas frecuentes sobre la hora o direcciones suelen ser tácticas de distracción para arrebatar objetos de valor.',
     emoji: '🏪',
@@ -281,7 +275,7 @@ window.ZR.situations = [
     title: '"¡Suelta mi celular!"',
     tag: 'INTENTO DE ARREBATO',
     tagColor: 'red',
-    image: 'assets/Situaciones/situacion_5.png',
+    image: 'assets/Situaciones/situacion_6.png',
     context: 'Caminabas cerca de una avenida peligrosa cuando un desconocido intentó quitarte el celular de la mano. Aunque hay gente cerca, el arrebato fue rápido. Tienes suerte de que varios negocios abiertos están a pocos metros.',
     tip: 'Ante un intento de robo, nunca opongas resistencia ni persigas al delincuente. Tu vida e integridad valen más que cualquier objeto.',
     emoji: '🏢',

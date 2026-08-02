@@ -146,12 +146,16 @@ window.ZR.registerScreen('screen-map', function (data) {
   if (scoreEl) scoreEl.textContent = `${window.ZR.state.story.score} XP`;
 
   const timerCard = document.getElementById('map-timer-card');
-  const lbCard    = document.getElementById('map-leaderboard-card');
-  if (timerCard) timerCard.style.display = mode === 'multi' ? '' : 'none';
-  if (lbCard)    lbCard.style.display    = mode === 'multi' ? '' : 'none';
+  const sbCard    = document.getElementById('map-scoreboard-card');
+  if (timerCard) timerCard.style.display = mode === 'multi' ? 'flex' : 'none';
+  if (sbCard)    sbCard.style.display    = mode === 'multi' ? 'flex' : 'none';
 
   const modeLabel = document.getElementById('map-mode-label');
   if (modeLabel) modeLabel.textContent = mode === 'story' ? '📖 Modo Historia' : '👥 Multijugador';
+
+  if (mode === 'multi' && window.ZR.startBotSimulation) {
+    window.ZR.startBotSimulation();
+  }
 
   const canvas = document.getElementById('game-canvas');
   if (!canvas) return;
@@ -312,7 +316,10 @@ window.ZR.registerScreen('screen-decision', function ({ situation }) {
       isCorrect: selectedOption.isCorrect
     });
 
-    if (window.ZR.state.mode === 'story') {
+    if (window.ZR.state.mode === 'multi') {
+      window.ZR.state.multi.myTeamScore = (window.ZR.state.multi.myTeamScore || 0) + selectedOption.score;
+      if (window.ZR.updateMultiHUD) window.ZR.updateMultiHUD();
+    } else {
       window.ZR.state.storyUnlockedLevel = Math.max(
         window.ZR.state.storyUnlockedLevel || 1,
         situation.id + 1

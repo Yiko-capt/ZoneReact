@@ -78,12 +78,18 @@ class GameEngine {
     }));
 
     this.nearSituation = null;
-    this.completedSituations = new Set();
+    this.completedStorySituations = new Set();
+    this.completedMultiSituations = new Set();
     this.touch = { active: false, x: 0, y: 0 };
 
     this._bindInput();
     this._resize();
     window.addEventListener('resize', () => this._resize());
+  }
+
+  getCompletedSet() {
+    const isMulti = (window.ZR.state && window.ZR.state.mode === 'multi') || (this.options && this.options.mode === 'multi');
+    return isMulti ? this.completedMultiSituations : this.completedStorySituations;
   }
 
   _bindInput() {
@@ -93,7 +99,7 @@ class GameEngine {
         e.preventDefault();
       }
       if (e.code === 'KeyE' || e.code === 'Space') {
-        if (this.nearSituation && !this.completedSituations.has(this.nearSituation.id)) {
+        if (this.nearSituation && !this.getCompletedSet().has(this.nearSituation.id)) {
           this._triggerSituation(this.nearSituation);
         }
       }
@@ -224,7 +230,7 @@ class GameEngine {
     this.nearSituation = null;
     const unlockedLevel = (window.ZR.state && window.ZR.state.storyUnlockedLevel) || 1;
     this.situations.forEach(s => {
-      if (this.completedSituations.has(s.id)) return;
+      if (this.getCompletedSet().has(s.id)) return;
       // En modo historia solo se puede interactuar con el nivel desbloqueado actual
       if (this.options.mode === 'story' && s.id !== unlockedLevel) return;
       const dist = Math.hypot(s.wx - this.player.wx, s.wy - this.player.wy);
@@ -282,7 +288,15 @@ class GameEngine {
   }
 
   markSituationComplete(id) {
-    this.completedSituations.add(id);
+    this.getCompletedSet().add(id);
+  }
+
+  resetCompletedSituations(mode) {
+    if (mode === 'multi') {
+      this.completedMultiSituations.clear();
+    } else {
+      this.completedStorySituations.clear();
+    }
   }
 
   _draw() {
@@ -350,7 +364,7 @@ class GameEngine {
       const bx = Math.floor(b.wx - this.camera.x);
       const by = Math.floor(b.wy - this.camera.y);
 
-      const aCompleted = this.completedSituations.has(a.id);
+      const aCompleted = this.getCompletedSet().has(a.id);
 
       ctx.save();
 
@@ -381,7 +395,7 @@ class GameEngine {
     const last = this.situations[this.situations.length - 1];
     const lx = Math.floor(last.wx - this.camera.x);
     const ly = Math.floor(last.wy - this.camera.y);
-    const allDone = this.situations.every(s => this.completedSituations.has(s.id));
+    const allDone = this.situations.every(s => this.getCompletedSet().has(s.id));
 
     if (allDone) {
       const grd = ctx.createRadialGradient(lx, ly - 60, 8, lx, ly - 60, 60);
@@ -406,7 +420,7 @@ class GameEngine {
 
       if (sx < -80 || sx > this.canvas.width + 80 || sy < -80 || sy > this.canvas.height + 80) return;
 
-      const completed = this.completedSituations.has(s.id);
+      const completed = this.getCompletedSet().has(s.id);
 
       if (isStory) {
         // --- Nodo estilo Overcooked ---

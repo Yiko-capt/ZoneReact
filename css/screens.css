@@ -280,6 +280,51 @@
   line-height: 1.4;
 }
 
+/* --- Scoreboard de Equipos (Top-Right HUD en Multijugador) --- */
+.map-team-scoreboard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(26, 26, 26, 0.95);
+  border: 3px solid var(--yellow, #F4C430);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6);
+  padding: 8px 16px;
+}
+
+.team-score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.team-score-title {
+  font-family: var(--font-pixel, monospace);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.team-score-val {
+  font-family: var(--font-pixel, monospace);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.team-my .team-score-title { color: #FFE885; }
+.team-my .team-score-val { color: var(--yellow, #F4C430); }
+
+.team-rival .team-score-title { color: #FF9999; }
+.team-rival .team-score-val { color: #FF4D4D; }
+
+.team-score-vs {
+  font-family: var(--font-pixel, monospace);
+  font-size: 14px;
+  font-weight: 900;
+  color: #FFF;
+  padding: 0 6px;
+}
+
 .home-avatar-preview .avatar-display {
   width: 200px;
   height: 548px;

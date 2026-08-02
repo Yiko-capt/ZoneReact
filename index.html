@@ -529,14 +529,23 @@
 
         <div class="map-hud-spacer"></div>
 
+        <!-- Contador 5 Minutos (Modo Multijugador) -->
         <div class="map-hud-card map-hud-timer" id="map-timer-card" style="display:none">
-          <span class="map-timer-label">TIEMPO</span>
-          <span class="map-timer-value" id="map-timer-display">7:30</span>
+          <span class="map-timer-label">TIEMPO MATCH</span>
+          <span class="map-timer-value" id="map-timer-display">5:00</span>
         </div>
 
-        <div class="map-hud-card map-mini-leaderboard" id="map-leaderboard-card" style="display:none">
-          <div style="font-size:10px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Liderboard</div>
-          <div id="map-mini-lb-body"></div>
+        <!-- Scoreboard Equipos (Modo Multijugador en Esquina Superior Derecha) -->
+        <div class="map-hud-card map-team-scoreboard" id="map-scoreboard-card" style="display:none">
+          <div class="team-score-box team-my">
+            <span class="team-score-title" id="hud-my-team-name">MI EQUIPO</span>
+            <span class="team-score-val" id="hud-my-team-score">0 XP</span>
+          </div>
+          <div class="team-score-vs">VS</div>
+          <div class="team-score-box team-rival">
+            <span class="team-score-title" id="hud-rival-team-name">RIVAL</span>
+            <span class="team-score-val" id="hud-rival-team-score">0 XP</span>
+          </div>
         </div>
       </div>
 

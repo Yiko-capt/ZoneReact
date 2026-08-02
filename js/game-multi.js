@@ -256,50 +256,81 @@ window.ZR.registerScreen('screen-vs', function () {
 
 /* =========================================
    PANTALLA MAP - MULTI MODE
-   (handled by game-story.js registerScreen 'screen-map')
-   Extra: timer and mini-leaderboard
    ========================================= */
+let matchTimerInterval = null;
 
-// Mini leaderboard update for multi map HUD
-window.ZR.updateMultiHUD = function () {
-  const lb = window.ZR.state.multi.leaderboard;
-  if (!lb) return;
+window.ZR.initMultiplayerMatch = function () {
+  window.ZR.state.multi.timerSeconds = 300; // 5 minutos (300 segundos)
+  window.ZR.state.multi.myTeamScore = 0;
+  window.ZR.state.multi.rivalTeamScore = 0;
 
-  // Sort by score
-  lb.sort((a, b) => b.score - a.score);
-
-  const container = document.getElementById('map-mini-lb-body');
-  if (!container) return;
-  container.innerHTML = '';
-
-  lb.slice(0, 5).forEach((entry, i) => {
-    const row = document.createElement('div');
-    row.className = 'map-mini-lb-row';
-    row.innerHTML = `
-      <span class="map-mini-lb-rank">${i + 1}</span>
-      <span class="map-mini-lb-name">${entry.name}</span>
-      <span class="map-mini-lb-score">${entry.score}</span>
-    `;
-    container.appendChild(row);
-  });
+  if (window.ZR.gameEngine && window.ZR.gameEngine.resetCompletedSituations) {
+    window.ZR.gameEngine.resetCompletedSituations('multi');
+  }
 };
 
-// Start bot score updates for multi mode
+window.ZR.updateMultiHUD = function () {
+  const myTeamName  = window.ZR.state.multi.squadName || 'MI EQUIPO';
+  const rivalName   = 'LURIGANCHO';
+
+  const myTeamNameEl = document.getElementById('hud-my-team-name');
+  if (myTeamNameEl) myTeamNameEl.textContent = myTeamName.toUpperCase();
+
+  const rivalNameEl = document.getElementById('hud-rival-team-name');
+  if (rivalNameEl) rivalNameEl.textContent = rivalName;
+
+  const myScoreEl = document.getElementById('hud-my-team-score');
+  if (myScoreEl) myScoreEl.textContent = `${window.ZR.state.multi.myTeamScore || 0} XP`;
+
+  const rivalScoreEl = document.getElementById('hud-rival-team-score');
+  if (rivalScoreEl) rivalScoreEl.textContent = `${window.ZR.state.multi.rivalTeamScore || 0} XP`;
+
+  // Formatear tiempo 5:00
+  const secsTotal = Math.max(0, window.ZR.state.multi.timerSeconds || 0);
+  const m = Math.floor(secsTotal / 60);
+  const s = Math.floor(secsTotal % 60);
+  const timerStr = `${m}:${s < 10 ? '0' : ''}${s}`;
+  const timerEl = document.getElementById('map-timer-display');
+  if (timerEl) timerEl.textContent = timerStr;
+};
+
 window.ZR.startBotSimulation = function () {
   if (botInterval) clearInterval(botInterval);
+  if (matchTimerInterval) clearInterval(matchTimerInterval);
 
+  if (typeof window.ZR.state.multi.timerSeconds !== 'number') {
+    window.ZR.initMultiplayerMatch();
+  }
+
+  // Intervalo de reloj (1 segundo)
+  matchTimerInterval = setInterval(() => {
+    if (window.ZR.state.mode !== 'multi') {
+      window.ZR.stopBotSimulation();
+      return;
+    }
+
+    if (window.ZR.state.multi.timerSeconds > 0) {
+      window.ZR.state.multi.timerSeconds--;
+    } else {
+      window.ZR.stopBotSimulation();
+      window.ZR.endMultiplayerMatch();
+      return;
+    }
+
+    window.ZR.updateMultiHUD();
+  }, 1000);
+
+  // Intervalo de simulación de puntos de bots (cada 4 segundos)
   botInterval = setInterval(() => {
-    const lb = window.ZR.state.multi.leaderboard;
-    if (!lb) return;
+    if (window.ZR.state.mode !== 'multi') return;
 
-    // Random bots score
-    lb.forEach(entry => {
-      if (!entry.isYou) {
-        if (Math.random() < 0.15) {
-          entry.score = Math.min(100, entry.score + 20);
-        }
-      }
-    });
+    // Suma aleatoria para equipo propio y equipo rival
+    if (Math.random() < 0.6) {
+      window.ZR.state.multi.myTeamScore += Math.floor(Math.random() * 15) + 5;
+    }
+    if (Math.random() < 0.6) {
+      window.ZR.state.multi.rivalTeamScore += Math.floor(Math.random() * 15) + 5;
+    }
 
     window.ZR.updateMultiHUD();
   }, 4000);
@@ -310,4 +341,23 @@ window.ZR.stopBotSimulation = function () {
     clearInterval(botInterval);
     botInterval = null;
   }
+  if (matchTimerInterval) {
+    clearInterval(matchTimerInterval);
+    matchTimerInterval = null;
+  }
+};
+
+window.ZR.endMultiplayerMatch = function () {
+  const myScore = window.ZR.state.multi.myTeamScore || 0;
+  const rivalScore = window.ZR.state.multi.rivalTeamScore || 0;
+  const won = myScore >= rivalScore;
+
+  const msg = won
+    ? `🏆 <b>¡VICTORIA MULTIJUGADOR!</b> Tu equipo ganó ${myScore} XP vs ${rivalScore} XP`
+    : `💔 <b>FIN DE PARTIDA</b> Tu equipo hizo ${myScore} XP vs ${rivalScore} XP del rival`;
+
+  window.ZR.showToast(msg, 6000);
+  setTimeout(() => {
+    window.ZR.navigate('screen-ending');
+  }, 2000);
 };
