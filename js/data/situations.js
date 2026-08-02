@@ -10,7 +10,7 @@ window.ZR.situations = [
     title: '"Aprobar exámenes"',
     tag: 'PRESIÓN DE ESTUDIO / VAPEO',
     tagColor: 'red',
-    image: 'assets/Situaciones/situacion_2.png',
+    image: 'assets/Situaciones/situacion_aprobarexamenes.png',
     context: 'Tu amigo te propone que se desvelen estudiando, por lo que te ofrece un vape sabor menta para combatir el sueño. Te dice "Este vape es menos dañino que los otros, lo compré en una tienda buena. Si lo usamos, estaremos despiertos hasta la madrugada"',
     tip: 'La presión de estudio no debe llevarte a consumir sustancias nocivas. El descanso adecuado antes de un examen es fundamental.',
     emoji: '🏠',
@@ -18,6 +18,16 @@ window.ZR.situations = [
     options: [
       {
         letter: 'A',
+        text: 'Le digo que mejor acortemos el repaso para dormir antes de medianoche',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente decisión! Dormir bien y descansar lo suficiente te permite rendir al máximo en los exámenes sin sustancias.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"El descanso y la preparación previa son la verdadera clave del éxito."'
+      },
+      {
+        letter: 'B',
         text: 'Acepto el vape, solo por esta noche, para aprovechar el tiempo de estudio',
         score: -10,
         isCorrect: false,
@@ -27,7 +37,7 @@ window.ZR.situations = [
         quote: '"Ninguna sustancia reemplaza un hábito de estudio y descanso saludable."'
       },
       {
-        letter: 'B',
+        letter: 'C',
         text: 'Rechazo el vape y termino de estudiar solo, dejando a mi amigo con su plan de desvelarse',
         score: 5,
         isCorrect: true,
@@ -37,7 +47,7 @@ window.ZR.situations = [
         quote: '"Saber decir que no a las sustancias es cuidar tu salud y tu futuro."'
       },
       {
-        letter: 'C',
+        letter: 'D',
         text: 'Nos desvelamos, pero sin usar nicotina, le digo que mejor tomemos Monster, que es menos dañino',
         score: -5,
         isCorrect: false,
@@ -45,16 +55,6 @@ window.ZR.situations = [
         resultWord: 'CUIDADO',
         resultType: 'bad',
         quote: '"Las bebidas energizantes en exceso también ponen en riesgo tu salud."'
-      },
-      {
-        letter: 'D',
-        text: 'Le digo que mejor acortemos el repaso para dormir antes de medianoche',
-        score: 10,
-        isCorrect: true,
-        feedback: '¡Excelente decisión! Dormir bien y descansar lo suficiente te permite rendir al máximo en los exámenes sin sustancias.',
-        resultWord: '¡EXCELENTE!',
-        resultType: 'good',
-        quote: '"El descanso y la preparación previa son la verdadera clave del éxito."'
       }
     ]
   },
@@ -63,7 +63,7 @@ window.ZR.situations = [
     title: '"La invitación"',
     tag: 'PRESIÓN SOCIAL',
     tagColor: 'blue',
-    image: 'assets/Situaciones/situacion_3.png',
+    image: 'assets/Situaciones/situacion_lainvitacion.png',
     context: 'Después de los exámenes, estás muy cansado y tus amigos te ofrecen ir a una discoteca por un cumpleaños para relajarse. Sabes que está ubicada en una calle conocida por la venta de drogas y comercio ilegal. Te dicen "siempre hemos pasado por ahí y les hemos comprado, por lo que son de confianza. No nos van a hacer nada"',
     tip: 'Las zonas de venta de drogas y comercio ilegal representan un alto riesgo para ti y tus amigos, sin importar la hora o con quién vayas.',
     emoji: '🏫',
@@ -71,13 +71,13 @@ window.ZR.situations = [
     options: [
       {
         letter: 'A',
-        text: 'Acepto porque iremos en grupo y eso hace que sea menos peligroso.',
-        score: -10,
+        text: 'Acepto, pero solo me quedaré un momento y evitaré acercarme a personas que no conozca.',
+        score: -5,
         isCorrect: false,
-        feedback: 'Ir en grupo no disminuye la peligrosidad de un lugar vinculado al comercio ilegal de sustancias.',
-        resultWord: 'PELIGRO',
+        feedback: 'Permanecer aunque sea un momento en un lugar peligroso sigue exponiéndote a situaciones ilícitas o violentas.',
+        resultWord: 'CUIDADO',
         resultType: 'bad',
-        quote: '"El peligro de una zona ilícita no desaparece por ir en grupo."'
+        quote: '"Estar poco tiempo en un entorno peligroso sigue siendo un riesgo alto."'
       },
       {
         letter: 'B',
@@ -91,13 +91,13 @@ window.ZR.situations = [
       },
       {
         letter: 'C',
-        text: 'Acepto, pero solo me quedaré un momento y evitaré acercarme a personas que no conozca.',
-        score: -5,
+        text: 'Acepto porque iremos en grupo y eso hace que sea menos peligroso.',
+        score: -10,
         isCorrect: false,
-        feedback: 'Permanecer aunque sea un momento en un lugar peligroso sigue exponiéndote a situaciones ilícitas o violentas.',
-        resultWord: 'CUIDADO',
+        feedback: 'Ir en grupo no disminuye la peligrosidad de un lugar vinculado al comercio ilegal de sustancias.',
+        resultWord: 'PELIGRO',
         resultType: 'bad',
-        quote: '"Estar poco tiempo en un entorno peligroso sigue siendo un riesgo alto."'
+        quote: '"El peligro de una zona ilícita no desaparece por ir en grupo."'
       },
       {
         letter: 'D',
@@ -116,7 +116,7 @@ window.ZR.situations = [
     title: '"Solo para probar"',
     tag: 'SUSTANCIAS ILÍCITAS',
     tagColor: 'purple',
-    image: 'assets/Situaciones/situacion_1.jpg',
+    image: 'assets/Situaciones/situacion_soloparaprobar.jpg',
     context: 'Estás en el cumpleaños de un amigo. Un chico mayor del grupo te ofrece un tipo de droga que no conoces "algo para pasarla mejor". Varios ya aceptaron y sientes que si dices que no, vas a quedar afuera del grupo.',
     tip: 'Nunca aceptes sustancias desconocidas. Consumir drogas por presión social a por encajar puede tener consecuencias fatales.',
     emoji: '🪩',
@@ -124,16 +124,6 @@ window.ZR.situations = [
     options: [
       {
         letter: 'A',
-        text: 'Le digo que no me provoca ahorita y continúo en el grupo',
-        score: 5,
-        isCorrect: true,
-        feedback: '¡Bien por rechazar la sustancia! Sin embargo, quedarte en el mismo entorno de consumo puede mantener la presión sobre ti.',
-        resultWord: '¡BIEN!',
-        resultType: 'good',
-        quote: '"Firmeza al rechazar, pero atento al entorno que te rodea."'
-      },
-      {
-        letter: 'B',
         text: 'Acepto un poco, para no quedar como el aguafiestas del grupo',
         score: -10,
         isCorrect: false,
@@ -143,17 +133,17 @@ window.ZR.situations = [
         quote: '"No vale la pena arriesgar tu vida para complacer a los demás."'
       },
       {
-        letter: 'C',
-        text: 'Me alejo del grupo gran parte de la fiesta para evitar que me vuelvan a insistir',
-        score: -5,
-        isCorrect: false,
-        feedback: 'Alejarte solo dentro de la fiesta sin buscar un adulto o salir del lugar puede dejarte desprotegido en la reunión.',
-        resultWord: 'CUIDADO',
-        resultType: 'bad',
-        quote: '"En lugar de aislarte en un lugar de riesgo, busca salir de allí."'
+        letter: 'B',
+        text: 'Le digo que no me provoca ahorita y continúo en el grupo',
+        score: 5,
+        isCorrect: true,
+        feedback: '¡Bien por rechazar la sustancia! Sin embargo, quedarte en el mismo entorno de consumo puede mantener la presión sobre ti.',
+        resultWord: '¡BIEN!',
+        resultType: 'good',
+        quote: '"Firmeza al rechazar, pero atento al entorno que te rodea."'
       },
       {
-        letter: 'D',
+        letter: 'C',
         text: 'Finjo salir a tomar aire y escribo a un familiar para que me llame con una excusa a recogerme',
         score: 10,
         isCorrect: true,
@@ -161,6 +151,16 @@ window.ZR.situations = [
         resultWord: '¡EXCELENTE!',
         resultType: 'good',
         quote: '"Recurrir a tu familia o adultos de confianza es la mejor estrategia de protección."'
+      },
+      {
+        letter: 'D',
+        text: 'Me alejo del grupo gran parte de la fiesta para evitar que me vuelvan a insistir',
+        score: -5,
+        isCorrect: false,
+        feedback: 'Alejarte solo dentro de la fiesta sin buscar un adulto o salir del lugar puede dejarte desprotegido en la reunión.',
+        resultWord: 'CUIDADO',
+        resultType: 'bad',
+        quote: '"En lugar de aislarte en un lugar de riesgo, busca salir de allí."'
       }
     ]
   },
@@ -169,7 +169,7 @@ window.ZR.situations = [
     title: '"El camino oscuro"',
     tag: 'RUTA NOCTURNA',
     tagColor: 'yellow',
-    image: 'assets/Situaciones/situacion_4.png',
+    image: 'assets/Situaciones/situacion_elcaminooscuro.png',
     context: 'Sales tarde de estudiar en casa de un amigo. Para llegar a tu casa hay dos rutas: un atajo por una calle sola y mal iluminada (10 min), o la calle principal, más iluminada pero más larga (25 min). Tu amigo vive en dirección contraria a la tuya.',
     tip: 'Las calles mal iluminadas y solitarias son puntos frecuentes de asaltos. Elige siempre caminos iluminados y transitados.',
     emoji: '🌙',
@@ -177,6 +177,16 @@ window.ZR.situations = [
     options: [
       {
         letter: 'A',
+        text: 'Cruzo solo por el atajo, porque ya conozco esa ruta de cuando la caminé de día',
+        score: -10,
+        isCorrect: false,
+        feedback: 'Conocer un atajo de día no lo hace seguro de noche. Las calles oscuras esconden riesgos de robos y agresiones.',
+        resultWord: 'PELIGRO',
+        resultType: 'bad',
+        quote: '"De noche, la falta de iluminación cambia por completo la seguridad de una calle."'
+      },
+      {
+        letter: 'B',
         text: 'Voy con mi amigo por el atajo, porque así no voy solo',
         score: -5,
         isCorrect: false,
@@ -186,7 +196,7 @@ window.ZR.situations = [
         quote: '"Acompañar a un amigo no debe desviarte hacia zonas oscuras solo."'
       },
       {
-        letter: 'B',
+        letter: 'C',
         text: 'Tomo la calle más iluminada, me separo de mi amigo y me demoro más en llegar a mi casa',
         score: 5,
         isCorrect: true,
@@ -194,16 +204,6 @@ window.ZR.situations = [
         resultWord: '¡BIEN!',
         resultType: 'good',
         quote: '"Llegar unos minutos más tarde por un camino seguro vale la pena."'
-      },
-      {
-        letter: 'C',
-        text: 'Cruzo solo por el atajo, porque ya conozco esa ruta de cuando la caminé de día',
-        score: -10,
-        isCorrect: false,
-        feedback: 'Conocer un atajo de día no lo hace seguro de noche. Las calles oscuras esconden riesgos de robos y agresiones.',
-        resultWord: 'PELIGRO',
-        resultType: 'bad',
-        quote: '"De noche, la falta de iluminación cambia por completo la seguridad de una calle."'
       },
       {
         letter: 'D',
@@ -222,7 +222,7 @@ window.ZR.situations = [
     title: '"Desconocido en la calle"',
     tag: 'DESCONOCIDO EN LA CALLE',
     tagColor: 'ink',
-    image: 'assets/Situaciones/situacion_5.png',
+    image: 'assets/Situaciones/situacion_desconocidoenlacalle.png',
     context: 'Vas caminando a casa después del colegio, con el celular guardado. Una persona que no conoces se te acerca y te pregunta la hora, insistiendo después en que la ayudes con el mapa de tu celular. Estás en una zona peligrosa con alto índice de un aumento del robo callejero de celulares por distracción.',
     tip: 'Las preguntas frecuentes sobre la hora o direcciones suelen ser tácticas de distracción para arrebatar objetos de valor.',
     emoji: '🏪',
@@ -230,6 +230,16 @@ window.ZR.situations = [
     options: [
       {
         letter: 'A',
+        text: 'Le respondes que no llevas celular ni reloj, sin detenerte, y sigues por tu ruta habitual hacia una avenida con más gente',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente! Responder sin detener la marcha y dirigirte a avenidas transitadas neutraliza el intento de robo.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"La firmeza, la prudencia y dirigirse a zonas transitadas son tu mejor escudo."'
+      },
+      {
+        letter: 'B',
         text: 'Sacas el celular rápido para indicarle la hora o la dirección que pide y sigues caminando sin detenerme',
         score: -10,
         isCorrect: false,
@@ -239,7 +249,7 @@ window.ZR.situations = [
         quote: '"No expongas tus pertenencias de valor ante desconocidos en la vía pública."'
       },
       {
-        letter: 'B',
+        letter: 'C',
         text: 'Le dices que no sabes y sigues caminando a tu ritmo normal, por la misma ruta',
         score: -5,
         isCorrect: false,
@@ -249,7 +259,7 @@ window.ZR.situations = [
         quote: '"Mantente alerta y busca avenidas más concurridas."'
       },
       {
-        letter: 'C',
+        letter: 'D',
         text: 'Ignoras a la persona y te metes por una calle más corta que conoces, para llegar antes a tu casa',
         score: 5,
         isCorrect: true,
@@ -257,16 +267,6 @@ window.ZR.situations = [
         resultWord: '¡BIEN!',
         resultType: 'good',
         quote: '"Evitar la interacción con desconocidos sospechosos previene el robo."'
-      },
-      {
-        letter: 'D',
-        text: 'Le respondes que no llevas celular ni reloj, sin detenerte, y sigues por tu ruta habitual hacia una avenida con más gente',
-        score: 10,
-        isCorrect: true,
-        feedback: '¡Excelente! Responder sin detener la marcha y dirigirte a avenidas transitadas neutraliza el intento de robo.',
-        resultWord: '¡EXCELENTE!',
-        resultType: 'good',
-        quote: '"La firmeza, la prudencia y dirigirse a zonas transitadas son tu mejor escudo."'
       }
     ]
   },
@@ -275,7 +275,7 @@ window.ZR.situations = [
     title: '"¡Suelta mi celular!"',
     tag: 'INTENTO DE ARREBATO',
     tagColor: 'red',
-    image: 'assets/Situaciones/situacion_6.png',
+    image: 'assets/Situaciones/situacion_arrebatocelular.png',
     context: 'Caminabas cerca de una avenida peligrosa cuando un desconocido intentó quitarte el celular de la mano. Aunque hay gente cerca, el arrebato fue rápido. Tienes suerte de que varios negocios abiertos están a pocos metros.',
     tip: 'Ante un intento de robo, nunca opongas resistencia ni persigas al delincuente. Tu vida e integridad valen más que cualquier objeto.',
     emoji: '🏢',
@@ -293,6 +293,16 @@ window.ZR.situations = [
       },
       {
         letter: 'B',
+        text: 'Sueltas el celular y entras a un negocio a pedir ayuda',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente decisión! Refugiarte de inmediato en un establecimiento comercial seguro con más personas es la reacción más prudente.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"Buscar refugio inmediato en un local comercial protege tu vida e integridad."'
+      },
+      {
+        letter: 'C',
         text: 'Sueltas el celular de inmediato y corres detrás del ladrón a corta distancia para intentar ver hacia dónde va',
         score: -5,
         isCorrect: false,
@@ -302,7 +312,7 @@ window.ZR.situations = [
         quote: '"Nunca persigas a un delincuente por tu propia cuenta."'
       },
       {
-        letter: 'C',
+        letter: 'D',
         text: 'Sueltas el celular de inmediato, gritas pidiendo ayuda a gente cercana y tratas de memorizar cómo era el ladrón',
         score: 5,
         isCorrect: true,
@@ -310,16 +320,6 @@ window.ZR.situations = [
         resultWord: '¡BIEN!',
         resultType: 'good',
         quote: '"Pedir ayuda y conservar la calma es fundamental."'
-      },
-      {
-        letter: 'D',
-        text: 'Sueltas el celular y entras a un negocio a pedir ayuda',
-        score: 10,
-        isCorrect: true,
-        feedback: '¡Excelente decisión! Refugiarte de inmediato en un establecimiento comercial seguro con más personas es la reacción más prudente.',
-        resultWord: '¡EXCELENTE!',
-        resultType: 'good',
-        quote: '"Buscar refugio inmediato en un local comercial protege tu vida e integridad."'
       }
     ]
   }

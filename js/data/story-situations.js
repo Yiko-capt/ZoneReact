@@ -11,6 +11,7 @@ window.ZR.storySituations = [
     title: '"Aprobar exámenes"',
     tag: 'Nivel 1 · Presión de estudio / Vapeo',
     tagColor: 'red',
+    image: 'assets/Situaciones/situacion_aprobarexamenes.png',
     context: 'Lucas está muy estresado por los exámenes finales. Te propone desvelarse en su casa estudiando y te muestra un vape sabor menta diciendo: "Con esto nos mantendremos despiertos toda la noche sin cansarnos".',
     tip: 'El vapeo contiene nicotina y sustancias tóxicas que dañan tu cerebro en desarrollo. El descanso es fundamental para rendir bien.',
     emoji: '🏠',
@@ -18,6 +19,16 @@ window.ZR.storySituations = [
     options: [
       {
         letter: 'A',
+        text: 'Convences a Lucas de repasar lo importante e irse a dormir antes de medianoche',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente decisión! Dormir 8 horas garantiza un rendimiento óptimo en los exámenes sin recurrir a sustancias.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"El descanso adecuado y la planificación son la verdadera clave del éxito."'
+      },
+      {
+        letter: 'B',
         text: 'Aceptas el vape solo por esta noche para poder estudiar más tiempo',
         score: -10,
         isCorrect: false,
@@ -27,7 +38,7 @@ window.ZR.storySituations = [
         quote: '"Ninguna sustancia reemplaza un hábito de estudio y descanso saludable."'
       },
       {
-        letter: 'B',
+        letter: 'C',
         text: 'Rechazas el vape y estudias solo un momento antes de ir a descansar',
         score: 5,
         isCorrect: true,
@@ -37,7 +48,7 @@ window.ZR.storySituations = [
         quote: '"Saber decir no a las sustancias protege tu salud y tu futuro."'
       },
       {
-        letter: 'C',
+        letter: 'D',
         text: 'Propones consumir bebidas energizantes en exceso para no usar el vape',
         score: -5,
         isCorrect: false,
@@ -45,16 +56,6 @@ window.ZR.storySituations = [
         resultWord: 'CUIDADO',
         resultType: 'bad',
         quote: '"El exceso de cafeína y taurina altera tu sistema nervioso."'
-      },
-      {
-        letter: 'D',
-        text: 'Convences a Lucas de repasar lo importante e irse a dormir antes de medianoche',
-        score: 10,
-        isCorrect: true,
-        feedback: '¡Excelente decisión! Dormir 8 horas garantiza un rendimiento óptimo en los exámenes sin recurrir a sustancias.',
-        resultWord: '¡EXCELENTE!',
-        resultType: 'good',
-        quote: '"El descanso adecuado y la planificación son la verdadera clave del éxito."'
       }
     ]
   },
@@ -64,6 +65,7 @@ window.ZR.storySituations = [
     title: '"El vape en el parque"',
     tag: 'Nivel 2 · Presión de pares en el parque',
     tagColor: 'yellow',
+    image: 'assets/Situaciones/situacion_soloparaprobar.jpg',
     context: 'En el parque del barrio, unos chicos mayores se acercan a Lucas y le ofrecen probar un cigarrillo electrónico nuevo. Lucas te mira indeciso buscando tu aprobación.',
     tip: 'La presión social en lugares públicos puede ser fuerte. Tu firmeza ayuda a tus amigos a no ceder.',
     emoji: '🛝',
@@ -81,6 +83,16 @@ window.ZR.storySituations = [
       },
       {
         letter: 'B',
+        text: 'Tomas del brazo a Lucas, le dices "Tenemos que ir a entrenar ya" y lo alejas del grupo',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente intervención! Sacar a Lucas de la situación de riesgo de inmediato previno cualquier consumo.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"Actuar a tiempo por un amigo es una verdadera muestra de lealtad."'
+      },
+      {
+        letter: 'C',
         text: 'Te quedas callado y dejas que Lucas decida por su cuenta',
         score: -5,
         isCorrect: false,
@@ -90,7 +102,7 @@ window.ZR.storySituations = [
         quote: '"El silencio frente a un peligro puede poner en riesgo a tus amigos."'
       },
       {
-        letter: 'C',
+        letter: 'D',
         text: 'Dices con voz firme "No gracias, no consumimos eso" y propones ir a jugar cancha',
         score: 5,
         isCorrect: true,
@@ -98,16 +110,6 @@ window.ZR.storySituations = [
         resultWord: '¡BIEN!',
         resultType: 'good',
         quote: '"La firmeza desactiva la presión social en un instante."'
-      },
-      {
-        letter: 'D',
-        text: 'Tomas del brazo a Lucas, le dices "Tenemos que ir a entrenar ya" y lo alejas del grupo',
-        score: 10,
-        isCorrect: true,
-        feedback: '¡Excelente intervención! Sacar a Lucas de la situación de riesgo de inmediato previno cualquier consumo.',
-        resultWord: '¡EXCELENTE!',
-        resultType: 'good',
-        quote: '"Actuar a tiempo por un amigo es una verdadera muestra de lealtad."'
       }
     ]
   },
@@ -117,6 +119,7 @@ window.ZR.storySituations = [
     title: '"La invitación al lugar peligroso"',
     tag: 'Nivel 3 · Zonas de riesgo e ilegalidad',
     tagColor: 'blue',
+    image: 'assets/Situaciones/situacion_lainvitacion.png',
     context: 'Al salir del colegio, unos conocidos invitan a Lucas a una fiesta en un pasaje solitario conocido por la venta ilegal de sustancias. Le aseguran que "no pasa nada si van en grupo".',
     tip: 'Las zonas donde se comercializan sustancias ilícitas conllevan riesgos de violencia, robos y consumo forzado.',
     emoji: '🏫',
@@ -144,16 +147,6 @@ window.ZR.storySituations = [
       },
       {
         letter: 'C',
-        text: 'Rechazas ir a ese lugar y sugieres ir a la cancha del colegio que es segura',
-        score: 5,
-        isCorrect: true,
-        feedback: '¡Buena iniciativa! Proponer alternativas seguras demuestra liderazgo positivo.',
-        resultWord: '¡BIEN!',
-        resultType: 'good',
-        quote: '"Plantear lugares seguros cuida a todo el grupo."'
-      },
-      {
-        letter: 'D',
         text: 'Adviertes a Lucas del peligro real de esa zona y lo convences de ir directo a casa',
         score: 10,
         isCorrect: true,
@@ -161,6 +154,16 @@ window.ZR.storySituations = [
         resultWord: '¡EXCELENTE!',
         resultType: 'good',
         quote: '"La información clara y la prudencia salvan vidas."'
+      },
+      {
+        letter: 'D',
+        text: 'Rechazas ir a ese lugar y sugieres ir a la cancha del colegio que es segura',
+        score: 5,
+        isCorrect: true,
+        feedback: '¡Buena iniciativa! Proponer alternativas seguras demuestra liderazgo positivo.',
+        resultWord: '¡BIEN!',
+        resultType: 'good',
+        quote: '"Plantear lugares seguros cuida a todo el grupo."'
       }
     ]
   },
@@ -170,6 +173,7 @@ window.ZR.storySituations = [
     title: '"Presión en el kiosco"',
     tag: 'Nivel 4 · Alcohol y bebidas alteradas',
     tagColor: 'ink',
+    image: 'assets/Situaciones/situacion_soloparaprobar.jpg',
     context: 'En el kiosco cerca de la avenida, un conocido le insiste a Lucas para que pruebe una lata de bebida alcohólica combinada diciendo "Todos en el barrio ya tomaron esto, no seas infantil".',
     tip: 'El consumo precoz de alcohol afecta gravemente el desarrollo cerebral en la adolescencia y desinhibe conductas de riesgo.',
     emoji: '🏪',
@@ -223,6 +227,7 @@ window.ZR.storySituations = [
     title: '"Desconocido en la avenida"',
     tag: 'Nivel 5 · Prevención de robos y captación',
     tagColor: 'red',
+    image: 'assets/Situaciones/situacion_desconocidoenlacalle.png',
     context: 'Caminando por la avenida principal, un sujeto desconocido se acerca a Lucas pidiéndole prestado el celular con la excusa de una emergencia familiar, mientras intenta llevarlo hacia un callejón solitario.',
     tip: 'Los delincuentes suelen usar historias conmovedoras para distraer o conducir a jóvenes hacia zonas desprotegidas.',
     emoji: '🛣️',
@@ -230,6 +235,16 @@ window.ZR.storySituations = [
     options: [
       {
         letter: 'A',
+        text: 'Le dices "No llevo celular" sin detenerte y entran de inmediato a una tienda transcurrida con gente',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente reacción! Mantener la marcha y buscar refugio en un establecimiento con gente anula el riesgo.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"Refugiarte en comercios concurridos es tu mejor escudo en la calle."'
+      },
+      {
+        letter: 'B',
         text: 'Lucas saca su celular y acompaña al desconocido al callejón para ayudarlo',
         score: -10,
         isCorrect: false,
@@ -239,7 +254,7 @@ window.ZR.storySituations = [
         quote: '"Jamás te desvíes a zonas desiertas con personas desconocidas."'
       },
       {
-        letter: 'B',
+        letter: 'C',
         text: 'Le prestas tu celular tú mismo en la calle sin moverte',
         score: -5,
         isCorrect: false,
@@ -249,7 +264,7 @@ window.ZR.storySituations = [
         quote: '"Protege tus pertenencias en la calle y mantén la distancia."'
       },
       {
-        letter: 'C',
+        letter: 'D',
         text: 'Le indican al sujeto la ubicación de una caseta policial cercana y siguen caminando a paso firme',
         score: 5,
         isCorrect: true,
@@ -257,16 +272,6 @@ window.ZR.storySituations = [
         resultWord: '¡BIEN!',
         resultType: 'good',
         quote: '"La ayuda formal en lugares públicos es la opción segura."'
-      },
-      {
-        letter: 'D',
-        text: 'Le dices "No llevo celular" sin detenerte y entran de inmediato a una tienda transcurrida con gente',
-        score: 10,
-        isCorrect: true,
-        feedback: '¡Excelente reacción! Mantener la marcha y buscar refugio en un establecimiento con gente anula el riesgo.',
-        resultWord: '¡EXCELENTE!',
-        resultType: 'good',
-        quote: '"Refugiarte en comercios concurridos es tu mejor escudo en la calle."'
       }
     ]
   },
@@ -276,6 +281,7 @@ window.ZR.storySituations = [
     title: '"El atajo a oscuras"',
     tag: 'Nivel 6 · Riesgo de ruta nocturna',
     tagColor: 'yellow',
+    image: 'assets/Situaciones/situacion_elcaminooscuro.png',
     context: 'Anochece y Lucas sugiere tomar un pasaje sin alumbrado público para ahorrar 15 minutos de caminata hacia su casa.',
     tip: 'Las vías sin luz y poco transitadas son lugares preferidos por delincuentes para cometer ilícitos.',
     emoji: '🌙',
@@ -293,6 +299,16 @@ window.ZR.storySituations = [
       },
       {
         letter: 'B',
+        text: 'Llaman a un familiar o transporte seguro para que los recoja en la avenida iluminada',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente prevención! Coordinar apoyo familiar o transporte formal es la máxima medida de protección.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"Pedir apoyo a tu familia ante el riesgo es actuar de forma inteligente."'
+      },
+      {
+        letter: 'C',
         text: 'Dejas que Lucas vaya por el atajo solo mientras tú vas por la avenida',
         score: -5,
         isCorrect: false,
@@ -302,7 +318,7 @@ window.ZR.storySituations = [
         quote: '"Cuidar a tus amigos significa no dejarlos solos en el peligro."'
       },
       {
-        letter: 'C',
+        letter: 'D',
         text: 'Convences a Lucas de tomar la avenida iluminada aunque demore unos minutos más',
         score: 5,
         isCorrect: true,
@@ -310,16 +326,6 @@ window.ZR.storySituations = [
         resultWord: '¡BIEN!',
         resultType: 'good',
         quote: '"Llegar seguro a casa vale más que unos minutos ahorrados."'
-      },
-      {
-        letter: 'D',
-        text: 'Llaman a un familiar o transporte seguro para que los recoja en la avenida iluminada',
-        score: 10,
-        isCorrect: true,
-        feedback: '¡Excelente prevención! Coordinar apoyo familiar o transporte formal es la máxima medida de protección.',
-        resultWord: '¡EXCELENTE!',
-        resultType: 'good',
-        quote: '"Pedir apoyo a tu familia ante el riesgo es actuar de forma inteligente."'
       }
     ]
   },
@@ -329,6 +335,7 @@ window.ZR.storySituations = [
     title: '"Solo para probar en la reunión"',
     tag: 'Nivel 7 · Experimentación con drogas',
     tagColor: 'purple',
+    image: 'assets/Situaciones/situacion_soloparaprobar.jpg',
     context: 'En una reunión en casa de un compañero, un chico mayor saca una envoltura con una sustancia blanca en polvo y le dice a Lucas: "Prueba solo un poco, te dará energía para divertirte toda la noche".',
     tip: 'Las drogas sintéticas y cocaínas destruyen neuronas rápidamente, provocan arritmias fatales y adicción inmediata.',
     emoji: '🏠',
@@ -356,16 +363,6 @@ window.ZR.storySituations = [
       },
       {
         letter: 'C',
-        text: 'Le dices a Lucas al oído "Esa porquería destruye el cerebro, vámonos ya" y salen de la casa',
-        score: 5,
-        isCorrect: true,
-        feedback: '¡Muy bien! Hacerlo reaccionar a tiempo y abandonar el lugar evita situaciones irreversibles.',
-        resultWord: '¡BIEN!',
-        resultType: 'good',
-        quote: '"Un amigo de verdad te aleja de las sustancias destructivas."'
-      },
-      {
-        letter: 'D',
         text: 'Rechazan enfáticamente, salen de la fiesta y avisan de inmediato a un adulto de confianza',
         score: 10,
         isCorrect: true,
@@ -373,6 +370,16 @@ window.ZR.storySituations = [
         resultWord: '¡EXCELENTE!',
         resultType: 'good',
         quote: '"La prevención valiente cuida tu vida y la de tus seres queridos."'
+      },
+      {
+        letter: 'D',
+        text: 'Le dices a Lucas al oído "Esa porquería destruye el cerebro, vámonos ya" y salen de la casa',
+        score: 5,
+        isCorrect: true,
+        feedback: '¡Muy bien! Hacerlo reaccionar a tiempo y abandonar el lugar evita situaciones irreversibles.',
+        resultWord: '¡BIEN!',
+        resultType: 'good',
+        quote: '"Un amigo de verdad te aleja de las sustancias destructivas."'
       }
     ]
   },
@@ -382,6 +389,7 @@ window.ZR.storySituations = [
     title: '"Intento de arrebato cerca a locales"',
     tag: 'Nivel 8 · Reacción ante asaltos',
     tagColor: 'red',
+    image: 'assets/Situaciones/situacion_arrebatocelular.png',
     context: 'Cerca a la zona comercial, un sujeto agresivo sorprende a Lucas e intenta quitarle la mochila por la fuerza. A pocos metros hay una farmacia abierta con personal y seguridad.',
     tip: 'Ante un intento de robo, la integridad física es lo más valioso. Nunca se debe forcejear violentamente.',
     emoji: '🏢',
@@ -435,6 +443,7 @@ window.ZR.storySituations = [
     title: '"Fiesta y sustancias en Neon Disco"',
     tag: 'Nivel 9 · Microtráfico e inoculación involuntaria',
     tagColor: 'purple',
+    image: 'assets/Situaciones/situacion_lainvitacion.png',
     context: 'En la zona de entretenimiento Neon Disco, un sujeto le ofrece a Lucas un vaso con una bebida alcohólica ya servida que traía en la mano. Lucas tiene sed y duda en recibirla.',
     tip: 'Nunca consumas bebidas o sustancias servidas por personas desconocidas. Pueden contener drogas de sumisión.',
     emoji: '🪩',
@@ -442,6 +451,16 @@ window.ZR.storySituations = [
     options: [
       {
         letter: 'A',
+        text: 'Rechazan de plano la bebida, advierten a los organizadores y deciden retirarse de la discoteca',
+        score: 10,
+        isCorrect: true,
+        feedback: '¡Excelente prevención! Identificar el riesgo, reportarlo y abandonar el establecimiento evita situaciones graves.',
+        resultWord: '¡EXCELENTE!',
+        resultType: 'good',
+        quote: '"Detectar la amenaza y abandonar el lugar es la máxima decisión de autoprotección."'
+      },
+      {
+        letter: 'B',
         text: 'Lucas recibe el vaso abierto y se lo toma de un solo trago',
         score: -10,
         isCorrect: false,
@@ -451,7 +470,7 @@ window.ZR.storySituations = [
         quote: '"Jamás recibas vasos servidos o abiertos de extraños."'
       },
       {
-        letter: 'B',
+        letter: 'C',
         text: 'Acepta el vaso pero solo da un pequeño sorbo para probar el sabor',
         score: -5,
         isCorrect: false,
@@ -461,7 +480,7 @@ window.ZR.storySituations = [
         quote: '"Un solo sorbo de sustancia alterada puede anular tu voluntad."'
       },
       {
-        letter: 'C',
+        letter: 'D',
         text: 'Le quitas el vaso respetuosamente, lo dejas en una mesa y compran una botella de agua sellada',
         score: 5,
         isCorrect: true,
@@ -469,16 +488,6 @@ window.ZR.storySituations = [
         resultWord: '¡BIEN!',
         resultType: 'good',
         quote: '"Consumir únicamente bebidas en envases sellados por ti mismo es tu norma de seguridad."'
-      },
-      {
-        letter: 'D',
-        text: 'Rechazan de plano la bebida, advierten a los organizadores y deciden retirarse de la discoteca',
-        score: 10,
-        isCorrect: true,
-        feedback: '¡Excelente prevención! Identificar el riesgo, reportarlo y abandonar el establecimiento evita situaciones graves.',
-        resultWord: '¡EXCELENTE!',
-        resultType: 'good',
-        quote: '"Detectar la amenaza y abandonar el lugar es la máxima decisión de autoprotección."'
       }
     ]
   },
@@ -488,6 +497,7 @@ window.ZR.storySituations = [
     title: '"La decisión final en la Plaza - META"',
     tag: 'Nivel 10 · META FINAL: Liderazgo y compromiso',
     tagColor: 'green',
+    image: 'assets/Situaciones/situacion_aprobarexamenes.png',
     context: 'Llegan a la Plaza Principal del distrito. Un grupo de amigos del barrio está reunido deliberando qué hacer durante el fin de semana. Le piden a Lucas y a ti que lideren el grupo y elijan la actividad.',
     tip: 'El verdadero liderazgo juvenil consiste en promover hábitos saludables, cultura y deporte libre de adicciones.',
     emoji: '🏆',
@@ -515,16 +525,6 @@ window.ZR.storySituations = [
       },
       {
         letter: 'C',
-        text: 'Propones organizar un torneo deportivo en la losa del barrio con premios para todos',
-        score: 5,
-        isCorrect: true,
-        feedback: '¡Excelente idea! El deporte une a los jóvenes y los mantiene alejados de los vicios.',
-        resultWord: '¡BIEN!',
-        resultType: 'good',
-        quote: '"El deporte y la sana competencia fortalecen a la juventud."'
-      },
-      {
-        letter: 'D',
         text: 'Organizan un taller de música y arte urbano comunitario para concientizar sobre la prevención',
         score: 10,
         isCorrect: true,
@@ -532,6 +532,16 @@ window.ZR.storySituations = [
         resultWord: '¡VICTORIA!',
         resultType: 'good',
         quote: '"Transformar tu barrio con arte, prevención y unión es tu máximo poder."'
+      },
+      {
+        letter: 'D',
+        text: 'Propones organizar un torneo deportivo en la losa del barrio con premios para todos',
+        score: 5,
+        isCorrect: true,
+        feedback: '¡Excelente idea! El deporte une a los jóvenes y los mantiene alejados de los vicios.',
+        resultWord: '¡BIEN!',
+        resultType: 'good',
+        quote: '"El deporte y la sana competencia fortalecen a la juventud."'
       }
     ]
   }
